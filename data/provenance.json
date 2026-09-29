@@ -1,0 +1,66 @@
+{
+  "schemaVersion": 1,
+  "copiedOn": "2026-09-29",
+  "assembly": "GRCh38",
+  "coordinates": "0-based, half-open",
+  "recipe": {
+    "id": "hcc1954-wakhan-explorer",
+    "releaseId": "v5",
+    "repository": "https://github.com/genome-spy/genomespy-dataset-recipes",
+    "commit": "cf3aa5b436aa877da7718a588e8dd172639dfa82",
+    "path": "recipes/hcc1954-wakhan-explorer",
+    "transformation": "Copied the two verified annotation outputs byte-for-byte; renamed files only."
+  },
+  "sources": [
+    {
+      "id": "cytobands",
+      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/cytoBandIdeo.txt.gz",
+      "filename": "cytoBandIdeo.txt.gz",
+      "assembly": "GRCh38",
+      "retrieved": "2026-09-03",
+      "fileSizeBytes": 12122,
+      "sha256": "c092fd7f0c1d0a3a543d1d826b3ae07a55bc9c8a9818580232ff9c8f13c60865"
+    },
+    {
+      "id": "refseq",
+      "url": "https://hgdownload.soe.ucsc.edu/goldenPath/hg38/database/ncbiRefSeqCurated.txt.gz",
+      "filename": "ncbiRefSeqCurated.txt.gz",
+      "assembly": "GRCh38",
+      "retrieved": "2026-09-03",
+      "fileSizeBytes": 4801131,
+      "sha256": "67090326b606658bdabdfe5f8dcb97b7943ac802c7945399522be7174ec021ca"
+    },
+    {
+      "id": "ncg",
+      "title": "Network of Cancer Genes 7.2: cancer-driver annotation and supporting evidence",
+      "version": "7.2",
+      "publication": "https://doi.org/10.1186/s13059-022-02607-z",
+      "url": "http://www.network-cancer-genes.org/download.php",
+      "formData": {
+        "downloadcancergenes": "Download"
+      },
+      "filename": "NCG_cancerdrivers_annotation_supporting_evidence.tsv",
+      "retrieved": "2026-09-05",
+      "lastModified": "2022-02-21T17:00:35Z",
+      "license": "Freely downloadable; no license required; citation requested",
+      "fileSizeBytes": 959142,
+      "sha256": "e1e1f8ff4dd6f3107a5dfe9f60e20dc52c62313cb8e4411856329a66849580a1"
+    }
+  ],
+  "outputs": [
+    {
+      "path": "ncg-7.2-grch38.tsv",
+      "sha256": "c4f8c1ab41e9125e96ec1e3d4bd5bed73a8dafbf91f349261b6365035f927ffc",
+      "fileSizeBytes": 46034,
+      "recordCount": 593,
+      "recipeOutput": "genes.tsv"
+    },
+    {
+      "path": "cytobands-grch38.tsv",
+      "sha256": "c1d07d3aba76426c133c2e7ee2b345c80f3d02ced98b775d17a0f76ffac90325",
+      "fileSizeBytes": 30775,
+      "recordCount": 862,
+      "recipeOutput": "cytobands.tsv"
+    }
+  ]
+}

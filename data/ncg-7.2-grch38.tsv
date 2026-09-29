@@ -1,0 +1,594 @@
+chrom	start	end	symbol	strand	entrez	ncgClass	driverRole	supportCount
+chr1	2228318	2310213	SKI	+	6497	Canonical cancer driver	Oncogene	1
+chr1	2556370	2563829	TNFRSF14	+	8764	Canonical cancer driver	Tumour suppressor	6
+chr1	3069202	3438621	PRDM16	+	63976	Canonical cancer driver	Oncogene	1
+chr1	6185019	6199595	RPL22	-	6146	Canonical cancer driver	Tumour suppressor	15
+chr1	6785453	7769706	CAMTA1	+	23261	Canonical cancer driver	Tumour suppressor	3
+chr1	11106534	11262551	MTOR	-	2475	Canonical cancer driver	Oncogene	18
+chr1	13700187	13825079	PRDM2	+	7799	Canonical cancer driver	Tumour suppressor	4
+chr1	15491400	15524790	CASP9	-	842	Canonical cancer driver	Tumour suppressor	1
+chr1	15847706	15940456	SPEN	+	23013	Canonical cancer driver	Tumour suppressor	5
+chr1	17018721	17054032	SDHB	-	6390	Canonical cancer driver	Tumour suppressor	1
+chr1	17520196	17697875	ARHGEF10L	+	55160	Canonical cancer driver	Tumour suppressor	2
+chr1	23557925	23559501	ID3	-	3399	Canonical cancer driver	Tumour suppressor	8
+chr1	26696014	26782104	ARID1A	+	8289	Canonical cancer driver	Tumour suppressor	84
+chr1	32251264	32286165	LCK	+	3932	Canonical cancer driver	Oncogene	1
+chr1	35182935	35193145	SFPQ	-	6421	Canonical cancer driver	Tumour suppressor	3
+chr1	36466042	36483314	CSF3R	-	1441	Canonical cancer driver	Oncogene	2
+chr1	39895427	39901917	MYCL	-	4610	Canonical cancer driver	Oncogene	1
+chr1	43337817	43354466	MPL	+	4352	Canonical cancer driver	Oncogene	5
+chr1	45329241	45340440	MUTYH	-	4595	Canonical cancer driver	Tumour suppressor	2
+chr1	47216289	47232335	TAL1	-	6886	Canonical cancer driver	Oncogene	2
+chr1	47250138	47314896	STIL	-	6491	Canonical cancer driver	Oncogene	1
+chr1	50960744	50974634	CDKN2C	+	1031	Canonical cancer driver	Tumour suppressor	4
+chr1	51354262	51519266	EPS15	-	2060	Canonical cancer driver	Tumour suppressor	1
+chr1	58780790	58784047	JUN	-	3725	Canonical cancer driver	Oncogene	1
+chr1	64833228	65067746	JAK1	-	3716	Canonical cancer driver	Oncogene	7
+chr1	77944054	77979072	FUBP1	-	8880	Canonical cancer driver	Tumour suppressor	12
+chr1	85265775	85276632	BCL10	-	8915	Canonical cancer driver	Tumour suppressor	3
+chr1	92832039	92841924	RPL5	+	6125	Canonical cancer driver	Tumour suppressor	12
+chr1	114392789	114511203	TRIM33	-	51592	Canonical cancer driver	Tumour suppressor	1
+chr1	114704468	114716771	NRAS	-	4893	Canonical cancer driver	Oncogene	65
+chr1	116373243	116404774	ATP1A1	+	476	Canonical cancer driver	Dual or unclassified	1
+chr1	117606047	117628389	TENT5C	+	54855	Canonical cancer driver	Tumour suppressor	4
+chr1	119911552	120069662	NOTCH2	-	4853	Canonical cancer driver	Tumour suppressor	19
+chr1	147541500	147626216	BCL9	+	607	Canonical cancer driver	Oncogene	2
+chr1	150809712	150876599	ARNT	-	405	Canonical cancer driver	Dual or unclassified	1
+chr1	150926262	150964737	SETDB1	+	9869	Canonical cancer driver	Oncogene	4
+chr1	153457743	153460651	S100A7	-	6278	Canonical cancer driver	Dual or unclassified	2
+chr1	154155307	154192100	TPM3	-	7170	Canonical cancer driver	Tumour suppressor	1
+chr1	155897807	155911349	RIT1	-	6016	Canonical cancer driver	Oncogene	5
+chr1	156815749	156881850	NTRK1	+	4914	Canonical cancer driver	Oncogene	6
+chr1	157573746	157598085	FCRL4	-	83417	Canonical cancer driver	Oncogene	1
+chr1	161314380	161363206	SDHC	+	6391	Canonical cancer driver	Tumour suppressor	1
+chr1	161647242	161678654	FCGR2B	+	2213	Canonical cancer driver	Oncogene	1
+chr1	162630862	162787405	DDR2	+	4921	Canonical cancer driver	Oncogene	5
+chr1	164559183	164886047	PBX1	+	5087	Canonical cancer driver	Oncogene	1
+chr1	179099329	179229677	ABL2	-	27	Canonical cancer driver	Oncogene	1
+chr1	193122030	193254815	CDC73	+	79577	Canonical cancer driver	Tumour suppressor	4
+chr1	198639039	198757476	PTPRC	+	5788	Canonical cancer driver	Tumour suppressor	4
+chr1	202010586	202017183	ELF3	+	1999	Canonical cancer driver	Tumour suppressor	20
+chr1	204516405	204558120	MDM4	+	4194	Canonical cancer driver	Oncogene	2
+chr1	205607942	205632011	ELK4	-	2005	Canonical cancer driver	Oncogene	1
+chr1	226061830	226072019	H3-3A	+	3020	Canonical cancer driver	Oncogene	12
+chr1	240774741	241357230	RGS7	-	6000	Canonical cancer driver	Dual or unclassified	3
+chr1	241497602	241519755	FH	-	2271	Canonical cancer driver	Tumour suppressor	3
+chr1	243488232	243851079	AKT3	-	10000	Canonical cancer driver	Oncogene	4
+chr2	15940549	15947004	MYCN	+	4613	Canonical cancer driver	Oncogene	11
+chr2	25227873	25342590	DNMT3A	-	1788	Canonical cancer driver	Dual or unclassified	25
+chr2	25733752	25878487	ASXL2	-	55252	Canonical cancer driver	Tumour suppressor	10
+chr2	29192773	29921586	ALK	-	238	Canonical cancer driver	Oncogene	14
+chr2	32357022	32618878	BIRC6	+	57448	Canonical cancer driver	Oncogene	2
+chr2	45005181	45009452	SIX2	-	10736	Canonical cancer driver	Oncogene	2
+chr2	46297406	46386697	EPAS1	+	2034	Canonical cancer driver	Dual or unclassified	3
+chr2	47403066	47709830	MSH2	+	4436	Canonical cancer driver	Tumour suppressor	6
+chr2	47783144	47810101	MSH6	+	2956	Canonical cancer driver	Tumour suppressor	9
+chr2	47806919	47906498	FBXO11	-	80204	Canonical cancer driver	Tumour suppressor	7
+chr2	60450519	60553924	BCL11A	-	53335	Canonical cancer driver	Oncogene	2
+chr2	60881573	60931612	REL	+	5966	Canonical cancer driver	Oncogene	1
+chr2	61477848	61538356	XPO1	-	7514	Canonical cancer driver	Oncogene	8
+chr2	70087476	70089203	PCBP1	+	5093	Canonical cancer driver	Dual or unclassified	9
+chr2	79185376	80648780	CTNNA2	+	1496	Canonical cancer driver	Oncogene	4
+chr2	96248513	96265997	TMEM127	-	55654	Canonical cancer driver	Tumour suppressor	1
+chr2	99545418	100142590	AFF3	-	3899	Canonical cancer driver	Oncogene	1
+chr2	106403405	106468413	RGPD3	-	653489	Canonical cancer driver	Dual or unclassified	1
+chr2	108719481	108785809	RANBP2	+	5903	Canonical cancer driver	Tumour suppressor	1
+chr2	127257289	127294144	ERCC3	-	2071	Canonical cancer driver	Tumour suppressor	1
+chr2	136114348	136118149	CXCR4	-	7852	Canonical cancer driver	Oncogene	5
+chr2	140231422	142131016	LRP1B	-	53353	Canonical cancer driver	Tumour suppressor	13
+chr2	147844516	147930822	ACVR2A	+	92	Canonical cancer driver	Tumour suppressor	18
+chr2	157736445	157876330	ACVR1	-	90	Canonical cancer driver	Oncogene	7
+chr2	176092720	176095944	HOXD13	+	3239	Canonical cancer driver	Oncogene	1
+chr2	176107279	176109754	HOXD11	+	3237	Canonical cancer driver	Oncogene	1
+chr2	177230302	177264727	NFE2L2	-	4780	Canonical cancer driver	Oncogene	36
+chr2	186590055	186680901	ITGAV	+	3685	Canonical cancer driver	Dual or unclassified	1
+chr2	189784449	189877629	PMS1	+	5378	Canonical cancer driver	Dual or unclassified	3
+chr2	197389783	197435093	SF3B1	-	23451	Canonical cancer driver	Oncogene	38
+chr2	201233462	201287709	CASP8	+	841	Canonical cancer driver	Tumour suppressor	20
+chr2	203706481	203738912	CD28	+	940	Canonical cancer driver	Oncogene	5
+chr2	207529961	207605988	CREB1	+	1385	Canonical cancer driver	Oncogene	1
+chr2	208236226	208255071	IDH1	-	3417	Canonical cancer driver	Oncogene	35
+chr2	211375716	212538802	ERBB4	-	2066	Canonical cancer driver	Oncogene	14
+chr2	214725645	214809683	BARD1	-	580	Canonical cancer driver	Tumour suppressor	1
+chr2	218981086	218985184	FEV	-	54738	Canonical cancer driver	Oncogene	1
+chr2	222199886	222298998	PAX3	-	5077	Canonical cancer driver	Oncogene	1
+chr2	224470149	224585363	CUL3	-	8452	Canonical cancer driver	Tumour suppressor	6
+chr2	236569824	236582354	ACKR3	+	57007	Canonical cancer driver	Oncogene	1
+chr3	10026436	10101932	FANCD2	+	2177	Canonical cancer driver	Tumour suppressor	1
+chr3	10141777	10153667	VHL	+	7428	Canonical cancer driver	Tumour suppressor	16
+chr3	12287367	12434344	PPARG	+	5468	Canonical cancer driver	Tumour suppressor	1
+chr3	12583600	12664117	RAF1	-	5894	Canonical cancer driver	Oncogene	6
+chr3	13549124	13638404	FBLN2	+	2199	Canonical cancer driver	Tumour suppressor	2
+chr3	14145146	14178601	XPC	-	7508	Canonical cancer driver	Tumour suppressor	1
+chr3	30606355	30694142	TGFBR2	+	7048	Canonical cancer driver	Tumour suppressor	24
+chr3	32951643	32956349	CCR4	+	1233	Canonical cancer driver	Oncogene	2
+chr3	36993517	37050846	MLH1	+	4292	Canonical cancer driver	Tumour suppressor	8
+chr3	38138660	38143022	MYD88	+	4615	Canonical cancer driver	Oncogene	16
+chr3	41199504	41240443	CTNNB1	+	1499	Canonical cancer driver	Oncogene	56
+chr3	47016435	47164113	SETD2	-	29072	Canonical cancer driver	Tumour suppressor	41
+chr3	49359144	49411976	RHOA	-	387	Canonical cancer driver	Oncogene	24
+chr3	52401007	52410008	BAP1	-	8314	Canonical cancer driver	Tumour suppressor	36
+chr3	52545366	52685913	PBRM1	-	55193	Canonical cancer driver	Tumour suppressor	34
+chr3	53494610	53813733	CACNA1D	+	776	Canonical cancer driver	Oncogene	1
+chr3	59747276	61251452	FHIT	-	2272	Canonical cancer driver	Tumour suppressor	1
+chr3	69739463	69968332	MITF	+	4286	Canonical cancer driver	Oncogene	2
+chr3	70954707	71583978	FOXP1	-	27086	Canonical cancer driver	Oncogene	3
+chr3	75906674	77649964	ROBO2	+	6092	Canonical cancer driver	Tumour suppressor	4
+chr3	89107620	89482134	EPHA3	+	2042	Canonical cancer driver	Dual or unclassified	9
+chr3	105655460	105869401	CBLB	-	868	Canonical cancer driver	Tumour suppressor	3
+chr3	121431430	121545988	POLQ	-	10721	Canonical cancer driver	Dual or unclassified	4
+chr3	128479421	128493201	GATA2	-	2624	Canonical cancer driver	Oncogene	7
+chr3	129167826	129183896	CNBP	-	7555	Canonical cancer driver	Tumour suppressor	1
+chr3	136336235	136752378	STAG1	-	10274	Canonical cancer driver	Tumour suppressor	2
+chr3	138652697	138834928	PIK3CB	-	5291	Canonical cancer driver	Oncogene	5
+chr3	138944223	138947137	FOXL2	-	668	Canonical cancer driver	Oncogene	3
+chr3	142449234	142578733	ATR	-	545	Canonical cancer driver	Tumour suppressor	6
+chr3	149517234	149724788	WWTR1	-	25937	Canonical cancer driver	Oncogene	1
+chr3	158571193	158606456	MLF1	+	4291	Canonical cancer driver	Tumour suppressor	1
+chr3	169083506	169663712	MECOM	-	2122	Canonical cancer driver	Oncogene	5
+chr3	177019343	177197482	TBL1XR1	-	79718	Canonical cancer driver	Dual or unclassified	13
+chr3	179148356	179240093	PIK3CA	+	5290	Canonical cancer driver	Oncogene	104
+chr3	181711924	181714436	SOX2	+	6657	Canonical cancer driver	Oncogene	1
+chr3	185282960	185489094	MAP3K13	+	9175	Canonical cancer driver	Dual or unclassified	4
+chr3	185643129	185825042	IGF2BP2	-	10644	Canonical cancer driver	Tumour suppressor	1
+chr3	186046313	186109089	ETV5	-	2119	Canonical cancer driver	Oncogene	1
+chr3	187721380	187745468	BCL6	-	604	Canonical cancer driver	Oncogene	8
+chr3	188153020	188890671	LPP	+	4026	Canonical cancer driver	Oncogene	3
+chr3	189596745	189897276	TP63	+	8626	Canonical cancer driver	Dual or unclassified	7
+chr4	1793292	1808867	FGFR3	+	2261	Canonical cancer driver	Oncogene	17
+chr4	1871392	1982192	NSD2	+	7468	Canonical cancer driver	Oncogene	4
+chr4	25655850	25678748	SLC34A2	+	10568	Canonical cancer driver	Tumour suppressor	1
+chr4	40056849	40158252	N4BP2	+	55728	Canonical cancer driver	Tumour suppressor	2
+chr4	40191079	40246967	RHOH	+	399	Canonical cancer driver	Tumour suppressor	3
+chr4	41744081	41748725	PHOX2B	-	8929	Canonical cancer driver	Tumour suppressor	1
+chr4	48135782	48269838	TEC	-	7006	Canonical cancer driver	Oncogene	2
+chr4	54229292	54298245	PDGFRA	+	5156	Canonical cancer driver	Oncogene	13
+chr4	54657956	54740715	KIT	+	3815	Canonical cancer driver	Oncogene	22
+chr4	55078480	55125595	KDR	-	3791	Canonical cancer driver	Oncogene	6
+chr4	86594314	86815161	PTPN13	+	5783	Canonical cancer driver	Tumour suppressor	2
+chr4	98261383	98443858	RAP1GDS1	+	5910	Canonical cancer driver	Oncogene	1
+chr4	105145874	105279803	TET2	+	54790	Canonical cancer driver	Tumour suppressor	23
+chr4	108047547	108168932	LEF1	-	51176	Canonical cancer driver	Dual or unclassified	2
+chr4	125314954	125492932	FAT4	+	79633	Canonical cancer driver	Tumour suppressor	9
+chr4	152320543	152536092	FBXW7	-	55294	Canonical cancer driver	Tumour suppressor	57
+chr4	184627695	184649447	CASP3	-	836	Canonical cancer driver	Tumour suppressor	1
+chr4	186587793	186726696	FAT1	-	2195	Canonical cancer driver	Tumour suppressor	20
+chr5	218319	257082	SDHA	+	6389	Canonical cancer driver	Tumour suppressor	1
+chr5	1253166	1295068	TERT	-	7015	Canonical cancer driver	Oncogene	18
+chr5	10971835	11904446	CTNND2	-	1501	Canonical cancer driver	Oncogene	2
+chr5	24487099	24644978	CDH10	-	1008	Canonical cancer driver	Tumour suppressor	7
+chr5	31400493	31532093	DROSHA	-	29102	Canonical cancer driver	Tumour suppressor	4
+chr5	35856890	35879603	IL7R	+	3575	Canonical cancer driver	Oncogene	7
+chr5	55935094	55994963	IL6ST	-	3572	Canonical cancer driver	Oncogene	4
+chr5	56815548	56896152	MAP3K1	+	4214	Canonical cancer driver	Tumour suppressor	25
+chr5	68215755	68301821	PIK3R1	+	5295	Canonical cancer driver	Tumour suppressor	44
+chr5	69369292	69414801	RAD17	+	5884	Canonical cancer driver	Tumour suppressor	1
+chr5	112707497	112846239	APC	+	324	Canonical cancer driver	Tumour suppressor	34
+chr5	132875394	132963634	AFF4	-	27125	Canonical cancer driver	Oncogene	2
+chr5	142770376	143229011	ARHGAP26	+	23092	Canonical cancer driver	Tumour suppressor	2
+chr5	150053294	150113365	CSF1R	-	1436	Canonical cancer driver	Oncogene	2
+chr5	150113838	150155845	PDGFRB	-	5159	Canonical cancer driver	Oncogene	2
+chr5	150401638	150412910	CD74	-	972	Canonical cancer driver	Oncogene	1
+chr5	158695919	159099916	EBF1	-	1879	Canonical cancer driver	Tumour suppressor	3
+chr5	171309247	171312139	TLX3	+	30012	Canonical cancer driver	Oncogene	2
+chr5	171387115	171410900	NPM1	+	4869	Canonical cancer driver	Dual or unclassified	12
+chr5	177086914	177098144	FGFR4	+	2264	Canonical cancer driver	Oncogene	4
+chr5	180601505	180649600	FLT4	-	2324	Canonical cancer driver	Oncogene	2
+chr6	391751	411443	IRF4	+	3662	Canonical cancer driver	Dual or unclassified	7
+chr6	18223859	18264530	DEK	-	7913	Canonical cancer driver	Oncogene	1
+chr6	26031588	26032099	H3C2	-	8358	Canonical cancer driver	Oncogene	12
+chr6	28903001	28923985	TRIM27	-	5987	Canonical cancer driver	Oncogene	1
+chr6	31164336	31170682	POU5F1	-	5460	Canonical cancer driver	Oncogene	1
+chr6	33318557	33322959	DAXX	-	1616	Canonical cancer driver	Tumour suppressor	10
+chr6	34236872	34246231	HMGA1	+	3159	Canonical cancer driver	Oncogene	1
+chr6	35452337	35467102	FANCE	+	2178	Canonical cancer driver	Tumour suppressor	1
+chr6	36594361	36605600	SRSF3	+	6428	Canonical cancer driver	Oncogene	1
+chr6	36676462	36687332	CDKN1A	+	1026	Canonical cancer driver	Dual or unclassified	14
+chr6	37170151	37175428	PIM1	+	5292	Canonical cancer driver	Oncogene	10
+chr6	41683977	41736223	TFEB	-	7942	Canonical cancer driver	Oncogene	1
+chr6	41934932	42050035	CCND3	-	896	Canonical cancer driver	Oncogene	14
+chr6	44258165	44265551	NFKBIE	-	4794	Canonical cancer driver	Tumour suppressor	2
+chr6	55753652	55875590	BMP5	-	653	Canonical cancer driver	Dual or unclassified	1
+chr6	93240019	93419559	EPHA7	-	2045	Canonical cancer driver	Dual or unclassified	6
+chr6	99542386	99568814	CCNC	-	892	Canonical cancer driver	Tumour suppressor	1
+chr6	106086335	106109938	PRDM1	+	639	Canonical cancer driver	Tumour suppressor	6
+chr6	108559824	108684774	FOXO3	+	2309	Canonical cancer driver	Dual or unclassified	2
+chr6	117287352	117425942	ROS1	-	6098	Canonical cancer driver	Oncogene	6
+chr6	127118670	127199481	RSPO3	+	84870	Canonical cancer driver	Oncogene	1
+chr6	127968784	128520599	PTPRK	-	5796	Canonical cancer driver	Tumour suppressor	3
+chr6	134169255	134318112	SGK1	-	6446	Canonical cancer driver	Oncogene	11
+chr6	135181307	135219172	MYB	+	4602	Canonical cancer driver	Oncogene	5
+chr6	136256626	136289846	BCLAF1	-	9774	Canonical cancer driver	Dual or unclassified	5
+chr6	137867258	137883312	TNFAIP3	+	7128	Canonical cancer driver	Tumour suppressor	7
+chr6	138796086	138904070	ECT2L	+	345930	Canonical cancer driver	Dual or unclassified	3
+chr6	149658152	149718101	LATS1	-	9113	Canonical cancer driver	Tumour suppressor	4
+chr6	151656671	152129619	ESR1	+	2099	Canonical cancer driver	Oncogene	10
+chr6	156776025	157210779	ARID1B	+	57492	Canonical cancer driver	Tumour suppressor	15
+chr6	163414717	163578592	QKI	+	9444	Canonical cancer driver	Dual or unclassified	7
+chr6	167826563	167972023	AFDN	+	4301	Canonical cancer driver	Oncogene	3
+chr7	2906141	3043867	CARD11	-	84433	Canonical cancer driver	Oncogene	15
+chr7	5970924	6009049	PMS2	-	5395	Canonical cancer driver	Tumour suppressor	4
+chr7	6374526	6403967	RAC1	+	5879	Canonical cancer driver	Oncogene	12
+chr7	13891228	13991425	ETV1	-	2115	Canonical cancer driver	Oncogene	1
+chr7	20134654	20217384	MACC1	-	346389	Canonical cancer driver	Oncogene	2
+chr7	26189926	26200746	HNRNPA2B1	-	3181	Canonical cancer driver	Oncogene	3
+chr7	27162437	27165537	HOXA9	-	3205	Canonical cancer driver	Dual or unclassified	1
+chr7	27181156	27185232	HOXA11	-	3207	Canonical cancer driver	Dual or unclassified	2
+chr7	27194363	27200091	HOXA13	-	3209	Canonical cancer driver	Oncogene	1
+chr7	32957439	33006928	FKBP9	+	11328	Canonical cancer driver	Dual or unclassified	1
+chr7	37905931	37916817	SFRP4	-	6424	Canonical cancer driver	Tumour suppressor	1
+chr7	50304063	50405101	IKZF1	+	10320	Canonical cancer driver	Tumour suppressor	6
+chr7	55019016	55211628	EGFR	+	1956	Canonical cancer driver	Oncogene	29
+chr7	57117675	57139864	ZNF479	-	90827	Canonical cancer driver	Dual or unclassified	2
+chr7	66987679	66995586	SBDS	-	51119	Canonical cancer driver	Tumour suppressor	1
+chr7	75533297	75738941	HIP1	-	3092	Canonical cancer driver	Oncogene	1
+chr7	86643908	86864879	GRM3	+	2913	Canonical cancer driver	Oncogene	3
+chr7	92604920	92836573	CDK6	-	1021	Canonical cancer driver	Oncogene	4
+chr7	98878531	99013241	TRRAP	+	8295	Canonical cancer driver	Oncogene	3
+chr7	101816006	102283958	CUX1	+	1523	Canonical cancer driver	Dual or unclassified	4
+chr7	116672195	116798377	MET	+	4233	Canonical cancer driver	Oncogene	14
+chr7	124822385	124929825	POT1	-	25913	Canonical cancer driver	Tumour suppressor	6
+chr7	127652193	128092593	SND1	+	27044	Canonical cancer driver	Oncogene	1
+chr7	129188632	129213545	SMO	+	6608	Canonical cancer driver	Oncogene	8
+chr7	137874978	138002086	CREB3L2	-	64764	Canonical cancer driver	Oncogene	1
+chr7	138460258	138589996	TRIM24	+	8805	Canonical cancer driver	Dual or unclassified	2
+chr7	140713327	140924929	BRAF	-	673	Canonical cancer driver	Oncogene	54
+chr7	148807382	148884291	EZH2	-	2146	Canonical cancer driver	Oncogene	25
+chr7	152134924	152436003	KMT2C	-	58508	Canonical cancer driver	Tumour suppressor	46
+chr8	1823343	1958641	ARHGEF10	+	9639	Canonical cancer driver	Tumour suppressor	1
+chr8	30095407	30138348	LEPROTL1	+	23484	Canonical cancer driver	Tumour suppressor	5
+chr8	31033809	31176138	WRN	+	7486	Canonical cancer driver	Tumour suppressor	2
+chr8	31639244	32774046	NRG1	+	3084	Canonical cancer driver	Tumour suppressor	1
+chr8	38269703	38382271	NSD3	-	54904	Canonical cancer driver	Oncogene	1
+chr8	38411142	38468635	FGFR1	-	2260	Canonical cancer driver	Oncogene	12
+chr8	41653224	41896741	ANK1	-	286	Canonical cancer driver	Dual or unclassified	1
+chr8	41929478	42051987	KAT6A	-	7994	Canonical cancer driver	Oncogene	2
+chr8	42271301	42332460	IKBKB	+	3551	Canonical cancer driver	Oncogene	4
+chr8	56160908	56211273	PLAG1	-	5324	Canonical cancer driver	Oncogene	1
+chr8	67952045	68237032	PREX2	+	80243	Canonical cancer driver	Oncogene	7
+chr8	70109781	70404217	NCOA2	-	10499	Canonical cancer driver	Oncogene	2
+chr8	79764009	79767767	HEY1	-	23462	Canonical cancer driver	Oncogene	1
+chr8	86866414	87382859	CNBD1	+	168975	Canonical cancer driver	Dual or unclassified	3
+chr8	89933330	89984667	NBN	-	4683	Canonical cancer driver	Tumour suppressor	1
+chr8	91954966	92103385	RUNX1T1	-	862	Canonical cancer driver	Dual or unclassified	3
+chr8	94127161	94217278	CDH17	-	1015	Canonical cancer driver	Oncogene	1
+chr8	100702915	100722088	PABPC1	-	26986	Canonical cancer driver	Dual or unclassified	7
+chr8	102252272	102412700	UBR5	-	51366	Canonical cancer driver	Oncogene	2
+chr8	107899315	108083620	RSPO2	-	340419	Canonical cancer driver	Tumour suppressor	2
+chr8	108201215	108248717	EIF3E	-	3646	Canonical cancer driver	Tumour suppressor	1
+chr8	116845933	116874776	RAD21	-	5885	Canonical cancer driver	Dual or unclassified	8
+chr8	117794489	118111826	EXT1	-	2131	Canonical cancer driver	Tumour suppressor	1
+chr8	127735433	127742951	MYC	+	4609	Canonical cancer driver	Oncogene	17
+chr8	133237174	133297252	NDRG1	-	10397	Canonical cancer driver	Tumour suppressor	1
+chr8	138130022	138497730	FAM135B	-	51059	Canonical cancer driver	Dual or unclassified	5
+chr8	144511287	144517833	RECQL4	-	9401	Canonical cancer driver	Dual or unclassified	3
+chr9	4985085	5129948	JAK2	+	3717	Canonical cancer driver	Oncogene	9
+chr9	5450541	5470554	CD274	+	29126	Canonical cancer driver	Tumour suppressor	1
+chr9	5510530	5571282	PDCD1LG2	+	80380	Canonical cancer driver	Oncogene	1
+chr9	8314245	10613002	PTPRD	-	5789	Canonical cancer driver	Tumour suppressor	9
+chr9	15464065	15510970	PSIP1	-	11168	Canonical cancer driver	Oncogene	4
+chr9	21967751	21995324	CDKN2A	-	1029	Canonical cancer driver	Tumour suppressor	78
+chr9	35073838	35079942	FANCG	-	2189	Canonical cancer driver	Tumour suppressor	1
+chr9	36833268	37034268	PAX5	-	5079	Canonical cancer driver	Tumour suppressor	10
+chr9	77716096	78031811	GNAQ	-	2776	Canonical cancer driver	Oncogene	8
+chr9	90801599	90898549	SYK	+	6850	Canonical cancer driver	Oncogene	4
+chr9	93184138	93320569	WNK2	+	65268	Canonical cancer driver	Tumour suppressor	3
+chr9	95099053	95317709	FANCC	-	2176	Canonical cancer driver	Tumour suppressor	1
+chr9	95442979	95516971	PTCH1	-	5727	Canonical cancer driver	Tumour suppressor	16
+chr9	97674908	97697340	XPA	-	7507	Canonical cancer driver	Tumour suppressor	1
+chr9	99821884	99866891	NR4A3	+	8013	Canonical cancer driver	Oncogene	1
+chr9	105662456	105663124	TAL2	+	6887	Canonical cancer driver	Oncogene	2
+chr9	107484851	107489769	KLF4	-	9314	Canonical cancer driver	Oncogene	4
+chr9	115019574	115118157	TNC	-	3371	Canonical cancer driver	Oncogene	2
+chr9	125146572	125189803	PPP6C	-	5537	Canonical cancer driver	Tumour suppressor	9
+chr9	128683423	128696396	SET	+	6418	Canonical cancer driver	Oncogene	1
+chr9	130713042	130887675	ABL1	+	25	Canonical cancer driver	Oncogene	4
+chr9	132891348	132944616	TSC1	-	7248	Canonical cancer driver	Tumour suppressor	15
+chr9	134030304	134068026	BRD3	-	8019	Canonical cancer driver	Oncogene	2
+chr9	136494432	136546048	NOTCH1	-	4851	Canonical cancer driver	Tumour suppressor	45
+chr10	806913	931705	LARP4B	-	23185	Canonical cancer driver	Tumour suppressor	2
+chr10	3775995	3785209	KLF6	-	1316	Canonical cancer driver	Tumour suppressor	2
+chr10	8045332	8075198	GATA3	+	2625	Canonical cancer driver	Tumour suppressor	25
+chr10	21533755	21743630	MLLT10	+	8028	Canonical cancer driver	Oncogene	2
+chr10	26746595	26860958	ABI1	-	10006	Canonical cancer driver	Tumour suppressor	1
+chr10	31318416	31529804	ZEB1	+	6935	Canonical cancer driver	Oncogene	5
+chr10	43077068	43130351	RET	+	5979	Canonical cancer driver	Oncogene	11
+chr10	46005087	46030623	NCOA4	-	8031	Canonical cancer driver	Tumour suppressor	1
+chr10	50799408	50885627	A1CF	-	29974	Canonical cancer driver	Oncogene	1
+chr10	59788746	59906556	CCDC6	-	8030	Canonical cancer driver	Tumour suppressor	2
+chr10	68560336	68694487	TET1	+	80312	Canonical cancer driver	Dual or unclassified	4
+chr10	70597347	70602741	PRF1	-	5551	Canonical cancer driver	Tumour suppressor	1
+chr10	74825254	75032624	KAT6B	+	23522	Canonical cancer driver	Tumour suppressor	1
+chr10	86755762	86927969	BMPR1A	+	657	Canonical cancer driver	Dual or unclassified	1
+chr10	87863624	87971930	PTEN	+	5728	Canonical cancer driver	Tumour suppressor	80
+chr10	88990797	89017059	FAS	+	355	Canonical cancer driver	Tumour suppressor	5
+chr10	92046691	92291078	CPEB3	-	22849	Canonical cancer driver	Tumour suppressor	1
+chr10	95036771	95069497	CYP2C8	-	1558	Canonical cancer driver	Dual or unclassified	1
+chr10	101131299	101137789	TLX1	+	3195	Canonical cancer driver	Oncogene	2
+chr10	102394109	102402529	NFKB2	+	4791	Canonical cancer driver	Dual or unclassified	5
+chr10	102503971	102633535	SUFU	+	51684	Canonical cancer driver	Tumour suppressor	3
+chr10	103088016	103193272	NT5C2	-	22978	Canonical cancer driver	Oncogene	1
+chr10	112950246	113167678	TCF7L2	+	6934	Canonical cancer driver	Oncogene	8
+chr10	121478329	121598444	FGFR2	-	2263	Canonical cancer driver	Oncogene	15
+chr10	129467240	129770983	MGMT	+	4255	Canonical cancer driver	Tumour suppressor	2
+chr11	532241	535576	HRAS	-	3265	Canonical cancer driver	Oncogene	30
+chr11	3000928	3057423	CARS1	-	833	Canonical cancer driver	Tumour suppressor	1
+chr11	3675018	3797554	NUP98	-	4928	Canonical cancer driver	Oncogene	2
+chr11	8224308	8268787	LMO1	-	4004	Canonical cancer driver	Oncogene	1
+chr11	17719570	17722136	MYOD1	+	4654	Canonical cancer driver	Oncogene	2
+chr11	22622532	22625823	FANCF	-	2188	Canonical cancer driver	Tumour suppressor	1
+chr11	32387774	32435539	WT1	-	7490	Canonical cancer driver	Tumour suppressor	14
+chr11	33858575	33892076	LMO2	-	4005	Canonical cancer driver	Oncogene	2
+chr11	44095677	44251962	EXT2	+	2132	Canonical cancer driver	Tumour suppressor	2
+chr11	46277661	46321409	CREB3L1	+	90993	Canonical cancer driver	Tumour suppressor	1
+chr11	47214453	47239217	DDB2	+	1643	Canonical cancer driver	Dual or unclassified	1
+chr11	57761801	57819540	CTNND1	+	1500	Canonical cancer driver	Dual or unclassified	2
+chr11	61430123	61446733	SDHAF2	+	54949	Canonical cancer driver	Tumour suppressor	1
+chr11	61792910	61797238	FEN1	+	2237	Canonical cancer driver	Tumour suppressor	2
+chr11	64803515	64811294	MEN1	-	4221	Canonical cancer driver	Tumour suppressor	14
+chr11	69641155	69654474	CCND1	+	595	Canonical cancer driver	Oncogene	22
+chr11	86244752	86287615	EED	+	8726	Canonical cancer driver	Tumour suppressor	5
+chr11	92224817	92896473	FAT3	+	120114	Canonical cancer driver	Dual or unclassified	10
+chr11	95976597	96343195	MAML2	-	84441	Canonical cancer driver	Oncogene	3
+chr11	102317483	102339403	BIRC3	+	330	Canonical cancer driver	Dual or unclassified	4
+chr11	108223066	108369102	ATM	+	472	Canonical cancer driver	Tumour suppressor	43
+chr11	108665068	108940927	DDX10	+	1662	Canonical cancer driver	Tumour suppressor	2
+chr11	111352254	111379275	POU2AF1	-	5450	Canonical cancer driver	Oncogene	3
+chr11	112086872	112095794	SDHD	+	6392	Canonical cancer driver	Tumour suppressor	2
+chr11	114059710	114256770	ZBTB16	+	7704	Canonical cancer driver	Tumour suppressor	2
+chr11	118436491	118526832	KMT2A	+	4297	Canonical cancer driver	Oncogene	15
+chr11	118747762	118791744	DDX6	-	1656	Canonical cancer driver	Oncogene	1
+chr11	118896135	118925926	BCL9L	-	283149	Canonical cancer driver	Dual or unclassified	3
+chr11	118971760	118981287	FOXR1	+	283150	Canonical cancer driver	Oncogene	1
+chr11	119206338	119308149	CBL	+	867	Canonical cancer driver	Oncogene	10
+chr11	120336412	120489937	ARHGEF12	+	23365	Canonical cancer driver	Tumour suppressor	2
+chr11	128685131	128813267	FLI1	+	2313	Canonical cancer driver	Oncogene	2
+chr11	128891355	128921163	KCNJ5	+	3762	Canonical cancer driver	Oncogene	1
+chr12	280056	389320	KDM5A	-	5927	Canonical cancer driver	Oncogene	3
+chr12	4273761	4305353	CCND2	+	894	Canonical cancer driver	Oncogene	3
+chr12	6570081	6607379	CHD4	-	1108	Canonical cancer driver	Oncogene	13
+chr12	6946576	6961316	PTPN6	+	5777	Canonical cancer driver	Tumour suppressor	1
+chr12	11649673	11895377	ETV6	+	2120	Canonical cancer driver	Tumour suppressor	8
+chr12	12717367	12722369	CDKN1B	+	1027	Canonical cancer driver	Tumour suppressor	21
+chr12	22625170	22690665	ETNK1	+	55500	Canonical cancer driver	Tumour suppressor	2
+chr12	25205245	25250929	KRAS	-	3845	Canonical cancer driver	Oncogene	103
+chr12	45729705	45908037	ARID2	+	196528	Canonical cancer driver	Tumour suppressor	37
+chr12	47972966	48004476	COL2A1	-	1280	Canonical cancer driver	Dual or unclassified	2
+chr12	49018977	49060794	KMT2D	-	8085	Canonical cancer driver	Tumour suppressor	54
+chr12	49623560	49644665	PRPF40B	+	25766	Canonical cancer driver	Dual or unclassified	2
+chr12	50085341	50100707	SMARCD1	+	6602	Canonical cancer driver	Tumour suppressor	3
+chr12	50763458	50821162	ATF1	+	466	Canonical cancer driver	Oncogene	1
+chr12	51951698	51997078	ACVR1B	+	91	Canonical cancer driver	Tumour suppressor	13
+chr12	53938830	53946544	HOXC13	+	3229	Canonical cancer driver	Oncogene	2
+chr12	53973125	53977643	HOXC11	+	3227	Canonical cancer driver	Oncogene	1
+chr12	56080107	56103505	ERBB3	+	2065	Canonical cancer driver	Oncogene	22
+chr12	57089113	57095476	NAB2	+	4665	Canonical cancer driver	Tumour suppressor	1
+chr12	57095407	57111362	STAT6	-	6778	Canonical cancer driver	Oncogene	5
+chr12	57459784	57472268	GLI1	+	2735	Canonical cancer driver	Oncogene	1
+chr12	57516587	57520517	DDIT3	-	1649	Canonical cancer driver	Oncogene	2
+chr12	57747726	57752310	CDK4	-	1019	Canonical cancer driver	Oncogene	6
+chr12	58872154	58920504	LRIG3	-	121227	Canonical cancer driver	Tumour suppressor	1
+chr12	65050625	65121305	WIF1	-	11197	Canonical cancer driver	Tumour suppressor	2
+chr12	65824459	65966291	HMGA2	+	8091	Canonical cancer driver	Oncogene	1
+chr12	68808171	68850686	MDM2	+	4193	Canonical cancer driver	Oncogene	3
+chr12	70515869	70637429	PTPRB	-	5787	Canonical cancer driver	Tumour suppressor	2
+chr12	92140277	92145846	BTG1	-	694	Canonical cancer driver	Tumour suppressor	6
+chr12	95516559	95551476	USP44	-	84101	Canonical cancer driver	Tumour suppressor	1
+chr12	104456947	104762014	CHST11	+	50515	Canonical cancer driver	Oncogene	1
+chr12	111405922	111451623	SH2B3	+	10019	Canonical cancer driver	Tumour suppressor	7
+chr12	112418946	112509918	PTPN11	+	5781	Canonical cancer driver	Oncogene	25
+chr12	114670254	114684175	TBX3	-	6926	Canonical cancer driver	Dual or unclassified	11
+chr12	120978542	121002512	HNF1A	+	6927	Canonical cancer driver	Tumour suppressor	3
+chr12	121804008	121832656	SETD1B	+	23067	Canonical cancer driver	Tumour suppressor	3
+chr12	124324414	124567612	NCOR2	-	9612	Canonical cancer driver	Tumour suppressor	3
+chr12	132623761	132687342	POLE	-	5426	Canonical cancer driver	Tumour suppressor	7
+chr13	20973035	21061586	LATS2	-	26524	Canonical cancer driver	Tumour suppressor	4
+chr13	27960917	27969315	CDX2	-	1045	Canonical cancer driver	Tumour suppressor	2
+chr13	28003273	28100576	FLT3	-	2322	Canonical cancer driver	Oncogene	18
+chr13	32315076	32400268	BRCA2	+	675	Canonical cancer driver	Tumour suppressor	21
+chr13	34942269	35672736	NBEA	+	26960	Canonical cancer driver	Dual or unclassified	2
+chr13	40555666	40666641	FOXO1	-	2308	Canonical cancer driver	Dual or unclassified	4
+chr13	48303750	48481890	RB1	+	5925	Canonical cancer driver	Tumour suppressor	69
+chr13	48653928	48711226	CYSLTR2	+	57105	Canonical cancer driver	Oncogene	4
+chr13	91398620	92867237	GPC5	+	2262	Canonical cancer driver	Tumour suppressor	2
+chr13	94709621	94712545	SOX21	-	11166	Canonical cancer driver	Tumour suppressor	1
+chr13	102846031	102875995	ERCC5	+	2073	Canonical cancer driver	Tumour suppressor	1
+chr14	20311369	20333279	CCNB1IP1	-	57820	Canonical cancer driver	Tumour suppressor	2
+chr14	32077303	32159728	ARHGAP5	+	394	Canonical cancer driver	Oncogene	1
+chr14	34752730	34875360	BAZ1A	-	11177	Canonical cancer driver	Tumour suppressor	2
+chr14	36516396	36520232	NKX2-1	-	7080	Canonical cancer driver	Dual or unclassified	2
+chr14	37589551	37595249	FOXA1	-	3169	Canonical cancer driver	Oncogene	16
+chr14	60643420	60649477	SIX1	-	6495	Canonical cancer driver	Oncogene	3
+chr14	61695512	61748258	HIF1A	+	3091	Canonical cancer driver	Oncogene	1
+chr14	65006100	65102517	MAX	-	4149	Canonical cancer driver	Tumour suppressor	7
+chr14	67819778	68683096	RAD51B	+	5890	Canonical cancer driver	Tumour suppressor	2
+chr14	80955620	81146306	TSHR	+	7253	Canonical cancer driver	Oncogene	4
+chr14	95086227	95158010	DICER1	-	23405	Canonical cancer driver	Tumour suppressor	5
+chr14	95709946	95714125	TCL1A	-	8115	Canonical cancer driver	Oncogene	4
+chr14	99169286	99272197	BCL11B	-	64919	Canonical cancer driver	Dual or unclassified	4
+chr14	104769348	104795748	AKT1	-	207	Canonical cancer driver	Oncogene	26
+chr15	34343314	34357735	NUTM1	+	256646	Canonical cancer driver	Oncogene	1
+chr15	40161068	40221123	BUB1B	+	701	Canonical cancer driver	Tumour suppressor	2
+chr15	40382720	40394288	KNSTRN	+	90417	Canonical cancer driver	Oncogene	3
+chr15	40594248	40664342	KNL1	+	57082	Canonical cancer driver	Tumour suppressor	1
+chr15	44711516	44718145	B2M	+	567	Canonical cancer driver	Tumour suppressor	17
+chr15	50424404	50514421	USP8	+	9101	Canonical cancer driver	Oncogene	1
+chr15	66386911	66491544	MAP2K1	+	5604	Canonical cancer driver	Oncogene	15
+chr15	67065601	67195169	SMAD3	+	4088	Canonical cancer driver	Tumour suppressor	4
+chr15	73994715	74047827	PML	+	5371	Canonical cancer driver	Tumour suppressor	2
+chr15	87859750	88256739	NTRK3	-	4916	Canonical cancer driver	Oncogene	5
+chr15	89316319	89334824	POLG	-	5428	Canonical cancer driver	Tumour suppressor	1
+chr15	90083044	90102468	IDH2	-	3418	Canonical cancer driver	Oncogene	22
+chr15	90717345	90816166	BLM	+	641	Canonical cancer driver	Tumour suppressor	1
+chr15	90884503	90895776	FES	+	2242	Canonical cancer driver	Dual or unclassified	1
+chr15	92900323	93027996	CHD2	+	1106	Canonical cancer driver	Tumour suppressor	5
+chr16	287439	352723	AXIN1	-	8312	Canonical cancer driver	Tumour suppressor	16
+chr16	2039819	2047834	NTHL1	-	4913	Canonical cancer driver	Tumour suppressor	1
+chr16	2047984	2089491	TSC2	+	7249	Canonical cancer driver	Tumour suppressor	8
+chr16	2155781	2178129	TRAF7	+	84231	Canonical cancer driver	Tumour suppressor	4
+chr16	3725053	3880713	CREBBP	-	1387	Canonical cancer driver	Tumour suppressor	29
+chr16	9753403	10182908	GRIN2A	-	2903	Canonical cancer driver	Tumour suppressor	4
+chr16	10877197	10936394	CIITA	+	4261	Canonical cancer driver	Tumour suppressor	6
+chr16	11254416	11256204	SOCS1	-	8651	Canonical cancer driver	Tumour suppressor	6
+chr16	11345458	11351760	RMI2	+	116028	Canonical cancer driver	Tumour suppressor	1
+chr16	11965209	11968068	TNFRSF17	+	608	Canonical cancer driver	Oncogene	1
+chr16	13920153	13952348	ERCC4	+	2072	Canonical cancer driver	Tumour suppressor	3
+chr16	23603164	23641310	PALB2	-	79728	Canonical cancer driver	Tumour suppressor	5
+chr16	23835982	24220611	PRKCB	+	5579	Canonical cancer driver	Dual or unclassified	3
+chr16	31180109	31194871	FUS	+	2521	Canonical cancer driver	Tumour suppressor	1
+chr16	50742085	50801935	CYLD	+	1540	Canonical cancer driver	Tumour suppressor	7
+chr16	64943752	65122063	CDH11	-	1009	Canonical cancer driver	Tumour suppressor	2
+chr16	67029148	67101058	CBFB	+	865	Canonical cancer driver	Tumour suppressor	17
+chr16	67562525	67639177	CTCF	+	10664	Canonical cancer driver	Tumour suppressor	19
+chr16	68737291	68835537	CDH1	+	999	Canonical cancer driver	Tumour suppressor	28
+chr16	72782884	73891930	ZFHX3	-	463	Canonical cancer driver	Tumour suppressor	11
+chr16	74621398	74666877	RFWD3	-	55159	Canonical cancer driver	Tumour suppressor	1
+chr16	79593837	79600737	MAF	-	4094	Canonical cancer driver	Oncogene	1
+chr16	88874857	88977207	CBFA2T3	-	863	Canonical cancer driver	Tumour suppressor	2
+chr16	89737548	89816647	FANCA	-	2175	Canonical cancer driver	Tumour suppressor	5
+chr17	1344274	1400222	YWHAE	-	7531	Canonical cancer driver	Tumour suppressor	1
+chr17	5116031	5174991	USP6	+	9098	Canonical cancer driver	Oncogene	1
+chr17	7668420	7687490	TP53	-	7157	Canonical cancer driver	Tumour suppressor	203
+chr17	8140471	8152404	PER1	-	5187	Canonical cancer driver	Tumour suppressor	1
+chr17	12020876	12143828	MAP2K4	+	6416	Canonical cancer driver	Dual or unclassified	21
+chr17	16029156	16215534	NCOR1	-	9611	Canonical cancer driver	Tumour suppressor	23
+chr17	17212211	17237168	FLCN	-	201163	Canonical cancer driver	Tumour suppressor	2
+chr17	31094976	31377675	NF1	+	4763	Canonical cancer driver	Tumour suppressor	62
+chr17	31937006	32001038	SUZ12	+	23512	Canonical cancer driver	Dual or unclassified	5
+chr17	35809483	35847242	TAF15	+	8148	Canonical cancer driver	Oncogene	1
+chr17	39461485	39534544	CDK12	+	51755	Canonical cancer driver	Tumour suppressor	9
+chr17	39688093	39728658	ERBB2	+	2064	Canonical cancer driver	Oncogene	31
+chr17	40309179	40357643	RARA	+	5914	Canonical cancer driver	Oncogene	3
+chr17	40553768	40565472	CCR7	-	1236	Canonical cancer driver	Oncogene	2
+chr17	40624961	40647818	SMARCE1	-	6605	Canonical cancer driver	Tumour suppressor	1
+chr17	42199176	42276391	STAT5B	-	6777	Canonical cancer driver	Dual or unclassified	4
+chr17	42313323	42388442	STAT3	-	6774	Canonical cancer driver	Oncogene	6
+chr17	43044294	43170327	BRCA1	-	672	Canonical cancer driver	Tumour suppressor	19
+chr17	43527845	43546340	ETV4	-	2118	Canonical cancer driver	Oncogene	1
+chr17	49598883	49678163	SPOP	-	8405	Canonical cancer driver	Oncogene	20
+chr17	49788680	49835026	KAT7	+	11143	Canonical cancer driver	Oncogene	1
+chr17	55264959	55325187	HLF	+	3131	Canonical cancer driver	Oncogene	1
+chr17	57255850	57684689	MSI2	+	124540	Canonical cancer driver	Oncogene	1
+chr17	58353675	58417534	RNF43	-	54894	Canonical cancer driver	Tumour suppressor	24
+chr17	59619894	59696956	CLTC	+	1213	Canonical cancer driver	Tumour suppressor	1
+chr17	60600192	60666280	PPM1D	+	8493	Canonical cancer driver	Oncogene	8
+chr17	61679138	61863528	BRIP1	-	83990	Canonical cancer driver	Tumour suppressor	2
+chr17	63928739	63932331	CD79B	-	974	Canonical cancer driver	Oncogene	10
+chr17	64498253	64506866	DDX5	-	1655	Canonical cancer driver	Oncogene	4
+chr17	65528562	65561648	AXIN2	-	8313	Canonical cancer driver	Tumour suppressor	6
+chr17	68413622	68551316	PRKAR1A	+	5573	Canonical cancer driver	Dual or unclassified	6
+chr17	72121019	72126416	SOX9	+	6662	Canonical cancer driver	Tumour suppressor	10
+chr17	75776433	75779779	H3-3B	-	3021	Canonical cancer driver	Oncogene	2
+chr17	76734114	76737331	SRSF2	-	6427	Canonical cancer driver	Oncogene	8
+chr18	25061923	25352166	ZNF521	-	25925	Canonical cancer driver	Oncogene	4
+chr18	44680072	45068510	SETBP1	+	26040	Canonical cancer driver	Oncogene	8
+chr18	47808956	47930872	SMAD2	-	4087	Canonical cancer driver	Tumour suppressor	11
+chr18	51030212	51085042	SMAD4	+	4089	Canonical cancer driver	Tumour suppressor	42
+chr18	52340196	53535899	DCC	+	1630	Canonical cancer driver	Dual or unclassified	3
+chr18	58671464	58754477	MALT1	+	10892	Canonical cancer driver	Oncogene	2
+chr18	63123345	63319769	BCL2	-	596	Canonical cancer driver	Oncogene	10
+chr19	676391	683385	FSTL3	+	10272	Canonical cancer driver	Oncogene	1
+chr19	1205777	1228431	STK11	+	6794	Canonical cancer driver	Tumour suppressor	24
+chr19	1609291	1652615	TCF3	-	6929	Canonical cancer driver	Dual or unclassified	6
+chr19	3094361	3123999	GNA11	+	2767	Canonical cancer driver	Oncogene	7
+chr19	4090320	4124122	MAP2K2	-	5605	Canonical cancer driver	Oncogene	5
+chr19	4360369	4400547	SH3GL1	-	6455	Canonical cancer driver	Oncogene	1
+chr19	6772707	6857361	VAV1	+	7409	Canonical cancer driver	Dual or unclassified	3
+chr19	7739992	7747534	CD209	-	30835	Canonical cancer driver	Dual or unclassified	1
+chr19	10133345	10194953	DNMT1	-	1786	Canonical cancer driver	Oncogene	4
+chr19	10486124	10503356	KEAP1	-	9817	Canonical cancer driver	Tumour suppressor	18
+chr19	10718078	10831903	DNM2	+	1785	Canonical cancer driver	Tumour suppressor	4
+chr19	10961029	11062273	SMARCA4	+	6597	Canonical cancer driver	Tumour suppressor	34
+chr19	12938608	12944489	CALR	+	811	Canonical cancer driver	Oncogene	4
+chr19	13099032	13102858	LYL1	-	4066	Canonical cancer driver	Oncogene	1
+chr19	14091687	14117762	PRKACA	-	5566	Canonical cancer driver	Oncogene	3
+chr19	15235518	15332539	BRD4	-	23476	Canonical cancer driver	Oncogene	1
+chr19	17824781	17847982	JAK3	-	3718	Canonical cancer driver	Oncogene	8
+chr19	18153162	18170532	PIK3R2	+	5296	Canonical cancer driver	Oncogene	3
+chr19	18442662	18522070	ELL	-	8178	Canonical cancer driver	Tumour suppressor	2
+chr19	18683679	18782333	CRTC1	+	23373	Canonical cancer driver	Oncogene	2
+chr19	21505601	21540668	ZNF429	+	353088	Canonical cancer driver	Dual or unclassified	1
+chr19	29811990	29824312	CCNE1	+	898	Canonical cancer driver	Oncogene	5
+chr19	33299933	33302534	CEBPA	-	1050	Canonical cancer driver	Tumour suppressor	9
+chr19	40230316	40285345	AKT2	-	208	Canonical cancer driver	Oncogene	7
+chr19	41877278	41881372	CD79A	+	973	Canonical cancer driver	Oncogene	2
+chr19	42268529	42295796	CIC	+	23152	Canonical cancer driver	Tumour suppressor	10
+chr19	44748707	44760044	BCL3	+	602	Canonical cancer driver	Oncogene	2
+chr19	44777868	44800652	CBLC	+	23624	Canonical cancer driver	Dual or unclassified	2
+chr19	45349836	45370573	ERCC2	-	2068	Canonical cancer driver	Tumour suppressor	9
+chr19	48954874	48961798	BAX	+	581	Canonical cancer driver	Tumour suppressor	2
+chr19	49665141	49673916	BCL2L12	+	83596	Canonical cancer driver	Oncogene	1
+chr19	50384322	50418018	POLD1	+	5424	Canonical cancer driver	Tumour suppressor	2
+chr19	52190051	52229518	PPP2R1A	+	5518	Canonical cancer driver	Oncogene	17
+chr19	53521013	53580269	ZNF331	+	55422	Canonical cancer driver	Tumour suppressor	1
+chr19	54137761	54155681	CNOT3	+	4849	Canonical cancer driver	Tumour suppressor	7
+chr20	1894166	1940592	SIRPA	+	140885	Canonical cancer driver	Tumour suppressor	2
+chr20	20034367	20056046	CRNKL1	-	51340	Canonical cancer driver	Dual or unclassified	1
+chr20	32358330	32439319	ASXL1	+	171023	Canonical cancer driver	Tumour suppressor	24
+chr20	37344698	37406050	SRC	+	6714	Canonical cancer driver	Oncogene	2
+chr20	40685847	40689236	MAFB	-	9935	Canonical cancer driver	Oncogene	1
+chr20	41137542	41177626	PLCG1	+	5335	Canonical cancer driver	Oncogene	9
+chr20	42072755	43189906	PTPRT	-	11122	Canonical cancer driver	Tumour suppressor	4
+chr20	51386962	51562839	NFATC2	-	4773	Canonical cancer driver	Oncogene	3
+chr20	51782330	51802521	SALL4	-	57167	Canonical cancer driver	Oncogene	2
+chr20	58839747	58911192	GNAS	+	2778	Canonical cancer driver	Oncogene	20
+chr20	63528000	63537376	PTK6	-	5753	Canonical cancer driver	Dual or unclassified	1
+chr21	33025934	33029185	OLIG2	+	10215	Canonical cancer driver	Oncogene	1
+chr21	34787800	35049302	RUNX1	-	861	Canonical cancer driver	Tumour suppressor	27
+chr21	38367260	38661780	ERG	-	2078	Canonical cancer driver	Oncogene	6
+chr21	43092955	43107578	U2AF1	-	7307	Canonical cancer driver	Oncogene	24
+chr22	19179472	19291719	CLTCL1	-	8218	Canonical cancer driver	Tumour suppressor	2
+chr22	20080240	20111872	DGCR8	+	54487	Canonical cancer driver	Oncogene	3
+chr22	20982296	20999032	LZTR1	+	8216	Canonical cancer driver	Tumour suppressor	6
+chr22	21759656	21867680	MAPK1	-	5594	Canonical cancer driver	Oncogene	7
+chr22	23786965	23838009	SMARCB1	+	6598	Canonical cancer driver	Tumour suppressor	12
+chr22	27748276	27801756	MN1	-	4330	Canonical cancer driver	Oncogene	1
+chr22	28687741	28741820	CHEK2	-	11200	Canonical cancer driver	Tumour suppressor	9
+chr22	28883571	29057488	ZNRF3	+	84133	Canonical cancer driver	Tumour suppressor	4
+chr22	29268267	29300521	EWSR1	+	2130	Canonical cancer driver	Oncogene	2
+chr22	29603555	29698600	NF2	+	4771	Canonical cancer driver	Tumour suppressor	18
+chr22	31325803	31346346	PATZ1	-	23598	Canonical cancer driver	Tumour suppressor	2
+chr22	35066157	35087387	ISX	+	91464	Canonical cancer driver	Dual or unclassified	1
+chr22	36281279	36387967	MYH9	-	4627	Canonical cancer driver	Tumour suppressor	3
+chr22	38982346	38992779	APOBEC3B	+	9582	Canonical cancer driver	Dual or unclassified	1
+chr22	39223358	39244982	PDGFB	-	5155	Canonical cancer driver	Oncogene	1
+chr22	40410288	40636719	MRTFA	-	57591	Canonical cancer driver	Dual or unclassified	1
+chr22	41092591	41180077	EP300	+	2033	Canonical cancer driver	Tumour suppressor	31
+chrX	1190489	1212649	CRLF2	-	64109	Canonical cancer driver	Oncogene	3
+chrX	1462580	1537185	P2RY8	-	286530	Canonical cancer driver	Oncogene	5
+chrX	15790483	15823260	ZRSR2	+	8233	Canonical cancer driver	Tumour suppressor	5
+chrX	20124524	20141838	EIF1AX	-	1964	Canonical cancer driver	Oncogene	9
+chrX	37008365	37011664	FAM47C	+	442444	Canonical cancer driver	Dual or unclassified	1
+chrX	40051250	40177277	BCOR	-	54880	Canonical cancer driver	Tumour suppressor	23
+chrX	41334161	41351668	DDX3X	+	1654	Canonical cancer driver	Tumour suppressor	24
+chrX	44873187	45112779	KDM6A	+	7403	Canonical cancer driver	Tumour suppressor	45
+chrX	47145220	47186813	RBM10	+	8241	Canonical cancer driver	Tumour suppressor	15
+chrX	47561204	47571908	ARAF	+	369	Canonical cancer driver	Oncogene	4
+chrX	48255391	48267444	SSX1	+	6756	Canonical cancer driver	Oncogene	1
+chrX	48383538	48393347	SSX4	+	6759	Canonical cancer driver	Oncogene	1
+chrX	48676635	48691427	WAS	+	7454	Canonical cancer driver	Oncogene	1
+chrX	48786589	48794311	GATA1	+	2623	Canonical cancer driver	Tumour suppressor	3
+chrX	49028725	49043357	TFE3	-	7030	Canonical cancer driver	Oncogene	1
+chrX	52696895	52707227	SSX2	-	6757	Canonical cancer driver	Oncogene	1
+chrX	53176276	53225207	KDM5C	-	8242	Canonical cancer driver	Tumour suppressor	14
+chrX	53374148	53422728	SMC1A	-	8243	Canonical cancer driver	Tumour suppressor	11
+chrX	64185116	64205708	AMER1	-	139285	Canonical cancer driver	Tumour suppressor	8
+chrX	67544020	67730619	AR	+	367	Canonical cancer driver	Oncogene	9
+chrX	71095850	71103532	FOXO4	+	4303	Canonical cancer driver	Dual or unclassified	1
+chrX	71118595	71142450	MED12	+	9968	Canonical cancer driver	Dual or unclassified	18
+chrX	71239623	71255197	ZMYM3	-	9203	Canonical cancer driver	Tumour suppressor	10
+chrX	77504879	77786216	ATRX	-	546	Canonical cancer driver	Tumour suppressor	27
+chrX	101349449	101390796	BTK	-	695	Canonical cancer driver	Dual or unclassified	2
+chrX	108719945	108736563	IRS4	-	8471	Canonical cancer driver	Dual or unclassified	2
+chrX	123960559	124102656	STAG2	+	10735	Canonical cancer driver	Tumour suppressor	29
+chrX	126163498	126166289	DCAF12L2	-	340578	Canonical cancer driver	Dual or unclassified	2
+chrX	129980978	130058071	BCORL1	+	63035	Canonical cancer driver	Dual or unclassified	7
+chrX	130063954	130111858	ELF4	-	2000	Canonical cancer driver	Dual or unclassified	3
+chrX	133535744	133985594	GPC3	-	2719	Canonical cancer driver	Dual or unclassified	1
+chrX	134373311	134428790	PHF6	+	84295	Canonical cancer driver	Tumour suppressor	12
+chrX	153517641	153582929	ATP2B3	+	492	Canonical cancer driver	Tumour suppressor	1
+chrX	154348530	154374634	FLNA	-	2316	Canonical cancer driver	Dual or unclassified	3
+chrX	154398064	154402339	RPL10	+	6134	Canonical cancer driver	Tumour suppressor	5
+chrX	155064033	155071136	MTCP1	-	4515	Canonical cancer driver	Oncogene	1
+chrY	1190489	1212649	CRLF2	-	64109	Canonical cancer driver	Oncogene	3
+chrY	1462580	1537185	P2RY8	-	286530	Canonical cancer driver	Oncogene	5
