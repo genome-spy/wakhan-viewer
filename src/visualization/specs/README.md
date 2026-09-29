@@ -7,3 +7,11 @@ The recipe's [rights review](https://github.com/genome-spy/genomespy-dataset-rec
 states that its original specs are CC0. This copy replaces sample-specific
 file URLs with the `svLinks` and `svSites` named sources. The app supplies
 normalized Severus VCF records to those sources through GenomeSpy's API.
+
+`../spec.ts` follows the same recipe for the navigator, title and axis styling,
+linked rulers, interval brush, BAF markers, masks, cytobands, and gene labels.
+Its tracks are assembled according to the files present in each ZIP. Wakhan's
+current ZIPs omit the plot's read-depth-to-copy-number calibration, so the app
+keeps raw depth and inferred copy number in separate tracks instead of using
+the recipe's calibrated dual-axis overlay. The ZIPs also do not distinguish all
+unavailable calls from genuine zeros; see [ZIP format findings](../../../docs/wakhan-zip-format.md).

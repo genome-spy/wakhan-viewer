@@ -16,13 +16,52 @@ const tip = (field: string, title: string, format?: string) => ({
   ...(format ? { format } : {}),
 });
 
+const rulerMark = {
+  stroke: "#6b7c85",
+  strokeWidth: 1,
+  strokeDash: [3, 3],
+  opacity: { expr: "rulerOpacity" },
+};
+
+function horizontalRuler(name: string) {
+  return {
+    name,
+    persist: false,
+    ruler: {
+      disabled: { expr: "!showRuler" },
+      encodings: ["y"],
+      extent: "view",
+      display: "line",
+      mark: rulerMark,
+    },
+  };
+}
+
+function maskLayer() {
+  return {
+    data: { name: "masks" },
+    mark: {
+      type: "rect",
+      fill: "#f7f9fa",
+      fillOpacity: 0,
+      stroke: "#dce2e4",
+      strokeWidth: 1,
+      hatch: "diagonal",
+      clip: "x",
+    },
+    encoding: { x, x2, tooltip: [tip("reason", "Availability")] },
+  };
+}
+
 function navigator() {
   return {
     name: "overview",
-    height: 22,
-    title: "Genome navigator | double-click and drag to brush",
+    height: 20,
+    title:
+      "Genome navigator | double-click, then drag to brush; scroll to resize; drag selection to move",
     resolve: { scale: { x: "excluded" } },
     data: { lazy: { type: "axisGenome", channel: "x" } },
+    view: { stroke: "#ccd4d8", strokeZindex: 10 },
     encoding: {
       x: {
         field: "continuousStart",
@@ -45,7 +84,13 @@ function navigator() {
         },
       },
       {
-        mark: { type: "text", size: 11, color: "#4a5c68", tooltip: null },
+        mark: {
+          type: "text",
+          size: 11,
+          color: "#4a5c68",
+          paddingX: 2,
+          tooltip: null,
+        },
         encoding: { text: { field: "name" } },
       },
     ],
@@ -56,7 +101,18 @@ function navigator() {
           type: "interval",
           encodings: ["x"],
           clear: "dblclick",
-          mark: { stroke: "#487d91", fill: "#75adbf", fillOpacity: 0.08 },
+          mark: {
+            stroke: "#487d91",
+            strokeWidth: 1.5,
+            strokeOpacity: 0.85,
+            fill: "#75adbf",
+            fillOpacity: 0.02,
+            shadowBlur: 10,
+            shadowColor: "#75adbf",
+            shadowOpacity: 0.5,
+            zindex: 11,
+            clip: false,
+          },
         },
         push: "outer",
         persist: false,
@@ -91,7 +147,8 @@ function sitesTrack() {
 }
 
 function cnTrack(hp: "HP1" | "HP2" | "Total", preview = false) {
-  const ink = hp === "HP1" ? "#b34141" : hp === "HP2" ? "#3976a5" : "#287a78";
+  const ink =
+    hp === "HP1" ? "firebrick" : hp === "HP2" ? "steelblue" : "#287a78";
   const segment = {
     data: { name: "segments" },
     transform: [
@@ -100,15 +157,19 @@ function cnTrack(hp: "HP1" | "HP2" | "Total", preview = false) {
         expr: `datum.haplotype == '${hp}' && datum.status == 'reported'`,
       },
     ],
-    mark: { type: "rule", size: 3, minLength: 1, clip: "x", color: ink },
+    mark: { type: "rule", size: 3, minLength: 1, clip: "x" },
     encoding: {
       x,
       x2,
+      color: {
+        condition: { param: "svRegion", empty: true, value: ink },
+        value: "#8f999e",
+      },
       y: {
         field: "copyNumber",
         type: "quantitative",
         scale: { zero: true, domain: { source: "viewport" } },
-        axis: { title: "Copies", tickCount: 4 },
+        axis: { title: "Copies", tickCount: 4, tickMinStep: 1 },
       },
       tooltip: [
         tip("haplotype", "Haplotype"),
@@ -120,18 +181,28 @@ function cnTrack(hp: "HP1" | "HP2" | "Total", preview = false) {
       ],
     },
   };
+  const layers = [
+    maskLayer(),
+    {
+      data: { values: [{}] },
+      mark: { type: "rule", color: "#d8e0e1", clip: false, y: 0 },
+    },
+  ];
   if (!import.meta.env.DEV || !preview || hp === "Total")
     return {
       name: `cn-${hp}`,
       height: 100,
       title: `${hp} | inferred copy number`,
-      ...segment,
+      params: [horizontalRuler(`cnCursor${hp}`)],
+      layer: [...layers, segment],
     };
   return {
     name: `cn-${hp}`,
     height: 100,
     title: `${hp} | copy number + Estimated calibration — development`,
+    params: [horizontalRuler(`cnCursor${hp}`)],
     layer: [
+      ...layers,
       {
         data: { name: "calibratedCoverage" },
         transform: [{ type: "filter", expr: `datum.haplotype == '${hp}'` }],
@@ -170,23 +241,27 @@ function depthTrack(hp: "HP1" | "HP2" | "Total") {
     name: `depth-${hp}`,
     height: 82,
     title: `${hp} | raw 50 kb read depth`,
+    params: [horizontalRuler(`depthCursor${hp}`)],
     data: { name: "coverage" },
     mark: {
       type: "point",
-      size: 15,
-      opacity: 0.35,
+      size: { expr: "min(pow(zoomLevel(), 1.5) + 2, 100)" },
+      opacity: 0.25,
       strokeWidth: 0,
-      clip: "x",
-      color: ink,
+      clip: true,
     },
     encoding: {
       x,
       x2,
+      color: {
+        condition: { param: "svRegion", empty: true, value: ink },
+        value: "#cbd2d6",
+      },
       y: {
         field,
         type: "quantitative",
         scale: { zero: true, domain: { source: "viewport" } },
-        axis: { title: "Read depth", tickCount: 4 },
+        axis: { orient: "right", title: "Read depth", tickCount: 4 },
       },
       tooltip: [
         tip(field, "Raw depth", ".2f"),
@@ -201,10 +276,17 @@ function bafTrack() {
   return {
     name: "baf",
     height: 80,
-    title: "Folded BAF | grey zeros have unknown SNP support",
+    title: "Folded BAF | 50 kb means | grey zeros have unknown SNP support",
+    params: [horizontalRuler("bafHorizontalCursor")],
     data: { name: "baf" },
     transform: [{ type: "filter", expr: "datum.baf != null" }],
-    mark: { type: "point", size: 14, opacity: 0.35, strokeWidth: 0, clip: "x" },
+    mark: {
+      type: "point",
+      size: { expr: "min(pow(zoomLevel(), 1.5), 100)" },
+      opacity: 0.25,
+      strokeWidth: 0,
+      clip: "x",
+    },
     encoding: {
       x,
       x2,
@@ -212,14 +294,35 @@ function bafTrack() {
         field: "baf",
         type: "quantitative",
         scale: { domain: [0, 0.5] },
-        axis: { title: "BAF", values: [0, 0.25, 0.5], grid: true },
+        axis: {
+          title: null,
+          values: [0, 0.25, 0.5],
+          grid: true,
+          gridDash: [3, 3],
+        },
       },
       color: {
+        condition: {
+          param: "svRegion",
+          empty: true,
+          field: "status",
+          type: "nominal",
+          scale: {
+            type: "ordinal",
+            domain: ["zero; SNP support unknown", "reported"],
+            range: ["#aeb8bd", "#428b81"],
+          },
+          legend: null,
+        },
+        value: "#cbd2d6",
+      },
+      shape: {
         field: "status",
         type: "nominal",
         scale: {
-          domain: ["reported", "zero; SNP support unknown"],
-          range: ["#428b81", "#aeb8bd"],
+          type: "ordinal",
+          domain: ["zero; SNP support unknown", "reported"],
+          range: ["cross", "circle"],
         },
         legend: null,
       },
@@ -232,77 +335,119 @@ function bafTrack() {
   };
 }
 
-function masksTrack() {
-  return {
-    name: "masks",
-    height: 13,
-    title: "Wakhan masked regions",
-    data: { name: "masks" },
-    mark: { type: "rect", color: "#b4a3a0", opacity: 0.7, clip: "x" },
-    encoding: { x, x2, tooltip: [tip("reason", "Mask")] },
-  };
-}
-
 function lohTrack(empty: boolean) {
   return {
     name: "loh",
-    height: 17,
+    height: 12,
     title: empty
       ? "Wakhan LOH | no calls in supplied table"
       : "Wakhan LOH calls",
-    data: { name: "loh" },
-    mark: { type: "rect", color: "#6195b9", opacity: 0.8, clip: "x" },
-    encoding: { x, x2, tooltip: [tip("feature", "Feature")] },
+    layer: [
+      maskLayer(),
+      {
+        data: { name: "loh" },
+        mark: { type: "rect", opacity: 0.78, strokeWidth: 0.5, clip: "x" },
+        encoding: {
+          x,
+          x2,
+          fill: {
+            condition: { param: "svRegion", empty: true, value: "#6195b9" },
+            value: "#8f999e",
+          },
+          stroke: {
+            condition: { param: "svRegion", empty: true, value: "#417497" },
+            value: "#768187",
+          },
+          tooltip: [tip("feature", "Feature")],
+        },
+      },
+    ],
   };
 }
 
 function cytobandsTrack() {
+  const stains = [
+    "gneg",
+    "gpos25",
+    "gpos50",
+    "gpos75",
+    "gpos100",
+    "acen",
+    "gvar",
+    "stalk",
+  ];
   return {
     name: "cytobands",
-    height: 17,
-    title: "GRCh38 cytobands",
+    height: 16,
     data: { name: "cytobands" },
-    mark: { type: "rect", clip: "x", minWidth: 0.3 },
-    encoding: {
-      x,
-      x2,
-      color: {
-        field: "stain",
-        type: "nominal",
-        scale: {
-          domain: [
-            "gneg",
-            "gpos25",
-            "gpos50",
-            "gpos75",
-            "gpos100",
-            "acen",
-            "gvar",
-            "stalk",
-          ],
-          range: [
-            "#f3f5f5",
-            "#dce1e3",
-            "#bdc6ca",
-            "#939fa5",
-            "#64747c",
-            "#c3988d",
-            "#e1e5e6",
-            "#d8dddd",
-          ],
+    encoding: { x, x2 },
+    resolve: { scale: { color: "independent" } },
+    layer: [
+      {
+        mark: { type: "rect", minWidth: 0.3 },
+        encoding: {
+          color: {
+            field: "stain",
+            type: "nominal",
+            scale: {
+              domain: stains,
+              range: [
+                "#f3f5f5",
+                "#dce1e3",
+                "#bdc6ca",
+                "#939fa5",
+                "#64747c",
+                "#c3988d",
+                "#e1e5e6",
+                "#d8dddd",
+              ],
+            },
+            legend: null,
+          },
+          tooltip: [tip("band", "Cytoband")],
         },
-        legend: null,
       },
-      tooltip: [tip("band", "Cytoband")],
-    },
+      {
+        mark: {
+          type: "text",
+          size: 10,
+          align: "center",
+          baseline: "middle",
+          paddingX: 4,
+          clip: "x",
+          tooltip: null,
+        },
+        encoding: {
+          text: { field: "band" },
+          color: {
+            field: "stain",
+            type: "nominal",
+            scale: {
+              domain: stains,
+              range: [
+                "#263741",
+                "#263741",
+                "#263741",
+                "#263741",
+                "#ffffff",
+                "#263741",
+                "#263741",
+                "#263741",
+              ],
+            },
+            legend: null,
+          },
+        },
+      },
+    ],
   };
 }
 
 function genesTrack() {
   return {
     name: "genes",
-    height: 30,
-    title: "NCG 7.2 canonical cancer drivers | RefSeq GRCh38",
+    height: 25,
+    title: "NCG canonical cancer drivers | RefSeq / GRCh38",
     axes: { x: { title: null } },
     data: { name: "genes" },
     encoding: {
@@ -345,6 +490,7 @@ function genesTrack() {
           size: 10,
           color: "#425560",
           y: 0.75,
+          yOffset: 2,
           align: "center",
           clip: "x",
         },
@@ -367,7 +513,6 @@ export function layoutSignature(result: WakhanResult): string {
     !!result.baf.length,
     result.lohAvailable,
     result.lohAvailable && result.loh.length === 0,
-    !!result.masks.length,
   ].join(":");
 }
 
@@ -389,15 +534,14 @@ export function createSpec(result: WakhanResult, preview = false): RootSpec {
         ]),
     ...(result.baf.length ? [bafTrack()] : []),
     ...(result.lohAvailable ? [lohTrack(result.loh.length === 0)] : []),
-    ...(result.masks.length ? [masksTrack()] : []),
     cytobandsTrack(),
     genesTrack(),
   ];
   return {
     assembly: "hg38",
     width: "container",
-    padding: { left: 8, right: 12, top: 8, bottom: 8 },
-    spacing: 5,
+    padding: { left: 10, right: 10, top: 8, bottom: 8 },
+    spacing: 6,
     params: [{ name: "brush" }, { name: "showRuler", value: true }],
     datasets: {
       segments: [],
@@ -412,11 +556,30 @@ export function createSpec(result: WakhanResult, preview = false): RootSpec {
       cytobands: [],
     },
     resolve: { scale: { x: "shared" } },
+    config: {
+      title: { anchor: "start", fontSize: 11, color: "#364653", offset: 5 },
+      axis: {
+        labelFontSize: 10,
+        titleFontSize: 10,
+        labelColor: "#6b7c85",
+        domainColor: "#ced6da",
+        tickColor: "#ced6da",
+        gridColor: "#e9edef",
+        grid: false,
+      },
+      axisLocus: {
+        chromGrid: true,
+        chromGridColor: "#e0e6e9",
+        chromGridOpacity: 0.6,
+        title: null,
+      },
+      legend: { labelFontSize: 10, titleFontSize: 10 },
+    },
     vconcat: [
       navigator(),
       {
         name: "detail",
-        spacing: 8,
+        spacing: 10,
         params: [
           {
             name: "genomicCursor",
@@ -426,12 +589,7 @@ export function createSpec(result: WakhanResult, preview = false): RootSpec {
               encodings: ["x"],
               extent: "container",
               display: "line",
-              mark: {
-                stroke: "#6b7c85",
-                strokeWidth: 1,
-                strokeDash: [3, 3],
-                opacity: 0.75,
-              },
+              mark: rulerMark,
             },
           },
           {
@@ -450,9 +608,22 @@ export function createSpec(result: WakhanResult, preview = false): RootSpec {
                 strokeWidth: 1,
                 fill: "#75adbf",
                 fillOpacity: 0.01,
+                shadowBlur: 10,
+                shadowColor: "#75adbf",
+                shadowOpacity: 0.5,
                 clip: false,
+                measure: "inside",
               },
             },
+          },
+          {
+            name: "pointerOverSvRegion",
+            expr: "genomicCursor.values.x != null && svRegion.intervals.x != null && linearize('x', genomicCursor.values.x) >= svRegion.intervals.x[0] && linearize('x', genomicCursor.values.x) <= svRegion.intervals.x[1]",
+          },
+          {
+            name: "rulerOpacity",
+            expr: "pointerOverSvRegion ? 0 : 0.75",
+            transition: { type: "lerp", halfLife: 50, epsilon: 0.01 },
           },
         ],
         resolve: { scale: { x: "shared" }, axis: { x: "shared" } },
