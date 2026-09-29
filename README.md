@@ -1,109 +1,104 @@
 # Wakhan Explorer
 
-A planned browser application for exploring [Wakhan](https://github.com/KolmogorovLab/Wakhan)
-copy-number results: open a ZIP, zoom to a locus, and switch between results while
-keeping the same genomic view.
+Open a Wakhan results ZIP in the browser and explore its copy-number calls,
+read depth, structural variants, and folded BAF on linked genomic tracks.
+The app parses the local file in a Worker; it has no data-upload endpoint.
+Open another ZIP or switch between already opened results to compare the same
+genomic locus without losing your zoom.
 
-**Status:** design and source inspection are complete. The application is not
-implemented yet. See [the implementation plan](PLAN.md) for the architecture,
-input contracts, supported-mode roadmap, and tentative commits.
+The app adapts the visual design of the
+[HCC1954 Wakhan GenomeSpy recipe](https://github.com/genome-spy/genomespy-dataset-recipes/tree/main/recipes/hcc1954-wakhan-explorer)
+and the simple file-opening workflow of
+[SegmentModel Spy](https://github.com/genome-spy/segment-model-spy).
+It uses [GenomeSpy](https://genomespy.app/) Core's **minimal** entry point,
+linked genomic scales, named data sources, and PNG/SVG image exports. ZIP-derived
+rows are supplied to GenomeSpy through its runtime dataset API.
 
-## Why this tool?
+## Run locally
 
-Wakhan estimates haplotype-specific copy number from long-read sequencing and
-produces plots and result tables. Wakhan Explorer will turn its result ZIPs into
-linked, continuously zoomable genomic tracks, with no manual unpacking or data
-preparation in the usual workflow.
+Requires a current Node.js release and npm.
 
-The application follows the simplicity of
-[SegmentModel Spy](https://github.com/genome-spy/segment-model-spy) and adapts the
-visualization developed in the
-[HCC1954 Wakhan recipe](https://github.com/genome-spy/genomespy-dataset-recipes/tree/main/recipes/hcc1954-wakhan-explorer).
-The intended workflow adds a single-file opener and fast comparison at a retained
-locus, including integer and subclonal profiles when available.
-
-## Powered by GenomeSpy
-
-[GenomeSpy](https://genomespy.app/) provides the declarative genomic visualization
-grammar and GPU rendering. Its linked scales, genomic navigation, selections,
-tooltips, and export API let this application concentrate on reading Wakhan data
-and making the results easy to explore. This project will also serve as a compact
-example of embedding GenomeSpy Core in a Lit application.
-
-The design includes SV arcs, copy number and depth, folded BAF, optional LOH,
-cytobands, and cancer genes. ZIP-derived data will be supplied through named
-datasets at runtime. Processing will happen locally in the browser; the planned
-application has no server upload endpoint.
-
-## Development
-
-Planned stack: **Vite, TypeScript, Lit, plain CSS, Vitest, npm, and
-`@genome-spy/core/minimal`**.
-
-Once milestone 1 creates `package.json` and the lockfile, development will use:
-
-```sh
+~~~sh
 npm ci
 npm run dev
-```
+~~~
 
-Open the local URL printed by Vite, normally `http://localhost:5173/`.
-The planned verification and production commands are:
+Open the URL printed by Vite, usually http://localhost:5173/. Choose a ZIP
+or drag one onto the page. The two supplied example ZIPs in ignored tmp/
+are useful for development. Use the navigator, scroll wheel, drag, or locus
+buttons to explore. Switch the result or integer/subclonal profile from the
+toolbar; the detail x domain is retained.
 
-```sh
+~~~sh
 npm run typecheck
 npm run test:run
 npm run build
 npm run preview
-```
+~~~
 
-These commands are the implementation contract; they are **not runnable in the
-current planning-only project**. The initial app will run through Vite. A later
-GitHub Pages deployment will serve the static build with a repository base path.
+The build is static. GitHub Pages can use GITHUB_PAGES=1 npm run build for
+the /wakhan-explorer/ base path; deployment is not configured yet.
 
-## Data and interpretation
+## What the current ZIPs support
 
-The supplied local HCC1937/HCC1954 ZIPs are development inputs in ignored `tmp/`.
-They contain merged haplotype CN profiles, raw depth, BAF, Severus variants, gene
-results, masks, and rankings. They do not explicitly identify which ranked
-solution is inside each ZIP. The importer must also distinguish unavailable/masked
-values from biological zero. In normal use, calibrated depth overlays will require
-calibration exported by Wakhan; current ZIPs will use separate CN and raw-depth tracks.
-An optional development experiment will estimate calibration from rounded gene
-depth centers to preview the overlay. Early fits look promising on both ZIPs;
-the preview will be explicitly labeled and excluded from production builds.
-The implementation will include `docs/wakhan-zip-format.md`, documenting observed
-shortcomings, their effects, and concrete additions for the Wakhan authors.
-See the [planned format report](PLAN.md#7-zip-shortcomings-and-upstream-requests).
+The HCC1937 and HCC1954 ZIPs render phased HP1/HP2 integer and subclonal CN
+profiles, raw 50 kb read depth, folded BAF, Severus SV links and sites,
+centromeric/masked regions, GRCh38 cytobands, and NCG 7.2 cancer-driver genes.
+Optional Wakhan LOH tables and the source's single-track unphased CN schema
+have synthetic parser tests. No real ZIP for those modes was supplied, and
+Wakhan's inspected ZIP exporter currently skips the unphased branch. Plot-only
+purity/ploidy and phasing diagnostics need exported data before they can be
+shown here.
 
-Bundled GRCh38 annotations are already included in [data/](data/README.md):
-NCG 7.2 canonical cancer drivers positioned with NCBI RefSeq, and UCSC cytobands.
-Their exact sources, transformations, checksums, and attribution are recorded
-there. Reference cancer genes provide genomic context; their literature counts
-rank labels and do not measure alteration or significance in an opened sample.
+The current ZIPs omit the enclosed solution identity, exact depth calibration,
+independent assembly metadata, and explicit missingness information. The app
+shows CN and raw depth on separate tracks and does not assign a ranked solution
+to the plot. A source 3300 sentinel is treated as unavailable or masked;
+BAF zero is shown with unknown SNP support. HP1/HP2 are chromosome-local
+labels, CN confidence is not phasing confidence, and fractional CN is not a
+cellular fraction.
 
-HP1 and HP2 are chromosome-local labels, not maternal/paternal assignments.
-Wakhan CN confidence is not phasing confidence. Fractional copy number is not a
-subclonal cell fraction. The implementation plan records which output modes can
-be supported with the current ZIP contents and which still need example files.
+See [the ZIP format report](docs/wakhan-zip-format.md) for observed shortcomings,
+their effects, and exact fields requested from Wakhan's authors. The
+[implementation plan](PLAN.md) records the architecture and original milestones.
 
-## Citations and related work
+## Development calibration experiment
 
-- Ahmad et al. **Wakhan: reconstruction of chromosome-scale copy number
-  profiles of tumor genomes with long-read sequencing** (2025 preprint).
+The ordinary importer never invents the missing calibration. To inspect an
+optional estimate based on rounded gene adjusted-depth centers, start the Vite
+dev server and open http://localhost:5173/?calibrationPreview=1. The overlay
+and its image exports are marked **Estimated calibration — development**.
+It is recalculated per archive, excludes genes overlapping masked subclonal
+segments, and appears only if the distinct-state fit passes rounding and
+stability checks. It has not been validated against Wakhan's Plotly parameters.
+The production build excludes this preview.
+
+For a numerical report without the browser:
+
+~~~sh
+npm run calibration:estimate -- tmp/HCC1954_plots_data.zip
+~~~
+
+## Reference data and citations
+
+Bundled GRCh38 annotations live in [data/](data/README.md), with source URLs,
+transformation details, checksums, and attribution. NCG literature counts rank
+labels; they are not measures of sample-specific significance.
+
+- Ahmad et al., *Wakhan: reconstruction of chromosome-scale copy number
+  profiles of tumor genomes with long-read sequencing* (2025 preprint),
   [DOI: 10.64898/2025.12.11.25342098](https://doi.org/10.64898/2025.12.11.25342098).
-- Lavikka et al. **Deciphering Cancer Genomes with GenomeSpy: A Grammar-Based
-  Visualization Toolkit.** GigaScience (2024).
+- Lavikka et al., *Deciphering Cancer Genomes with GenomeSpy: A Grammar-Based
+  Visualization Toolkit*, GigaScience (2024),
   [DOI: 10.1093/gigascience/giae040](https://doi.org/10.1093/gigascience/giae040).
-- **Severus**, the source of SV annotations in the inspected bundles.
-  [Publication](https://doi.org/10.1038/s41587-025-02618-8).
-- Dressler et al. **Comparative assessment of genes driving cancer and somatic
-  evolution in non-cancer tissues: an update of the Network of Cancer Genes (NCG)
-  resource.** Genome Biology (2022).
+- Keskus et al., *Severus* structural variants,
+  [DOI: 10.1038/s41587-025-02618-8](https://doi.org/10.1038/s41587-025-02618-8).
+- Dressler et al., Network of Cancer Genes 7.2,
   [DOI: 10.1186/s13059-022-02607-z](https://doi.org/10.1186/s13059-022-02607-z).
 - [UCSC Genome Browser](https://genome.ucsc.edu/) and
-  [NCBI RefSeq](https://www.ncbi.nlm.nih.gov/refseq/) supply annotation coordinates.
+  [NCBI RefSeq](https://www.ncbi.nlm.nih.gov/refseq/) provide genomic context.
 
 The original recipe used published
-[Wakhan/CASTLE data on Zenodo](https://zenodo.org/records/17780982). Its rights and
-sample-specific claims should not be assumed to apply to arbitrary user-opened ZIPs.
+[Wakhan/CASTLE data on Zenodo](https://zenodo.org/records/17780982). Its
+sample-specific claims and rights do not automatically apply to arbitrary
+ZIPs opened in this app.

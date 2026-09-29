@@ -1,7 +1,13 @@
 # Wakhan Explorer implementation plan
 
-Status: proposed; source inspection completed on 2026-09-29. This document plans
-the application. No application scaffold or dev server has been implemented yet.
+Status: initial application implemented on 2026-09-29. This is the original
+design plan, so the milestones below remain as a planning record. The current
+Vite app opens the two supplied ZIPs, renders the principal recipe tracks,
+switches results at a retained locus, and exports PNG/SVG. The optional
+development calibration preview is implemented. The recipe's SV feet, arc
+selection, and genomic ruler have been adapted. Further Wakhan modes need
+representative exporter data. See README.md and
+docs/wakhan-zip-format.md for tested behavior and format gaps.
 
 Recommended approach: keep one GenomeSpy instance for compatible results, parse
 ZIPs in a Worker, and replace named datasets while restoring the current locus.
@@ -643,9 +649,9 @@ working npm commands as soon as the scaffold exists.
 
 ## 9. Initial implementation milestones
 
-Each milestone should be reviewable on its own. Commit messages below are tentative;
-the application milestones have not been implemented. The initial repository
-contains the plan, project documentation, and reference annotations.
+These were the tentative initial milestones and commit messages. The implemented
+baseline combines parts of several milestones; remaining items are documented
+in the project README and ZIP format report.
 
 ### 1. Establish the scaffold and the input contract
 
