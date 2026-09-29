@@ -48,16 +48,8 @@ a:hover {
   padding: 0 clamp(24px, 5vw, 80px);
   gap: 24px;
 }
-.brand .eyebrow,
-.eyebrow {
-  font:
-    700 10px "Space Grotesk",
-    sans-serif;
-  letter-spacing: 0.21em;
-  color: #82c9c4;
-}
 .brand h1 {
-  margin: 3px 0 0;
+  margin: 0;
   font:
     600 clamp(22px, 2.6vw, 30px) "Space Grotesk",
     sans-serif;
@@ -121,127 +113,37 @@ button:disabled {
   border-color: #9bdecc;
 }
 .welcome {
-  width: min(1320px, 100%);
+  width: min(720px, 100%);
   margin: auto;
   min-height: calc(100vh - 142px);
-  display: grid;
-  grid-template-columns: minmax(0, 1fr) minmax(300px, 0.85fr);
+  display: flex;
   align-items: center;
-  gap: 6vw;
-  padding: 50px clamp(24px, 6vw, 88px);
+  padding: 50px 24px;
 }
 .welcome-copy h2 {
-  max-width: 650px;
   font:
-    600 clamp(46px, 5.8vw, 78px)/1.04 "Space Grotesk",
+    600 clamp(30px, 4vw, 42px)/1.15 "Space Grotesk",
     sans-serif;
-  letter-spacing: -0.07em;
-  margin: 20px 0 24px;
+  letter-spacing: -0.04em;
+  margin: 0 0 20px;
   color: #15323c;
 }
 .welcome-copy > p {
-  max-width: 530px;
-  font-size: 18px;
-  line-height: 1.6;
+  max-width: 650px;
+  font-size: 16px;
+  line-height: 1.55;
   color: #536c74;
-  margin: 0 0 35px;
+  margin: 0 0 14px;
 }
 .welcome-copy .large {
-  padding: 15px 21px;
-  font-size: 15px;
-  display: flex;
-  gap: 45px;
-  justify-content: space-between;
-  min-width: 245px;
+  padding: 12px 18px;
+  font-size: 14px;
+  margin-top: 18px;
 }
 .welcome-copy .hint {
   font-size: 13px;
-  margin: 16px 0 0;
+  margin: 14px 0 0;
   color: #698087;
-}
-.welcome-art {
-  position: relative;
-  height: min(36vw, 430px);
-  min-height: 300px;
-  background: #e0eeee;
-  border: 1px solid #bdd6d7;
-  border-radius: 20px;
-  box-shadow: 24px 24px 0 #edf3f3;
-  overflow: hidden;
-  padding: 60px 45px;
-}
-.welcome-art:before {
-  content: "";
-  position: absolute;
-  inset: 0;
-  background: linear-gradient(
-    135deg,
-    transparent 50%,
-    rgba(41, 115, 123, 0.08) 50.2%
-  );
-  pointer-events: none;
-}
-.chrom-line {
-  height: 2px;
-  background: #7caeaf;
-  position: absolute;
-  top: 95px;
-  left: 45px;
-  right: 45px;
-}
-.chrom-line:before,
-.chrom-line:after {
-  content: "";
-  position: absolute;
-  top: -5px;
-  width: 12px;
-  height: 12px;
-  background: #2a727e;
-  border-radius: 50%;
-}
-.chrom-line:after {
-  right: 0;
-}
-.art-label {
-  position: relative;
-  display: flex;
-  justify-content: space-between;
-  color: #3e6972;
-  font:
-    700 11px "Space Grotesk",
-    sans-serif;
-  letter-spacing: 0.07em;
-}
-.art-label span {
-  color: #ae5d57;
-}
-.art-bars {
-  position: absolute;
-  inset: 150px 45px 60px;
-  display: flex;
-  align-items: end;
-  gap: 5px;
-  border-bottom: 2px solid #84aaab;
-}
-.art-bars i {
-  display: block;
-  flex: 1;
-  background: linear-gradient(#3976a5, #89b8c8);
-  border-radius: 2px 2px 0 0;
-  opacity: calc(0.62 + var(--i) * 0.018);
-}
-.art-bars i:nth-child(3n) {
-  background: linear-gradient(#b34141, #d49c93);
-}
-.art-caption {
-  position: absolute;
-  bottom: 25px;
-  left: 45px;
-  color: #639198;
-  font:
-    700 10px "Space Grotesk",
-    sans-serif;
-  letter-spacing: 0.16em;
 }
 .workspace {
   width: min(1600px, 100%);
@@ -413,14 +315,6 @@ button:disabled {
   pointer-events: none;
 }
 @media (max-width: 900px) {
-  .welcome {
-    grid-template-columns: 1fr;
-    padding-top: 80px;
-  }
-  .welcome-art {
-    height: 260px;
-    min-height: 260px;
-  }
   .loci {
     margin-left: 0;
   }
@@ -446,15 +340,6 @@ button:disabled {
   .welcome {
     min-height: calc(100vh - 120px);
     padding: 48px 22px;
-  }
-  .welcome-copy h2 {
-    font-size: 46px;
-  }
-  .welcome-copy > p {
-    font-size: 16px;
-  }
-  .welcome-art {
-    display: none;
   }
   .toolbar {
     padding: 12px;

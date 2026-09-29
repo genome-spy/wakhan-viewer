@@ -279,7 +279,6 @@ export class WakhanExplorer extends LitElement {
       />
       <header class="masthead">
         <div class="brand">
-          <div class="eyebrow">GENOMIC VISUALIZATION</div>
           <h1>Wakhan <em>Explorer</em></h1>
         </div>
         <div class="top-actions">
@@ -395,41 +394,32 @@ export class WakhanExplorer extends LitElement {
               </main>`
             : html` <main class="welcome">
                 <div class="welcome-copy">
-                  <div class="eyebrow">
-                    FROM A SINGLE FILE TO THE WHOLE GENOME
-                  </div>
-                  <h2>See the shape of a cancer genome.</h2>
+                  <h2>Open Wakhan results</h2>
                   <p>
-                    Open a Wakhan results ZIP to explore copy number, read
-                    depth, structural variants, and folded BAF in linked genomic
-                    tracks.
+                    Wakhan analyzes long-read tumor sequencing data to estimate
+                    copy-number changes, including haplotype-specific profiles
+                    when phasing is available.
+                  </p>
+                  <p>
+                    This viewer opens a Wakhan results ZIP and displays its
+                    copy-number, read-depth, BAF, and structural-variant tracks.
                   </p>
                   <button
                     class="primary large"
                     @click=${this.openPicker}
                     ?disabled=${this.busy}
                   >
-                    Choose a Wakhan ZIP <span>↗</span>
+                    Open ZIP file
                   </button>
                   <p class="hint">
-                    Or drag and drop a ZIP anywhere on this page. Your data
-                    stays in your browser.
+                    Or drop a ZIP file anywhere on this page. The file is
+                    processed in your browser.
                   </p>
-                </div>
-                <div class="welcome-art" aria-hidden="true">
-                  <div class="chrom-line"></div>
-                  <div class="art-label">
-                    chr8 <span>MYC</span> chr17 <span>ERBB2</span>
-                  </div>
-                  <div class="art-bars">
-                    ${[25, 35, 40, 28, 57, 49, 62, 90, 52, 45, 71, 66, 38, 53].map((n, i) => html`<i style="height:${n}%;--i:${i}"></i>`)}
-                  </div>
-                  <div class="art-caption">COPY NUMBER · DEPTH · VARIANTS</div>
                 </div>
               </main>`
         }
       <footer class="footer">
-        <span>Wakhan Explorer · local ZIP analysis</span
+        <span>Wakhan Explorer</span
         ><span
           >Built with <a href="https://genomespy.app/">GenomeSpy</a> ·
           <a href="https://github.com/KolmogorovLab/Wakhan">Wakhan</a></span
