@@ -67,7 +67,10 @@ their effects, and exact fields requested from Wakhan's authors. The
 The ordinary importer never invents the missing calibration. To inspect an
 optional estimate based on rounded gene adjusted-depth centers, start the Vite
 dev server and open http://localhost:5173/?calibrationPreview=1. The overlay
-and its image exports are marked **Estimated calibration — development**.
+puts read-depth points and copy-number segments in the same HP1 and HP2 tracks,
+with a calibrated read-depth axis on the right. It removes the separate raw-depth
+tracks while the estimate is available. The view and its image exports are
+marked **Estimated calibration — development**.
 It is recalculated per archive, excludes genes overlapping masked subclonal
 segments, and appears only if the distinct-state fit passes rounding and
 stability checks. It has not been validated against Wakhan's Plotly parameters.

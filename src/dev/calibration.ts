@@ -111,15 +111,25 @@ export function calibratedCoverage(
   estimate: CalibrationEstimate,
 ): Row[] {
   return coverage.flatMap((row) =>
-    [1, 2].map((hp) => ({
-      chrom: row.chrom,
-      start: row.start,
-      end: row.end,
-      haplotype: `HP${hp}`,
-      adjustedCopyNumber:
-        ((row[`hp${hp}`] as number) - estimate.offset) /
-        estimate.singleCopyDepth,
-      rawDepth: row[`hp${hp}`],
-    })),
+    [1, 2].flatMap((hp) => {
+      const rawDepth = row[`hp${hp}`];
+      if (
+        typeof rawDepth !== "number" ||
+        !Number.isFinite(rawDepth) ||
+        rawDepth === 3300
+      )
+        return [];
+      return [
+        {
+          chrom: row.chrom,
+          start: row.start,
+          end: row.end,
+          haplotype: `HP${hp}`,
+          adjustedCopyNumber:
+            (rawDepth - estimate.offset) / estimate.singleCopyDepth,
+          rawDepth,
+        },
+      ];
+    }),
   );
 }

@@ -1,4 +1,5 @@
 import type { RootSpec } from "@genome-spy/core/spec/root.js";
+import type { CalibrationEstimate } from "../dev/calibration";
 import type { WakhanResult } from "../model";
 import recipeSvSpec from "./specs/structural-variants.json";
 
@@ -146,7 +147,7 @@ function sitesTrack() {
   };
 }
 
-function cnTrack(hp: "HP1" | "HP2" | "Total", preview = false) {
+function cnTrack(hp: "HP1" | "HP2" | "Total", calibration?: CalibrationEstimate) {
   const ink =
     hp === "HP1" ? "firebrick" : hp === "HP2" ? "steelblue" : "#287a78";
   const segment = {
@@ -168,7 +169,9 @@ function cnTrack(hp: "HP1" | "HP2" | "Total", preview = false) {
       y: {
         field: "copyNumber",
         type: "quantitative",
-        scale: { zero: true, domain: { source: "viewport" } },
+        ...(calibration
+          ? {}
+          : { scale: { zero: true, domain: { source: "viewport" } } }),
         axis: { title: "Copies", tickCount: 4, tickMinStep: 1 },
       },
       tooltip: [
@@ -188,7 +191,7 @@ function cnTrack(hp: "HP1" | "HP2" | "Total", preview = false) {
       mark: { type: "rule", color: "#d8e0e1", clip: false, y: 0 },
     },
   ];
-  if (!import.meta.env.DEV || !preview || hp === "Total")
+  if (!calibration || hp === "Total")
     return {
       name: `cn-${hp}`,
       height: 100,
@@ -198,9 +201,10 @@ function cnTrack(hp: "HP1" | "HP2" | "Total", preview = false) {
     };
   return {
     name: `cn-${hp}`,
-    height: 100,
-    title: `${hp} | copy number + Estimated calibration — development`,
+    height: { grow: 1 },
+    title: `${hp} | copy number + binned read depth`,
     params: [horizontalRuler(`cnCursor${hp}`)],
+    resolve: { axis: { y: "independent" } },
     layer: [
       ...layers,
       {
@@ -208,26 +212,43 @@ function cnTrack(hp: "HP1" | "HP2" | "Total", preview = false) {
         transform: [{ type: "filter", expr: `datum.haplotype == '${hp}'` }],
         mark: {
           type: "point",
-          size: 12,
+          size: { expr: "min(pow(zoomLevel(), 1.5) + 2, 100)" },
           opacity: 0.25,
-          color: hp === "HP1" ? "#cd6f6f" : "#87aece",
           strokeWidth: 0,
-          clip: "x",
+          clip: true,
         },
         encoding: {
           x,
           x2,
+          color: {
+            condition: {
+              param: "svRegion",
+              empty: true,
+              value: hp === "HP1" ? "#cd6f6f" : "#87aece",
+            },
+            value: "#cbd2d6",
+          },
           y: {
-            field: "adjustedCopyNumber",
+            field: "rawDepth",
             type: "quantitative",
-            scale: { zero: true, domain: { source: "viewport" } },
-            axis: { title: "Copies", tickCount: 4 },
+            scale: {
+              type: "linear",
+              nice: false,
+              zero: false,
+              domainTransition: false,
+              clamp: false,
+              domain: {
+                expr: "[cnDomain[0] * singleCopyDepth + depthOffset, cnDomain[1] * singleCopyDepth + depthOffset]",
+              },
+            },
+            axis: { orient: "right", title: "Read depth", tickCount: 4 },
           },
           tooltip: [
             tip("rawDepth", "Raw depth", ".2f"),
             tip("adjustedCopyNumber", "Estimated copies", ".2f"),
           ],
         },
+        resolve: { scale: { y: "excluded" } },
       },
       segment,
     ],
@@ -516,18 +537,48 @@ export function layoutSignature(result: WakhanResult): string {
   ].join(":");
 }
 
-export function createSpec(result: WakhanResult, preview = false): RootSpec {
+export function createSpec(
+  result: WakhanResult,
+  estimate?: CalibrationEstimate,
+): RootSpec {
   const mode = result.mode;
+  const calibration =
+    import.meta.env.DEV && mode === "phased" && result.coverage.length
+      ? estimate
+      : undefined;
   const tracks = [
     ...(result.svLinks.length ? [structuredClone(recipeSvSpec)] : []),
     ...(!result.svLinks.length && result.svSites.length ? [sitesTrack()] : []),
     ...(mode === "phased"
-      ? [
-          cnTrack("HP1", preview),
-          ...(result.coverage.length ? [depthTrack("HP1")] : []),
-          cnTrack("HP2", preview),
-          ...(result.coverage.length ? [depthTrack("HP2")] : []),
-        ]
+      ? calibration
+        ? [
+            {
+              name: "copy-number",
+              params: [
+                { name: "singleCopyDepth", value: calibration.singleCopyDepth },
+                { name: "depthOffset", value: calibration.offset },
+                { name: "cnDomain", expr: "domain('y')" },
+              ],
+              spacing: 10,
+              resolve: { scale: { y: "shared" }, axis: { x: "shared" } },
+              scales: {
+                y: {
+                  domain: { source: "viewport" },
+                  zero: true,
+                  nice: true,
+                  name: "copyNumber",
+                  clamp: true,
+                },
+              },
+              vconcat: [cnTrack("HP1", calibration), cnTrack("HP2", calibration)],
+            },
+          ]
+        : [
+            cnTrack("HP1"),
+            ...(result.coverage.length ? [depthTrack("HP1")] : []),
+            cnTrack("HP2"),
+            ...(result.coverage.length ? [depthTrack("HP2")] : []),
+          ]
       : [
           cnTrack("Total"),
           ...(result.coverage.length ? [depthTrack("Total")] : []),

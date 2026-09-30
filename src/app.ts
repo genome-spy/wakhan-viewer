@@ -142,7 +142,7 @@ export class WakhanExplorer extends LitElement {
           genes,
           cytobands,
           result,
-          previewEnabled && !!this.previewEstimate,
+          previewEnabled ? this.previewEstimate : undefined,
         );
         this.view = view;
         this.viewLayout = layout;
@@ -187,7 +187,7 @@ export class WakhanExplorer extends LitElement {
             genes,
             cytobands,
             result,
-            previewEnabled && !!this.previewEstimate,
+            previewEnabled ? this.previewEstimate : undefined,
           );
           this.view = view;
           this.viewLayout = this.signature(result);

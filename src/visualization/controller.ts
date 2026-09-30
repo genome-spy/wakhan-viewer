@@ -3,6 +3,7 @@ import "@genome-spy/core/rendering/webgl.js";
 import "@genome-spy/core/rendering/svg.js";
 import "@genome-spy/core/rendering/canvas.js";
 import type { EmbedResult } from "@genome-spy/core/types/embedApi.js";
+import type { CalibrationEstimate } from "../dev/calibration";
 import type { Profile, Row, WakhanResult } from "../model";
 import { createSpec } from "./spec";
 
@@ -19,9 +20,9 @@ export class ExplorerView {
     genes: Row[],
     cytobands: Row[],
     result: WakhanResult,
-    preview = false,
+    calibration?: CalibrationEstimate,
   ) {
-    this.api = await embed(this.host, createSpec(result, preview), {
+    this.api = await embed(this.host, createSpec(result, calibration), {
       inputBindingContainer: "none",
     });
     this.api.datasets.set("genes", structuredClone(genes));
