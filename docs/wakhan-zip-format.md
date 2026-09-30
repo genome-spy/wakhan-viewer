@@ -56,7 +56,7 @@ format guarantees.
 | Priority / status | Gap and effect | Exact addition requested | Current Explorer behavior |
 | --- | --- | --- | --- |
 | Essential · proposed | `solutions_ranks.tsv` lists multiple solutions but the ZIP does not identify the one enclosed. HCC1954 lists two ranks and HCC1937 lists three. We cannot label the plotted ploidy, purity, rank, or confidence safely. | In a small manifest, include `included_solution_id` matching `repository_name`, `solution_rank`, and the associated `ploidy`, `dna_purity`, `cell_purity`, and `confidence`, plus the target VCF sample name. | Shows the rank table count but does not assign any row to the plotted CN. |
-| Essential for calibrated overlay · proposed | The plot's read-depth-to-CN calibration is not exported. Separate CN and raw-depth axes cannot be read as a calibrated pair. | Export the exact calibration for the enclosed solution and each applicable profile/series: e.g. `depth = depth_offset + single_copy_depth * copy_number`, with coefficient units and scope. If the plot uses a different mapping, export its centers and interpolation rule instead. | Displays CN and raw depth in separate aligned tracks. |
+| Essential for calibrated overlay · proposed | The plot's read-depth-to-CN calibration is not exported. The selected Plotly axis cannot be recreated exactly from the ZIP. | Export the exact `cen_out` vector for the enclosed solution and profile, with its CN labels and units. For the current phased integer path, `cen_out[i] = normal_coverage + i * single_copy_cov`; include the original floating-point values rather than values rounded for display. | Keeps CN and raw depth in separate tracks by default. An opt-in development preview estimates calibration from the rounded gene table and layers the two series. |
 | Essential for arbitrary modes · proposed | No independent reference assembly declaration or complete contig dictionary. The current VCF happens to contain GRCh38 primary lengths. Modes without VCF may not be identifiable. | `reference_assembly` (name and accession/build), ordered `{name,length}` contigs, and analyzed contigs in the manifest. | Validates the current VCF dictionary against GRCh38 or relies on the exact GRCh38 centromere member name. Rejects unresolved references. |
 | Essential for reliable coordinates · proposed | The files mix BED-like and CSV-like conventions, and the adjacency convention is inferred from observed rows. | Document coordinate base and interval closure for each member and ZIP schema version; preferably export new tables as zero-based half-open intervals. State the meaning of VCF END and BAF start explicitly. | Uses the bounded observed conversions above. Unknown schemas are rejected. |
 | Essential for missingness · proposed | CN/depth `3300` is a sentinel. The integer profile can contain zero placeholders in masked regions; a missing haplotype can also be zero-filled. A true zero and an unavailable measurement cannot always be distinguished. | Export per-series, per-row `status` (`reported`, `masked`, `unavailable`) and explicit mask intervals with series/profile scope. Preserve genuine zero measurements. | Excludes known sentinel values, uses subclonal sentinel intervals for masks, and retains other zero values with a caution. |
@@ -85,6 +85,47 @@ Suggested minimal manifest shape (illustrative; names can be agreed with authors
 The calibration numbers above are illustrative and **must not be treated as
 HCC1954 plot metadata**. In particular, the current `solutions_ranks.tsv` does
 not establish which solution's centers appear in the ZIP.
+
+## Where Wakhan computes and stores plot calibration
+
+These findings are from the checked-out Wakhan source at the commit named
+above. They describe the implementation, not an author-confirmed file-format
+contract.
+
+1. `peak_detection_optimization` in `src/cna/optimization.py` calls
+   `cn_one_inference` on coverage segments. It sets `single_copy_cov` to the
+   inferred CN=1 peak (or `--first-copy` override) and makes an initial
+   evenly spaced `centers` vector. It also computes an alternative spacing
+   when it detects a half peak.
+2. For phased output, `copy_numbers_assignment_haplotypes` in `src/main.py`
+   searches candidate `normal_coverage` values in 0.1-depth increments. For
+   each candidate, it builds
+   `cen_out[i] = normal_coverage + i * single_copy_cov`. Each selected
+   solution retains its own vector as `solution[2]`. Here
+   `normal_coverage` is the **haplotype-level depth offset**; Wakhan doubles
+   it separately when calculating diploid-normal purity.
+3. Wakhan passes the selected `cen_out` to the integer-profile BED and gene
+   writers and to `copy_number_plots_genome` or its breakpoint variant. The
+   Plotly code places CN labels at these depth positions (`tickvals=centers`)
+   on an axis overlaid with binned read depth. In the subclonal branch, Wakhan
+   converts the centers to integers before creating the subclonal Plotly plot,
+   so the exact plotted axis for that profile can differ from the integer
+   profile. The unphased path uses the initial `centers` directly and skips
+   the phased offset search.
+4. The full vector is logged as `Normal optimized clusters means` to
+   `wakhan.log` at DEBUG level. Wakhan also saves Plotly HTML containing its
+   axis tick positions. Neither the log nor HTML is included by
+   `create_hiscanner_plot_data_archives` in `src/output/compressed_output.py`:
+   its ZIP writer adds the profile BEDs, gene table, coverage, BAF, optional
+   LOH, centromeres, VCF, and solution ranking only. Both supplied ZIPs have
+   exactly these eight members and no calibration file.
+
+The smallest upstream change is to write the selected solution's unrounded
+`cen_out` and CN labels to a small machine-readable member at the point where
+the corresponding BED and Plotly HTML are produced, then include that member
+and the solution ID in its ZIP. If integer and subclonal plots retain different
+center vectors, export both explicitly. The current `solutions_ranks.tsv`
+alone cannot recover either vector: it lacks the peak spacing and offset.
 
 ## Development calibration experiment
 
