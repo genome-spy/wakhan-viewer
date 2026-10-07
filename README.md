@@ -67,9 +67,10 @@ shown here.
 
 The current ZIPs omit the enclosed solution identity, exact depth calibration,
 independent assembly metadata, and explicit missingness information. The app
-shows CN and raw depth on separate tracks and does not assign a ranked solution
-to the plot. A source 3300 sentinel is treated as unavailable or masked;
-BAF zero is shown with unknown SNP support. HP1/HP2 are chromosome-local
+infers the copy/depth mapping when the gene table supports a consistent fit,
+and does not assign a ranked solution to the plot. A source 3300 sentinel is
+treated as unavailable or masked; BAF zero is shown with unknown SNP support.
+HP1/HP2 are chromosome-local
 labels, CN confidence is not phasing confidence, and fractional CN is not a
 cellular fraction.
 
@@ -77,24 +78,30 @@ See [the ZIP format report](docs/wakhan-zip-format.md) for observed shortcomings
 their effects, and exact fields requested from Wakhan's authors. The
 [implementation plan](PLAN.md) records the architecture and original milestones.
 
-## Development calibration experiment
+## Inferred depth calibration
 
-The ordinary importer never invents the missing calibration. To inspect an
-optional estimate based on rounded gene adjusted-depth centers, start the Vite
-dev server and open http://localhost:5173/?calibrationPreview=1. The overlay
-puts read-depth points and copy-number segments in the same HP1 and HP2 tracks,
-with a calibrated read-depth axis on the right. It removes the separate raw-depth
-tracks while the estimate is available. The view and its image exports are
-marked **Estimated calibration — development**.
-It is recalculated per archive, excludes genes overlapping masked subclonal
-segments, and appears only if the distinct-state fit passes rounding and
-stability checks. It has not been validated against Wakhan's Plotly parameters.
-The production build excludes this preview.
+By default, the viewer estimates the copy/depth mapping from rounded gene
+adjusted-depth centers and integer states. When a fit is available, read-depth
+points and copy-number segments share the HP1 and HP2 tracks, with a calibrated
+read-depth axis on the right. This applies to development and production builds,
+including image exports.
+
+The estimate is recalculated per archive, excludes genes overlapping masked
+subclonal segments, and requires at least three distinct states, residuals
+consistent with two-decimal rounding, and a stable slope when each state is
+left out. If those checks fail or the required data are missing, CN and raw depth
+remain on separate tracks.
+
+The **About** panel highlights that the exact Wakhan calibration and plotted
+solution identity are absent. Agreement with Wakhan's original plot is
+unverified, especially for subclonal profiles; depth alignment and depth-derived
+copy estimates are approximate. This estimate does not resolve the upstream
+request for explicit calibration.
 
 For a numerical report without the browser:
 
 ~~~sh
-npm run calibration:estimate -- tmp/HCC1954_plots_data.zip
+npm run calibration:estimate -- public/examples/HCC1937_plots_data.zip
 ~~~
 
 ## Reference data and citations
@@ -120,3 +127,10 @@ The original recipe used published
 [Wakhan/CASTLE data on Zenodo](https://zenodo.org/records/17780982). Its
 sample-specific claims and rights do not automatically apply to arbitrary
 ZIPs opened in this app.
+
+## License
+
+The application is licensed under the [MIT License](LICENSE).
+Copyright (c) 2026 Kari Lavikka.
+Third-party dependencies and bundled data retain their respective terms and
+attribution requirements.

@@ -1,5 +1,5 @@
 import type { RootSpec } from "@genome-spy/core/spec/root.js";
-import type { CalibrationEstimate } from "../dev/calibration";
+import type { CalibrationEstimate } from "../calibration";
 import type { WakhanResult } from "../model";
 import recipeSvSpec from "./specs/structural-variants.json";
 
@@ -525,7 +525,10 @@ function genesTrack() {
   };
 }
 
-export function layoutSignature(result: WakhanResult): string {
+export function layoutSignature(
+  result: WakhanResult,
+  calibration?: CalibrationEstimate,
+): string {
   return [
     result.mode,
     !!result.svLinks.length,
@@ -534,6 +537,8 @@ export function layoutSignature(result: WakhanResult): string {
     !!result.baf.length,
     result.lohAvailable,
     result.lohAvailable && result.loh.length === 0,
+    calibration?.offset,
+    calibration?.singleCopyDepth,
   ].join(":");
 }
 
@@ -543,7 +548,7 @@ export function createSpec(
 ): RootSpec {
   const mode = result.mode;
   const calibration =
-    import.meta.env.DEV && mode === "phased" && result.coverage.length
+    mode === "phased" && result.coverage.length
       ? estimate
       : undefined;
   const tracks = [

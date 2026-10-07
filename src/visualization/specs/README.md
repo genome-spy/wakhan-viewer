@@ -11,9 +11,10 @@ normalized Severus VCF records to those sources through GenomeSpy's API.
 `../spec.ts` follows the same recipe for the navigator, title and axis styling,
 linked rulers, interval brush, BAF markers, masks, cytobands, and gene labels.
 Its tracks are assembled according to the files present in each ZIP. Wakhan's
-current ZIPs omit the plot's read-depth-to-copy-number calibration, so the
-normal view keeps raw depth and inferred copy number in separate tracks. The
-opt-in development estimate restores the recipe's layered HP tracks and
-calibrated right-side depth axis when the fit passes its checks. The ZIPs also
+current ZIPs omit the plot's read-depth-to-copy-number calibration. The viewer
+infers a mapping from rounded gene values by default, restoring the recipe's
+layered HP tracks and calibrated right-side depth axis when the fit passes its
+checks. About highlights the estimate's unverified agreement with Wakhan's plot.
+Without a consistent estimate, CN and raw depth use separate tracks. The ZIPs also
 do not distinguish all unavailable calls from genuine zeros; see
 [ZIP format findings](../../../docs/wakhan-zip-format.md).

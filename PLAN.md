@@ -9,6 +9,13 @@ selection, and genomic ruler have been adapted. Further Wakhan modes need
 representative exporter data. See README.md and
 docs/wakhan-zip-format.md for tested behavior and format gaps.
 
+Update on 2026-10-07: inferred copy/depth calibration is now the default when
+the rounding and stability checks pass. About highlights its approximate,
+unverified agreement with Wakhan's plot, and unsupported ZIPs retain separate
+CN and depth tracks. This supersedes the development-only and opt-in calibration
+requirements in the original plan below; explicit calibration remains an
+upstream request.
+
 Recommended approach: keep one GenomeSpy instance for compatible results, parse
 ZIPs in a Worker, and replace named datasets while restoring the current locus.
 Reuse the recipe's visual design, with explicit adapters for current Wakhan tables.

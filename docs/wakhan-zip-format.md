@@ -56,7 +56,7 @@ format guarantees.
 | Priority / status | Gap and effect | Exact addition requested | Current Viewer behavior |
 | --- | --- | --- | --- |
 | Essential · proposed | `solutions_ranks.tsv` lists multiple solutions but the ZIP does not identify the one enclosed. HCC1954 lists two ranks and HCC1937 lists three. We cannot label the plotted ploidy, purity, rank, or confidence safely. | In a small manifest, include `included_solution_id` matching `repository_name`, `solution_rank`, and the associated `ploidy`, `dna_purity`, `cell_purity`, and `confidence`, plus the target VCF sample name. | Shows the rank table count but does not assign any row to the plotted CN. |
-| Essential for calibrated overlay · proposed | The plot's read-depth-to-CN calibration is not exported. The selected Plotly axis cannot be recreated exactly from the ZIP. | Export two unrounded values for the enclosed phased solution: `normal_coverage` (depth offset) and `single_copy_cov` (depth per copy), with units and solution ID. These reconstruct the integer centers as `cen_out[i] = normal_coverage + i * single_copy_cov`. State any profile-specific plotting rule, such as the subclonal plot's integer conversion. | Keeps CN and raw depth in separate tracks by default. An opt-in development preview estimates calibration from the rounded gene table and layers the two series. |
+| Essential for calibrated overlay · proposed | The plot's read-depth-to-CN calibration is not exported. The selected Plotly axis cannot be recreated exactly from the ZIP. | Export two unrounded values for the enclosed phased solution: `normal_coverage` (depth offset) and `single_copy_cov` (depth per copy), with units and solution ID. These reconstruct the integer centers as `cen_out[i] = normal_coverage + i * single_copy_cov`. State any profile-specific plotting rule, such as the subclonal plot's integer conversion. | Estimates calibration from the rounded gene table by default when rounding and stability checks pass, layers the two series, and highlights the approximation in About. Otherwise keeps CN and raw depth separate. |
 | Essential for arbitrary modes · proposed | No independent reference assembly declaration or complete contig dictionary. The current VCF happens to contain GRCh38 primary lengths. Modes without VCF may not be identifiable. | `reference_assembly` (name and accession/build), ordered `{name,length}` contigs, and analyzed contigs in the manifest. | Validates the current VCF dictionary against GRCh38 or relies on the exact GRCh38 centromere member name. Rejects unresolved references. |
 | Essential for reliable coordinates · proposed | The files mix BED-like and CSV-like conventions, and the adjacency convention is inferred from observed rows. | Document coordinate base and interval closure for each member and ZIP schema version; preferably export new tables as zero-based half-open intervals. State the meaning of VCF END and BAF start explicitly. | Uses the bounded observed conversions above. Unknown schemas are rejected. |
 | Essential for missingness · proposed | CN/depth `3300` is a sentinel. The integer profile can contain zero placeholders in masked regions; a missing haplotype can also be zero-filled. A true zero and an unavailable measurement cannot always be distinguished. | Export per-series, per-row `status` (`reported`, `masked`, `unavailable`) and explicit mask intervals with series/profile scope. Preserve genuine zero measurements. | Excludes known sentinel values, uses subclonal sentinel intervals for masks, and retains other zero values with a caution. |
@@ -129,7 +129,7 @@ reproduce its axis without exporting another vector. The unphased path uses
 zero offset. The current `solutions_ranks.tsv` alone cannot recover the
 spacing or offset.
 
-## Development calibration experiment
+## Calibration inferred by the viewer
 
 The gene table has rounded `adjusted_coverage_hp1/hp2` values paired with
 integer `hp1_state/hp2_state`. A preliminary fit of distinct, unmasked
@@ -143,11 +143,15 @@ CN/depth pairs gave these indicative results:
 Those residuals fit the two-decimal rounding in the gene writer, but they do
 not prove that the interactive Plotly plot used those coefficients. Masked
 genes must be excluded. In particular, SPIN4 has apparent state 141/196 and
-adjusted depth near 3300 in the sample archives. The opt-in development
-script and Vite preview show an **Estimated calibration — development** overlay
-after a rounding and leave-one-state-out stability check. The upstream
-calibration request remains open until exact plot parameters are exported and
-checked across solutions and high/fractional states.
+adjusted depth near 3300 in the sample archives. The viewer uses this estimate
+by default after rounding and leave-one-state-out stability checks, in both
+development and production. About highlights that depth alignment and
+depth-derived copy estimates are approximate and unverified against Wakhan's
+original plot, especially for subclonal profiles. When a consistent estimate
+is unavailable, the viewer keeps CN and raw depth separate. The reporting script
+uses the same estimator. The upstream calibration request remains open until
+exact plot parameters are exported and checked across solutions and
+high/fractional states.
 
 ## Acceptance checks for an author-supplied revision
 

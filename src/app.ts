@@ -4,16 +4,13 @@ import type { Profile, WakhanResult } from "./model";
 import { genes, cytobands } from "./annotations";
 import { WakhanView } from "./visualization/controller";
 import zipReportUrl from "../docs/wakhan-zip-format.md?url";
-import type { CalibrationEstimate } from "./dev/calibration";
+import {
+  estimateCalibration,
+  calibratedCoverage,
+  type CalibrationEstimate,
+} from "./calibration";
 import { layoutSignature } from "./visualization/spec";
 import { ImportQueue } from "./import/queue";
-
-const previewEnabled =
-  import.meta.env.DEV &&
-  new URLSearchParams(location.search).has("calibrationPreview");
-const calibrationTools = import.meta.env.DEV
-  ? await import("./dev/calibration")
-  : undefined;
 
 @customElement("wakhan-viewer")
 export class WakhanViewer extends LitElement {
@@ -26,7 +23,7 @@ export class WakhanViewer extends LitElement {
   @state() private dragging = false;
   @state() private message = "";
   @state() private exportBusy = false;
-  @state() private previewEstimate?: CalibrationEstimate;
+  @state() private calibrationEstimate?: CalibrationEstimate;
   private view?: WakhanView;
   private viewLayout?: string;
   private worker?: Worker;
@@ -60,10 +57,6 @@ export class WakhanViewer extends LitElement {
       this.statusTimer = window.setTimeout(() => {
         if (this.message === text) this.message = "";
       }, 5000);
-  }
-
-  private signature(result: WakhanResult) {
-    return `${layoutSignature(result)}:${previewEnabled && !!this.previewEstimate}`;
   }
 
   private labelFor(index: number) {
@@ -185,13 +178,13 @@ export class WakhanViewer extends LitElement {
     this.profile = result.profiles.includes(this.profile)
       ? this.profile
       : result.profiles[0];
-    this.previewEstimate = previewEnabled
-      ? calibrationTools?.estimateCalibration(result)
+    this.calibrationEstimate = result.coverage.length
+      ? estimateCalibration(result)
       : undefined;
     this.switching = true;
     try {
       await this.updateComplete;
-      const layout = this.signature(result);
+      const layout = layoutSignature(result, this.calibrationEstimate);
       if (this.view && this.viewLayout !== layout) {
         this.view.dispose();
         this.view = undefined;
@@ -205,7 +198,7 @@ export class WakhanViewer extends LitElement {
             genes,
             cytobands,
             result,
-            previewEnabled ? this.previewEstimate : undefined,
+            this.calibrationEstimate,
           );
         } catch (error) {
           view.dispose();
@@ -214,7 +207,7 @@ export class WakhanViewer extends LitElement {
         this.view = view;
         this.viewLayout = layout;
       }
-      this.view.show(result, this.profile, !!prior, this.previewRows(result));
+      this.view.show(result, this.profile, !!prior, this.calibratedRows(result));
       if (prior) this.view.zoom(prior, 0);
     } finally {
       this.switching = false;
@@ -225,15 +218,12 @@ export class WakhanViewer extends LitElement {
     const result = this.loaded[this.active];
     if (!result?.profiles.includes(value) || !this.view) return;
     this.profile = value;
-    this.view.show(result, value, true, this.previewRows(result));
+    this.view.show(result, value, true, this.calibratedRows(result));
   }
 
-  private previewRows(result: WakhanResult) {
-    return this.previewEstimate && previewEnabled
-      ? (calibrationTools?.calibratedCoverage(
-          result.coverage,
-          this.previewEstimate,
-        ) ?? [])
+  private calibratedRows(result: WakhanResult) {
+    return this.calibrationEstimate
+      ? calibratedCoverage(result.coverage, this.calibrationEstimate)
       : [];
   }
 
@@ -325,11 +315,33 @@ export class WakhanViewer extends LitElement {
             GRCh38 · ${active.segments[this.profile].length / (active.mode === "phased" ? 2 : 1)}
             CN intervals · ${active.mode}
           </p>
+          ${active.coverage.length ? html`<div class="calibration-note">
+            ${this.calibrationEstimate ? html`
+              <strong>Estimated depth calibration</strong>
+              <p>
+                The ZIP omits Wakhan’s exact calibration and the identity of the
+                plotted solution. We infer the copy/depth mapping from rounded
+                gene values. Its agreement with Wakhan’s original plot is
+                unverified, especially for subclonal profiles. Depth alignment
+                and depth-derived copy estimates are approximate.
+              </p>
+              <p class="calibration-values">
+                Depth ≈ ${this.calibrationEstimate.offset.toFixed(3)} +
+                ${this.calibrationEstimate.singleCopyDepth.toFixed(3)} × copies
+              </p>
+            ` : html`
+              <strong>Depth calibration unavailable</strong>
+              <p>
+                The ZIP omits Wakhan’s exact calibration, and a consistent
+                estimate is unavailable. Copy number and raw read
+                depth are shown in separate tracks.
+              </p>
+            `}
+          </div>` : nothing}
           <p>Scroll to zoom · drag to pan · navigator to brush.</p>
           <p>
             HP1 and HP2 are chromosome-local labels. Wakhan CN confidence is
-            distinct from phasing confidence. The ZIP does not include the
-            calibration for a combined depth and CN axis.
+            distinct from phasing confidence.
           </p>
           <ul>
             ${active.diagnostics.map((d) => html`<li class=${d.level}>${d.message}</li>`)}
@@ -386,7 +398,6 @@ export class WakhanViewer extends LitElement {
       </header>
       ${active
         ? html`<main class="workspace" aria-label="Genome viewer">
-            ${previewEnabled ? html`<div class="preview-banner">${this.previewEstimate ? html`Estimated calibration — development · offset ${this.previewEstimate.offset.toFixed(3)} · depth per copy ${this.previewEstimate.singleCopyDepth.toFixed(3)} · not verified against Wakhan plot parameters` : "Estimated calibration preview unavailable for this ZIP"}</div>` : nothing}
             <div
               id="vis"
               class=${this.busy ? "is-loading" : ""}

@@ -3,7 +3,7 @@ import "@genome-spy/core/rendering/webgl.js";
 import "@genome-spy/core/rendering/svg.js";
 import "@genome-spy/core/rendering/canvas.js";
 import type { EmbedResult } from "@genome-spy/core/types/embedApi.js";
-import type { CalibrationEstimate } from "../dev/calibration";
+import type { CalibrationEstimate } from "../calibration";
 import type { Profile, Row, WakhanResult } from "../model";
 import { createSpec } from "./spec";
 

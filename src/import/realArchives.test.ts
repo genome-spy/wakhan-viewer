@@ -2,7 +2,7 @@ import { existsSync, readFileSync } from "node:fs";
 import { describe, expect, it } from "vitest";
 import { extractArchive } from "./archive";
 import { parseMembers } from "./parse";
-import { estimateCalibration } from "../dev/calibration";
+import { estimateCalibration } from "../calibration";
 
 const cases = [
   {

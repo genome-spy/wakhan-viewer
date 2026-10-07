@@ -1,4 +1,4 @@
-import type { Row, WakhanResult } from "../model";
+import type { Row, WakhanResult } from "./model";
 
 export interface CalibrationEstimate {
   offset: number;
@@ -22,7 +22,7 @@ function fit(pairs: { copyNumber: number; adjustedDepth: number }[]) {
   return { singleCopyDepth, offset };
 }
 
-/** Development-only estimate from Wakhan's rounded adjusted gene centers. */
+/** Approximate mapping from rounded gene centers, not exported plot calibration. */
 export function estimateCalibration(
   result: WakhanResult,
 ): CalibrationEstimate | undefined {
