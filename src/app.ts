@@ -2,30 +2,12 @@ import { LitElement, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import type { Profile, WakhanResult } from "./model";
 import { genes, cytobands } from "./annotations";
-import { WakhanView, type Domain } from "./visualization/controller";
+import { WakhanView } from "./visualization/controller";
 import zipReportUrl from "../docs/wakhan-zip-format.md?url";
 import type { CalibrationEstimate } from "./dev/calibration";
 import { layoutSignature } from "./visualization/spec";
 import { ImportQueue } from "./import/queue";
 
-const loci: Record<string, Domain> = {
-  all: [
-    { chrom: "chr1", pos: 0 },
-    { chrom: "chrY", pos: 57227415 },
-  ],
-  chr8: [
-    { chrom: "chr8", pos: 0 },
-    { chrom: "chr8", pos: 145138636 },
-  ],
-  myc: [
-    { chrom: "chr8", pos: 120000000 },
-    { chrom: "chr8", pos: 135000000 },
-  ],
-  erbb2: [
-    { chrom: "chr17", pos: 37000000 },
-    { chrom: "chr17", pos: 42000000 },
-  ],
-};
 const previewEnabled =
   import.meta.env.DEV &&
   new URLSearchParams(location.search).has("calibrationPreview");
@@ -39,6 +21,7 @@ export class WakhanViewer extends LitElement {
   @state() private active = -1;
   @state() private profile: Profile = "integer";
   @state() private importing = false;
+  @state() private loadingExample = false;
   @state() private switching = false;
   @state() private dragging = false;
   @state() private message = "";
@@ -56,7 +39,7 @@ export class WakhanViewer extends LitElement {
   );
 
   private get busy() {
-    return this.importing || this.switching;
+    return this.importing || this.loadingExample || this.switching;
   }
 
   protected createRenderRoot() {
@@ -94,6 +77,28 @@ export class WakhanViewer extends LitElement {
     if (!this.fileInput)
       this.fileInput = this.querySelector("input[type=file]") ?? undefined;
     this.fileInput?.click();
+  }
+
+  private async loadExample() {
+    if (this.busy) return;
+    this.loadingExample = true;
+    this.status("Loading HCC1937 example…", true);
+    try {
+      const name = "HCC1937_plots_data.zip";
+      const response = await fetch(`${import.meta.env.BASE_URL}examples/${name}`);
+      if (!response.ok) throw Error(`Download failed (${response.status}).`);
+      const file = new File([await response.blob()], name, {
+        type: "application/zip",
+      });
+      await this.open([file]);
+    } catch (error) {
+      this.status(
+        `Could not load the example: ${error instanceof Error ? error.message : String(error)}`,
+        true,
+      );
+    } finally {
+      this.loadingExample = false;
+    }
   }
 
   private async open(files: File[]) {
@@ -295,12 +300,6 @@ export class WakhanViewer extends LitElement {
           ${active.profiles.map((p) => html`<option value=${p} ?selected=${p === this.profile}>${p === "integer" ? "Integer CN" : "Subclonal CN"}</option>`)}
         </select>
       </div>
-      <div class="loci" role="group" aria-label="Genomic region">
-        <button ?disabled=${this.busy} @click=${() => this.view?.zoom(loci.all)}>Genome</button>
-        <button ?disabled=${this.busy} @click=${() => this.view?.zoom(loci.chr8)}>Chr 8</button>
-        <button ?disabled=${this.busy} @click=${() => this.view?.zoom(loci.myc)}>MYC</button>
-        <button ?disabled=${this.busy} @click=${() => this.view?.zoom(loci.erbb2)}>ERBB2</button>
-      </div>
       <div class="exports" role="group" aria-label="Export image">
         <button
           ?disabled=${this.exportBusy || this.busy}
@@ -406,13 +405,22 @@ export class WakhanViewer extends LitElement {
                     This viewer opens a Wakhan results ZIP and displays its
                     copy-number, read-depth, BAF, and structural-variant tracks.
                   </p>
-                  <button
-                    class="primary large"
-                    @click=${this.openPicker}
-                    ?disabled=${this.busy}
-                  >
-                    Open ZIP files
-                  </button>
+                  <div class="welcome-actions">
+                    <button
+                      class="primary large"
+                      @click=${this.openPicker}
+                      ?disabled=${this.busy}
+                    >
+                      Open ZIP files
+                    </button>
+                    <button
+                      class="large"
+                      @click=${this.loadExample}
+                      ?disabled=${this.busy}
+                    >
+                      ${this.loadingExample ? "Loading example…" : "Load HCC1937 example"}
+                    </button>
+                  </div>
                   <p class="hint">
                     Or drop one or more ZIP files anywhere on this page. Files
                     are processed in your browser.

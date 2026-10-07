@@ -5,17 +5,28 @@ import { parseMembers } from "./parse";
 import { estimateCalibration } from "../dev/calibration";
 
 const cases = [
-  { name: "HCC1937", cn: 461, variants: 1018, baf: 60630 },
-  { name: "HCC1954", cn: 1271, variants: 1926, baf: 60630 },
+  {
+    name: "HCC1937",
+    path: "public/examples/HCC1937_plots_data.zip",
+    cn: 461,
+    baf: 60630,
+  },
+  {
+    name: "HCC1954",
+    path: "tmp/HCC1954_plots_data.zip",
+    cn: 1271,
+    baf: 60630,
+    optional: true,
+  },
 ];
 
-describe.skipIf(!existsSync("tmp/HCC1954_plots_data.zip"))(
-  "local Wakhan archives",
-  () => {
-    for (const sample of cases) {
-      it(`imports ${sample.name} with all expected tracks`, async () => {
+describe("Wakhan archives", () => {
+  for (const sample of cases) {
+    it.skipIf(sample.optional && !existsSync(sample.path))(
+      `imports ${sample.name} with all expected tracks`,
+      async () => {
         const name = `${sample.name}_plots_data.zip`;
-        const members = extractArchive(readFileSync(`tmp/${name}`));
+        const members = extractArchive(readFileSync(sample.path));
         const result = await parseMembers(name, members);
         expect(result.segments.integer).toHaveLength(sample.cn * 2);
         expect(result.segments.subclonal).toHaveLength(sample.cn * 2);
@@ -35,7 +46,7 @@ describe.skipIf(!existsSync("tmp/HCC1954_plots_data.zip"))(
         expect(estimate?.pairs.length).toBeGreaterThanOrEqual(6);
         expect(estimate?.maxResidual).toBeLessThan(0.0051);
         expect(estimate?.excludedGenes).toContain("SPIN4");
-      });
-    }
-  },
-);
+      },
+    );
+  }
+});

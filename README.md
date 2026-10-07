@@ -9,6 +9,13 @@ join the queue. The first successful import is displayed, and adding files keeps
 the current result and zoom. A failed file is reported without stopping the
 remaining imports.
 
+New users can choose **Load HCC1937 example** on the welcome screen to explore
+the bundled [HCC1937 ZIP](public/examples/HCC1937_plots_data.zip) without providing
+their own files. The archive is downloaded only when requested, then processed
+in the browser by the same importer as local ZIPs. It is an unchanged copy of
+the supplied archive; its contents and checksum are recorded in the
+[ZIP format report](docs/wakhan-zip-format.md).
+
 Once a result is open, GenomeSpy fills the window beneath a compact toolbar.
 Tracks resize with the window; short windows scroll within the visualization.
 Result metadata, notes, and credits are available in the toolbar's **About** panel.
@@ -30,11 +37,12 @@ npm ci
 npm run dev
 ~~~
 
-Open the URL printed by Vite, usually http://localhost:5173/. Choose one or more
-ZIPs or drag them onto the page. The two supplied example ZIPs in ignored tmp/
-are useful for development. Use the navigator, scroll wheel, drag, or locus
-buttons to explore. Switch the result or integer/subclonal profile from the
-toolbar; the detail x domain is retained.
+Open the URL printed by Vite, usually http://localhost:5173/. Load the HCC1937
+example, choose one or more ZIPs, or drag them onto the page. An additional
+HCC1954 archive in ignored tmp/ is used by optional development tests.
+Use the navigator, scroll wheel, and drag to explore.
+Switch the result or integer/subclonal profile from the toolbar; the detail x
+domain is retained.
 
 ~~~sh
 npm run typecheck

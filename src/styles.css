@@ -167,10 +167,15 @@ button:disabled {
   color: #536c74;
   margin: 0 0 14px;
 }
+.welcome-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 32px;
+}
 .welcome-copy .large {
   padding: 12px 18px;
   font-size: 14px;
-  margin-top: 18px;
 }
 .welcome-copy .hint {
   font-size: 13px;
@@ -210,18 +215,11 @@ button:disabled {
   font-size: 12px;
   padding: 0 28px 0 10px;
 }
-.loci,
 .exports {
   display: flex;
   gap: 5px;
   align-items: center;
-}
-.loci {
   margin-left: auto;
-}
-.exports {
-  padding-left: 8px;
-  border-left: 1px solid #dde8e9;
 }
 .toolbar button {
   height: 32px;
@@ -246,7 +244,6 @@ button:disabled {
 }
 .details {
   position: relative;
-  margin-left: auto;
 }
 .details summary {
   display: flex;
@@ -378,9 +375,6 @@ button:disabled {
   pointer-events: none;
 }
 @media (max-width: 900px) {
-  .loci {
-    margin-left: 0;
-  }
   .is-viewing .masthead {
     flex-wrap: wrap;
     gap: 8px;
@@ -415,9 +409,6 @@ button:disabled {
   }
   .toolbar button {
     padding: 0 8px;
-  }
-  .loci {
-    gap: 4px;
   }
   .footer {
     padding: 15px 18px;
