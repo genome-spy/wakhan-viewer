@@ -265,6 +265,21 @@ export class WakhanViewer extends LitElement {
     void this.open(Array.from(event.dataTransfer.files));
   }
 
+  private renderProjectLinks() {
+    return html`
+      <a
+        href="https://github.com/genome-spy/wakhan-viewer"
+        target="_blank"
+        rel="noopener noreferrer"
+      >GitHub</a> ·
+      <a
+        href="https://github.com/genome-spy/wakhan-viewer/blob/main/LICENSE"
+        target="_blank"
+        rel="noopener noreferrer"
+      >MIT license</a>
+    `;
+  }
+
   private renderToolbar(active: WakhanResult) {
     return html`<section class="toolbar" aria-label="Explore results">
       <button class="primary" @click=${this.openPicker} ?disabled=${this.busy}>
@@ -355,6 +370,7 @@ export class WakhanViewer extends LitElement {
           </p>
           <a href=${zipReportUrl} target="_blank" rel="noopener noreferrer">Wakhan ZIP format findings ↗</a>
           <p class="credits">
+            ${this.renderProjectLinks()}<br />
             Built with <a href="https://genomespy.app/">GenomeSpy</a> ·
             <a href="https://github.com/KolmogorovLab/Wakhan">Wakhan</a>
           </p>
@@ -439,11 +455,11 @@ export class WakhanViewer extends LitElement {
                 </div>
               </main>`}
       ${active ? nothing : html`<footer class="footer">
-        <span>Wakhan Viewer</span
-        ><span
-          >Built with <a href="https://genomespy.app/">GenomeSpy</a> ·
-          <a href="https://github.com/KolmogorovLab/Wakhan">Wakhan</a></span
-        >
+        <span>Wakhan Viewer · ${this.renderProjectLinks()}</span>
+        <span>
+          Built with <a href="https://genomespy.app/">GenomeSpy</a> ·
+          <a href="https://github.com/KolmogorovLab/Wakhan">Wakhan</a>
+        </span>
       </footer>`}
       ${this.dragging ? html`<div class="drop-overlay">Drop Wakhan ZIP files to open them</div>` : nothing}
       <div
