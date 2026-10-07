@@ -51,8 +51,27 @@ npm run build
 npm run preview
 ~~~
 
-The build is static. GitHub Pages can use GITHUB_PAGES=1 npm run build for
-the /wakhan-viewer/ base path; deployment is not configured yet.
+## GitHub Pages
+
+[CI and GitHub Pages](.github/workflows/pages.yml) runs tests and builds the
+static app on every push and pull request using Node.js 24 and `npm ci`.
+Every successful push to `main` deploys `dist/` to
+[genome-spy.github.io/wakhan-viewer](https://genome-spy.github.io/wakhan-viewer/).
+The workflow can also be run manually from the Actions tab.
+
+In the repository's **Settings → Pages → Build and deployment**, select
+**GitHub Actions** as the source once. The workflow uses GitHub's built-in token
+and the `github-pages` environment; no additional secrets are needed.
+
+To build and preview the same deployment locally:
+
+~~~sh
+GITHUB_PAGES=1 npm run build
+GITHUB_PAGES=1 npm run preview
+~~~
+
+Open the `/wakhan-viewer/` URL printed by Vite. The base path applies to the
+app, its import Worker, and the bundled HCC1937 example ZIP.
 
 ## What the current ZIPs support
 
