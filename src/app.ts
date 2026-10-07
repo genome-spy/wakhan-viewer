@@ -424,13 +424,18 @@ export class WakhanViewer extends LitElement {
                 <div class="welcome-copy">
                   <h2>Open Wakhan results</h2>
                   <p>
-                    Wakhan analyzes long-read tumor sequencing data to estimate
+                    <a href="https://github.com/KolmogorovLab/Wakhan" target="_blank" rel="noopener noreferrer">Wakhan</a>
+                    analyzes long-read tumor sequencing data to estimate
                     copy-number changes, including haplotype-specific profiles
                     when phasing is available.
                   </p>
                   <p>
                     This viewer opens a Wakhan results ZIP and displays its
                     copy-number, read-depth, BAF, and structural-variant tracks.
+                  </p>
+                  <p>
+                    <strong>Work in progress.</strong> The interface and support
+                    for Wakhan ZIP formats are still evolving.
                   </p>
                   <div class="welcome-actions">
                     <button

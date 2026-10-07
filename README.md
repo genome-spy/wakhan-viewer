@@ -1,5 +1,8 @@
 # Wakhan Viewer
 
+Wakhan Viewer is still a **work in progress**. The interface and support for
+Wakhan ZIP formats are still evolving.
+
 Open a Wakhan results ZIP in the browser and explore its copy-number calls,
 read depth, structural variants, and folded BAF on linked genomic tracks.
 The app parses the local file in a Worker; it has no data-upload endpoint.
@@ -32,10 +35,10 @@ rows are supplied to GenomeSpy through its runtime dataset API.
 
 Requires a current Node.js release and npm.
 
-~~~sh
+```sh
 npm ci
 npm run dev
-~~~
+```
 
 Open the URL printed by Vite, usually http://localhost:5173/. Load the HCC1937
 example, choose one or more ZIPs, or drag them onto the page. An additional
@@ -44,12 +47,12 @@ Use the navigator, scroll wheel, and drag to explore.
 Switch the result or integer/subclonal profile from the toolbar; the detail x
 domain is retained.
 
-~~~sh
+```sh
 npm run typecheck
 npm run test:run
 npm run build
 npm run preview
-~~~
+```
 
 ## GitHub Pages
 
@@ -65,10 +68,10 @@ and the `github-pages` environment; no additional secrets are needed.
 
 To build and preview the same deployment locally:
 
-~~~sh
+```sh
 GITHUB_PAGES=1 npm run build
 GITHUB_PAGES=1 npm run preview
-~~~
+```
 
 Open the `/wakhan-viewer/` URL printed by Vite. The base path applies to the
 app, its import Worker, and the bundled HCC1937 example ZIP.
@@ -119,9 +122,9 @@ request for explicit calibration.
 
 For a numerical report without the browser:
 
-~~~sh
+```sh
 npm run calibration:estimate -- public/examples/HCC1937_plots_data.zip
-~~~
+```
 
 ## Reference data and citations
 
@@ -129,13 +132,13 @@ Bundled GRCh38 annotations live in [data/](data/README.md), with source URLs,
 transformation details, checksums, and attribution. NCG literature counts rank
 labels; they are not measures of sample-specific significance.
 
-- Ahmad et al., *Wakhan: reconstruction of chromosome-scale copy number
-  profiles of tumor genomes with long-read sequencing* (2025 preprint),
+- Ahmad et al., _Wakhan: reconstruction of chromosome-scale copy number
+  profiles of tumor genomes with long-read sequencing_ (2025 preprint),
   [DOI: 10.64898/2025.12.11.25342098](https://doi.org/10.64898/2025.12.11.25342098).
-- Lavikka et al., *Deciphering Cancer Genomes with GenomeSpy: A Grammar-Based
-  Visualization Toolkit*, GigaScience (2024),
+- Lavikka et al., _Deciphering Cancer Genomes with GenomeSpy: A Grammar-Based
+  Visualization Toolkit_, GigaScience (2024),
   [DOI: 10.1093/gigascience/giae040](https://doi.org/10.1093/gigascience/giae040).
-- Keskus et al., *Severus* structural variants,
+- Keskus et al., _Severus_ structural variants,
   [DOI: 10.1038/s41587-025-02618-8](https://doi.org/10.1038/s41587-025-02618-8).
 - Dressler et al., Network of Cancer Genes 7.2,
   [DOI: 10.1186/s13059-022-02607-z](https://doi.org/10.1186/s13059-022-02607-z).
@@ -146,6 +149,8 @@ The original recipe used published
 [Wakhan/CASTLE data on Zenodo](https://zenodo.org/records/17780982). Its
 sample-specific claims and rights do not automatically apply to arbitrary
 ZIPs opened in this app.
+
+Development makes extensive use of AI assistance from **OpenAI Codex**.
 
 ## License
 
