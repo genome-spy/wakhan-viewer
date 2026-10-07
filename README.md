@@ -9,6 +9,10 @@ join the queue. The first successful import is displayed, and adding files keeps
 the current result and zoom. A failed file is reported without stopping the
 remaining imports.
 
+Once a result is open, GenomeSpy fills the window beneath a compact toolbar.
+Tracks resize with the window; short windows scroll within the visualization.
+Result metadata, notes, and credits are available in the toolbar's **About** panel.
+
 The app adapts the visual design of the
 [HCC1954 Wakhan GenomeSpy recipe](https://github.com/genome-spy/genomespy-dataset-recipes/tree/main/recipes/hcc1954-wakhan-explorer)
 and the simple file-opening workflow of

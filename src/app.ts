@@ -270,13 +270,99 @@ export class WakhanViewer extends LitElement {
     void this.open(Array.from(event.dataTransfer.files));
   }
 
+  private renderToolbar(active: WakhanResult) {
+    return html`<section class="toolbar" aria-label="Explore results">
+      <button class="primary" @click=${this.openPicker} ?disabled=${this.busy}>
+        Open ZIPs
+      </button>
+      <div class="control result-control">
+        <label class="sr-only" for="result-select">Result</label>
+        <select
+          id="result-select"
+          ?disabled=${this.busy}
+          @change=${(e: Event) => this.activate(Number((e.target as HTMLSelectElement).value))}
+        >
+          ${this.loaded.map((_r, i) => html`<option value=${i} ?selected=${i === this.active}>${this.labelFor(i)}</option>`)}
+        </select>
+      </div>
+      <div class="control">
+        <label class="sr-only" for="profile-select">Profile</label>
+        <select
+          id="profile-select"
+          ?disabled=${this.busy}
+          @change=${(e: Event) => this.changeProfile((e.target as HTMLSelectElement).value as Profile)}
+        >
+          ${active.profiles.map((p) => html`<option value=${p} ?selected=${p === this.profile}>${p === "integer" ? "Integer CN" : "Subclonal CN"}</option>`)}
+        </select>
+      </div>
+      <div class="loci" role="group" aria-label="Genomic region">
+        <button ?disabled=${this.busy} @click=${() => this.view?.zoom(loci.all)}>Genome</button>
+        <button ?disabled=${this.busy} @click=${() => this.view?.zoom(loci.chr8)}>Chr 8</button>
+        <button ?disabled=${this.busy} @click=${() => this.view?.zoom(loci.myc)}>MYC</button>
+        <button ?disabled=${this.busy} @click=${() => this.view?.zoom(loci.erbb2)}>ERBB2</button>
+      </div>
+      <div class="exports" role="group" aria-label="Export image">
+        <button
+          ?disabled=${this.exportBusy || this.busy}
+          @click=${() => this.exportImage("png")}
+        >PNG ↓</button>
+        <button
+          ?disabled=${this.exportBusy || this.busy}
+          @click=${() => this.exportImage("svg")}
+        >SVG ↓</button>
+      </div>
+      <details
+        class="details"
+        @keydown=${(e: KeyboardEvent) => {
+          if (e.key === "Escape") (e.currentTarget as HTMLDetailsElement).open = false;
+        }}
+      >
+        <summary aria-label=${`About these results (${active.diagnostics.length} notes)`}>
+          About <span>${active.diagnostics.length}</span>
+        </summary>
+        <div class="details-panel">
+          <h2>${active.name}</h2>
+          <p class="details-meta">
+            GRCh38 · ${active.segments[this.profile].length / (active.mode === "phased" ? 2 : 1)}
+            CN intervals · ${active.mode}
+          </p>
+          <p>Scroll to zoom · drag to pan · navigator to brush.</p>
+          <p>
+            HP1 and HP2 are chromosome-local labels. Wakhan CN confidence is
+            distinct from phasing confidence. The ZIP does not include the
+            calibration for a combined depth and CN axis.
+          </p>
+          <ul>
+            ${active.diagnostics.map((d) => html`<li class=${d.level}>${d.message}</li>`)}
+          </ul>
+          <p>
+            ${active.svLinks.length} SV links · ${active.svSites.length} SV sites ·
+            ${active.baf.filter((b) => b.baf !== null).length} BAF bins ·
+            ${active.lohAvailable ? `${active.loh.length} LOH intervals` : "LOH not supplied"}
+            · ${active.rankings.length} ranked solutions (included solution
+            unspecified) · VCF sample ${active.vcfSample ?? "not supplied"}.
+          </p>
+          <a href=${zipReportUrl} target="_blank" rel="noopener noreferrer">Wakhan ZIP format findings ↗</a>
+          <p class="credits">
+            Built with <a href="https://genomespy.app/">GenomeSpy</a> ·
+            <a href="https://github.com/KolmogorovLab/Wakhan">Wakhan</a>
+          </p>
+        </div>
+      </details>
+    </section>`;
+  }
+
   render() {
     const active = this.loaded[this.active];
-    return html` <div
-      class="app ${this.dragging ? "dragging" : ""}"
+    return html`<div
+      class="app ${active ? "is-viewing" : ""} ${this.dragging ? "dragging" : ""}"
       @dragover=${this.onDragOver}
       @dragleave=${() => (this.dragging = false)}
       @drop=${this.onDrop}
+      @pointerdown=${(e: PointerEvent) => {
+        const details = this.querySelector<HTMLDetailsElement>(".details");
+        if (details && !details.contains(e.target as Node)) details.open = false;
+      }}
     >
       <input
         class="sr-only"
@@ -290,121 +376,25 @@ export class WakhanViewer extends LitElement {
         }}
       />
       <header class="masthead">
-        <div class="brand">
-          <h1>Wakhan <em>Viewer</em></h1>
-        </div>
-        <div class="top-actions">
-          ${active ? html`<button class="primary" @click=${this.openPicker} ?disabled=${this.busy}>Open ZIPs</button>` : nothing}
-          <a
-            href="https://genomespy.app/"
-            target="_blank"
-            rel="noopener noreferrer"
-            class="powered"
-            >Powered by <strong>GenomeSpy ↗</strong></a
-          >
-        </div>
+        <div class="brand"><h1>Wakhan <em>Viewer</em></h1></div>
+        ${active
+          ? this.renderToolbar(active)
+          : html`<div class="top-actions">
+              <a href="https://genomespy.app/" target="_blank" rel="noopener noreferrer" class="powered">
+                Powered by <strong>GenomeSpy ↗</strong>
+              </a>
+            </div>`}
       </header>
-      ${
-          active
-            ? html` <main class="workspace">
-                <section class="toolbar" aria-label="Explore results">
-                  <div class="control">
-                    <label for="result-select">Result</label
-                    ><select
-                      id="result-select"
-                      ?disabled=${this.busy}
-                      @change=${(e: Event) => this.activate(Number((e.target as HTMLSelectElement).value))}
-                    >
-                      ${this.loaded.map((_r, i) => html`<option value=${i} ?selected=${i === this.active}>${this.labelFor(i)}</option>`)}
-                    </select>
-                  </div>
-                  <div class="control">
-                    <label for="profile-select">Profile</label
-                    ><select
-                      id="profile-select"
-                      ?disabled=${this.busy}
-                      @change=${(e: Event) => this.changeProfile((e.target as HTMLSelectElement).value as Profile)}
-                    >
-                      ${active.profiles.map((p) => html`<option value=${p} ?selected=${p === this.profile}>${p === "integer" ? "Integer CN" : "Subclonal CN"}</option>`)}
-                    </select>
-                  </div>
-                  <div class="loci" role="group" aria-label="Genomic region">
-                    <button @click=${() => this.view?.zoom(loci.all)}>
-                      Genome</button
-                    ><button @click=${() => this.view?.zoom(loci.chr8)}>
-                      Chr 8</button
-                    ><button @click=${() => this.view?.zoom(loci.myc)}>
-                      MYC</button
-                    ><button @click=${() => this.view?.zoom(loci.erbb2)}>
-                      ERBB2
-                    </button>
-                  </div>
-                  <div class="exports" role="group" aria-label="Export image">
-                    <button
-                      ?disabled=${this.exportBusy || this.busy}
-                      @click=${() => this.exportImage("png")}
-                    >
-                      PNG ↓</button
-                    ><button
-                      ?disabled=${this.exportBusy || this.busy}
-                      @click=${() => this.exportImage("svg")}
-                    >
-                      SVG ↓
-                    </button>
-                  </div>
-                </section>
-                <div class="viewer-head">
-                  <div>
-                    <strong>${active.name}</strong
-                    ><span>
-                      · GRCh38 ·
-                      ${active.segments[this.profile].length / (active.mode === "phased" ? 2 : 1)}
-                      CN intervals · ${active.mode}</span
-                    >
-                  </div>
-                  <small
-                    >Scroll to zoom · drag to pan · navigator to brush</small
-                  >
-                </div>
-                ${previewEnabled ? html`<div class="preview-banner">${this.previewEstimate ? html`Estimated calibration — development · offset ${this.previewEstimate.offset.toFixed(3)} · depth per copy ${this.previewEstimate.singleCopyDepth.toFixed(3)} · not verified against Wakhan plot parameters` : "Estimated calibration preview unavailable for this ZIP"}</div>` : nothing}
-                <div
-                  id="vis"
-                  class=${this.busy ? "is-loading" : ""}
-                  aria-label="Interactive genomic tracks"
-                ></div>
-                <details class="details">
-                  <summary>
-                    About these results
-                    <span>${active.diagnostics.length} notes</span>
-                  </summary>
-                  <p>
-                    HP1 and HP2 are chromosome-local labels. Wakhan CN
-                    confidence is distinct from phasing confidence. The ZIP does
-                    not include the calibration for a combined depth and CN
-                    axis.
-                  </p>
-                  <ul>
-                    ${active.diagnostics.map((d) => html`<li class=${d.level}>${d.message}</li>`)}
-                  </ul>
-                  <p>
-                    ${active.svLinks.length} SV links · ${active.svSites.length}
-                    SV sites ·
-                    ${active.baf.filter((b) => b.baf !== null).length} BAF bins
-                    ·
-                    ${active.lohAvailable ? `${active.loh.length} LOH intervals` : "LOH not supplied"}
-                    · ${active.rankings.length} ranked solutions (included
-                    solution unspecified) · VCF sample
-                    ${active.vcfSample ?? "not supplied"}.
-                  </p>
-                  <a
-                    href=${zipReportUrl}
-                    target="_blank"
-                    rel="noopener noreferrer"
-                    >Wakhan ZIP format findings ↗</a
-                  >
-                </details>
-              </main>`
-            : html` <main class="welcome">
+      ${active
+        ? html`<main class="workspace" aria-label="Genome viewer">
+            ${previewEnabled ? html`<div class="preview-banner">${this.previewEstimate ? html`Estimated calibration — development · offset ${this.previewEstimate.offset.toFixed(3)} · depth per copy ${this.previewEstimate.singleCopyDepth.toFixed(3)} · not verified against Wakhan plot parameters` : "Estimated calibration preview unavailable for this ZIP"}</div>` : nothing}
+            <div
+              id="vis"
+              class=${this.busy ? "is-loading" : ""}
+              aria-label="Interactive genomic tracks"
+            ></div>
+          </main>`
+        : html`<main class="welcome">
                 <div class="welcome-copy">
                   <h2>Open Wakhan results</h2>
                   <p>
@@ -428,15 +418,14 @@ export class WakhanViewer extends LitElement {
                     are processed in your browser.
                   </p>
                 </div>
-              </main>`
-        }
-      <footer class="footer">
+              </main>`}
+      ${active ? nothing : html`<footer class="footer">
         <span>Wakhan Viewer</span
         ><span
           >Built with <a href="https://genomespy.app/">GenomeSpy</a> ·
           <a href="https://github.com/KolmogorovLab/Wakhan">Wakhan</a></span
         >
-      </footer>
+      </footer>`}
       ${this.dragging ? html`<div class="drop-overlay">Drop Wakhan ZIP files to open them</div>` : nothing}
       <div
         class="status ${this.message || this.busy ? "is-visible" : ""}"

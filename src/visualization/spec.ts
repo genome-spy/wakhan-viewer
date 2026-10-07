@@ -194,7 +194,7 @@ function cnTrack(hp: "HP1" | "HP2" | "Total", calibration?: CalibrationEstimate)
   if (!calibration || hp === "Total")
     return {
       name: `cn-${hp}`,
-      height: 100,
+      height: { grow: 1 },
       title: `${hp} | inferred copy number`,
       params: [horizontalRuler(`cnCursor${hp}`)],
       layer: [...layers, segment],
@@ -260,7 +260,7 @@ function depthTrack(hp: "HP1" | "HP2" | "Total") {
   const ink = hp === "HP1" ? "#cd6f6f" : hp === "HP2" ? "#87aece" : "#6eb0aa";
   return {
     name: `depth-${hp}`,
-    height: 82,
+    height: { grow: 0.8 },
     title: `${hp} | raw 50 kb read depth`,
     params: [horizontalRuler(`depthCursor${hp}`)],
     data: { name: "coverage" },
@@ -296,7 +296,7 @@ function depthTrack(hp: "HP1" | "HP2" | "Total") {
 function bafTrack() {
   return {
     name: "baf",
-    height: 80,
+    height: { grow: 0.7 },
     title: "Folded BAF | 50 kb means | grey zeros have unknown SNP support",
     params: [horizontalRuler("bafHorizontalCursor")],
     data: { name: "baf" },
@@ -591,6 +591,7 @@ export function createSpec(
   return {
     assembly: "hg38",
     width: "container",
+    height: "container",
     padding: { left: 10, right: 10, top: 8, bottom: 8 },
     spacing: 6,
     params: [{ name: "brush" }, { name: "showRuler", value: true }],
