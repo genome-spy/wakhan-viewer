@@ -1,3 +1,13 @@
+/*
+ * Upstream references below are relative to KolmogorovLab/Wakhan, inspected in
+ * tmp/Wakhan at commit 38ca70e3df821837e97b6489101f2fccc86eb503.
+ * src/output/compressed_output.py:create_hiscanner_plot_data_archives defines
+ * the ZIP members, but exports no schema version or coordinate declaration.
+ * These parsers combine that source with observations from the HCC1937/HCC1954
+ * archives; viewer assumptions and known gaps are recorded explicitly below.
+ * See docs/wakhan-zip-format.md for the archive evidence and open format questions.
+ */
+
 import type { Row, WakhanResult, Profile } from "../model";
 import { emptyResult } from "../model";
 import parseVcf from "@genome-spy/core/data/formats/vcf.js";
@@ -9,12 +19,22 @@ const number = (s: string, member: string, line: number): number => {
     throw Error(`${member}:${line}: invalid number ${JSON.stringify(s)}`);
   return n;
 };
+// Viewer restriction: GRCh38 primary chromosomes only, accepting either prefix.
+// Wakhan's src/utils/chromosome.py:get_contigs_list can select other references
+// and contigs; normalizing a chromosome name here does not establish its assembly.
 const chrom = (s: string): string =>
   /^chr(?:[1-9]|1\d|2[0-2]|X|Y)$/.test(s)
     ? s
     : /^([1-9]|1\d|2[0-2]|X|Y)$/.test(s)
       ? `chr${s}`
       : "";
+// src/coverage/binning.py:get_chromosomes_bins_hapcorrect and
+// get_chromosomes_bins_bam start at 0, then advance with start = previous end + 1.
+// src/coverage/segmentation.py:adjust_bps_cn_segments_boundries also uses end + 1.
+// Map the observed CN/coverage convention to half-open viewer intervals without
+// assuming a bin width. CN and gene writers preserve their input bounds without
+// declaring base/closure; applying this conversion to them is a compatibility
+// assumption for the observed archives, not a general rule for BED files.
 const interval = (fields: string[], member: string, line: number) => {
   const c = chrom(fields[0]);
   const start = Math.max(0, number(fields[1], member, line) - 1);
@@ -38,6 +58,9 @@ function table(
   delimiter = "\t",
   commentHeader = false,
 ): string[][] {
+  // Wakhan's BED writers prepend descriptive # comments and then a #chr column
+  // header (src/output/writers.py:_write_segments_header and
+  // src/output/genes.py:write_df_csv_header). Ranking TSVs have a plain header.
   const ls = lines(text);
   const headerLine = commentHeader
     ? [...ls].reverse().find((x) => x.value.startsWith("#chr\t"))
@@ -104,6 +127,21 @@ const unphasedColumns = [
   "confidence",
 ];
 
+/**
+ * Read integer_profile.bed / subclonal_profile.bed from
+ * src/output/writers.py:write_copynumber_segments_csv, whose
+ * merge_haplotype_segments aligns HP1/HP2 into the wide column order above.
+ * _write_segments_header declares the TSV schema and Y/N subclonal flags.
+ * The phased parser requires svs_breakpoints_ids, as in the supplied ZIPs;
+ * the writer itself adds it only when breakpoints are supplied.
+ *
+ * write_unphased_copynumber_segments_csv in the same file produces the Total
+ * schema, with optional subclonal/breakpoint columns. This path has synthetic
+ * tests only: src/main.py:cna_process invokes the ZIP exporter only in its
+ * phased branch. Sentinel 3300 comes from CENTROMERE_SENTINEL and
+ * centromere_regions_blacklist in src/utils/chromosome.py. Do not infer missingness
+ * from zero alone: merge_haplotype_segments also zero-fills absent haplotypes.
+ */
 export function parseSegments(text: string, profile: Profile): Row[] {
   const member = `${profile}_profile.bed`;
   const header =
@@ -170,6 +208,14 @@ export function parseSegments(text: string, profile: Profile): Row[] {
   return result;
 }
 
+/**
+ * Despite the .csv extension, phase_corrected_coverage.csv is headerless TSV:
+ * src/hapcorrect/main_hapcorrect.py:main_process builds chr/start/end/hp1/hp2/hp3
+ * and writes it via src/output/writers.py:write_df_csv; hp3 is unphased depth.
+ * src/main.py:cna_process also writes four-column coverage.csv in unphased mode
+ * (chr/start/end/total depth), supported here as an import fallback.
+ * Preserve the source start for the BAF join; interval ends come from each row.
+ */
 export function parseCoverage(text: string): Row[] {
   return lines(text).map(({ value, line }) => {
     const f = value.split("\t");
@@ -191,6 +237,17 @@ export function parseCoverage(text: string): Row[] {
   });
 }
 
+/**
+ * Accept only three-column chr/start/end TSV, treating bounds as half-open.
+ * src/plots/snps_loh.py:plot_snps_frequencies and
+ * plot_snps_frequencies_without_phasing write this shape to *_loh_segments.bed
+ * via src/cna/loh.py:loh_regions_events and their local _write_segments_coverage.
+ * That BED is NOT the optional coverage_data/*_loh_segments.csv packed by the
+ * ZIP exporter: src/hapcorrect/main_hapcorrect.py:main_process writes that CSV
+ * via write_df_csv after src/cna/loh.py:update_hp_assignment_loh_segments, with
+ * a fourth hp column. This parser does not yet support that current ZIP schema;
+ * neither supplied archive contains LOH, so this path has synthetic tests only.
+ */
 export function parseLoh(text: string, member: string): Row[] {
   return lines(text)
     .filter((x) => !x.value.startsWith("#"))
@@ -206,6 +263,16 @@ export function parseLoh(text: string, member: string): Row[] {
     });
 }
 
+/**
+ * src/main.py:cna_process writes baf.csv as headerless comma-separated chr/pos/vaf
+ * from src/plots/snps_loh.py:snps_df_loh. The latter selects
+ * get_vafs_from_normal_phased_vcf or get_vafs_from_tumor_phased_vcf in
+ * src/coverage/processing.py: both fold VAF to 0–0.5 and emit coverage bin starts
+ * as pos. Their _bin_vaf_values uses 3300 for insufficient SNP support.
+ * No end or SNP count is exported, so join on the ORIGINAL coverage start and
+ * use a one-base site when unmatched. The example ZIPs also contain zeros;
+ * their support cannot be reconstructed, so retain them with an uncertainty label.
+ */
 export function parseBaf(text: string, coverage: Row[]): Row[] {
   const bins = new Map(
     coverage.map((r) => [`${r.chrom}:${r.originalStart}`, r]),
@@ -236,6 +303,12 @@ export function parseBaf(text: string, coverage: Row[]): Row[] {
   });
 }
 
+/**
+ * The ZIP exporter copies args.centromere unchanged, retaining its basename.
+ * This parser supports src/annotations/grch38.cen_coord.curated.bed: three
+ * headerless TSV columns. The start == 1 special case mirrors
+ * src/utils/chromosome.py:extract_centromere_regions; other bounds are preserved.
+ */
 export function parseMasks(text: string): Row[] {
   return lines(text).map(({ value, line }) => {
     const f = value.split("\t");
@@ -251,6 +324,14 @@ export function parseMasks(text: string): Row[] {
   });
 }
 
+/**
+ * src/output/genes.py:update_genes_phase_corrected_coverage writes
+ * genes/genes_copynumber_states.bed via write_df_csv_header, which defines the
+ * ten-column #chr TSV header above. genes_phase_correction in the same file
+ * supplies actual depths, snapped center depths ("adjusted"), and integer states;
+ * both depth pairs are rounded to two decimals. These are not exact calibration
+ * parameters. The ZIP exporter flattens the genes/ path to the member basename.
+ */
 export function parseGenes(text: string): Row[] {
   return table(
     text,
@@ -270,6 +351,12 @@ export function parseGenes(text: string): Row[] {
   }));
 }
 
+/**
+ * src/main.py:copy_numbers_assignment_haplotypes appends candidate metadata;
+ * cna_process adds solution_rank and writes this headered TSV with pandas.
+ * The ZIP exporter copies the complete run-wide table into every solution ZIP,
+ * without identifying which repository_name belongs to the enclosed profiles.
+ */
 export function parseRankings(text: string): Row[] {
   const cols = [
     "repository_name",
@@ -301,6 +388,15 @@ const first = (v: unknown): string =>
   String(Array.isArray(v) ? (v[0] ?? "") : (v ?? ""));
 const firstNumber = (v: unknown): number => Number(Array.isArray(v) ? v[0] : v);
 
+/**
+ * severus_somatic.vcf is not generated by Wakhan: the ZIP exporter copies the
+ * --breakpoints input unchanged under this fixed name, even for other callers.
+ * We support the observed Severus schema (INFO SVTYPE/END/MATE_ID/HP/PHASESETID/
+ * STRANDS/DETAILED_TYPE and FORMAT GT/DV/DR/VAF/hVAF). One target sample,
+ * PASS/non-reference filtering, and reciprocal MATE_ID pairing are viewer
+ * policies, not guarantees imposed by Wakhan's exporter. VCF positions use
+ * their own one-based conversion, independently of the BED-like interval helper.
+ */
 export async function parseVariants(
   text: string,
   result: WakhanResult,
@@ -395,6 +491,9 @@ export async function parseVariants(
   }
 }
 
+// The exporter copies the input VCF header, without declaring a ZIP-level
+// assembly. Matching the complete GRCh38 primary dictionary is our acceptance
+// policy; it is not a constraint enforced by Wakhan's ZIP writer.
 function validateVcfAssembly(text: string): void {
   const expectedContigs = getContigs("hg38").filter((x) => x.name !== "chrM");
   const declared = new Map(
@@ -410,6 +509,14 @@ function validateVcfAssembly(text: string): void {
   }
 }
 
+/**
+ * Member roles follow
+ * src/output/compressed_output.py:create_hiscanner_plot_data_archives.
+ * Requiring a CN profile, tolerating failed optional tracks, and accepting
+ * coverage.csv as a fallback are viewer policies. The current upstream exporter
+ * itself requires both profiles, genes, phase-corrected coverage, BAF, ranks,
+ * centromeres, and a breakpoint VCF; only the LOH member is optional.
+ */
 export async function parseMembers(
   name: string,
   members: Record<string, string>,
@@ -485,6 +592,10 @@ export async function parseMembers(
     (row) => row.status === "masked",
   );
   if (maskedSegments.length) {
+    // Compatibility repair for the example archives: some integer zeros match
+    // subclonal 3300 intervals exactly. This is observed evidence, not a writer
+    // guarantee; src/output/writers.py:merge_haplotype_segments can also emit
+    // zeros for missing haplotypes. Mask only an exact interval/haplotype match.
     const maskKeys = new Set(
       maskedSegments.map(
         (r) => `${r.chrom}:${r.start}-${r.end}:${r.haplotype}`,
