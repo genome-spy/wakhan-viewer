@@ -261,7 +261,7 @@ function depthTrack(hp: "HP1" | "HP2" | "Total") {
   return {
     name: `depth-${hp}`,
     height: { grow: 0.8 },
-    title: `${hp} | raw 50 kb read depth`,
+    title: `${hp} | raw binned read depth`,
     params: [horizontalRuler(`depthCursor${hp}`)],
     data: { name: "coverage" },
     mark: {
@@ -297,7 +297,7 @@ function bafTrack() {
   return {
     name: "baf",
     height: { grow: 0.7 },
-    title: "Folded BAF | 50 kb means | grey zeros have unknown SNP support",
+    title: "Folded BAF | grey zeros have unknown SNP support",
     params: [horizontalRuler("bafHorizontalCursor")],
     data: { name: "baf" },
     transform: [{ type: "filter", expr: "datum.baf != null" }],

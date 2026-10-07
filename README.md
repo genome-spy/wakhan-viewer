@@ -76,7 +76,7 @@ app, its import Worker, and the bundled HCC1937 example ZIP.
 ## What the current ZIPs support
 
 The HCC1937 and HCC1954 ZIPs render phased HP1/HP2 integer and subclonal CN
-profiles, raw 50 kb read depth, folded BAF, Severus SV links and sites,
+profiles, raw binned read depth, folded BAF, Severus SV links and sites,
 centromeric/masked regions, GRCh38 cytobands, and NCG 7.2 cancer-driver genes.
 Optional Wakhan LOH tables and the source's single-track unphased CN schema
 have synthetic parser tests. No real ZIP for those modes was supplied, and
