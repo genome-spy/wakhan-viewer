@@ -1,6 +1,6 @@
 # Reference annotation data
 
-These files provide GRCh38 genomic context for Wakhan Explorer. They were copied
+These files provide GRCh38 genomic context for Wakhan Viewer. They were copied
 byte-for-byte from the verified outputs of the GenomeSpy
 [HCC1954 Wakhan recipe, release v5](https://github.com/genome-spy/genomespy-dataset-recipes/tree/main/recipes/hcc1954-wakhan-explorer)
 on 2026-09-29. Only filenames changed. No sample measurements are included here.

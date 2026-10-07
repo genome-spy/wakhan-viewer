@@ -12,7 +12,7 @@ export type Domain = [
   { chrom: string; pos: number },
 ];
 
-export class ExplorerView {
+export class WakhanView {
   private api?: EmbedResult;
   constructor(private host: HTMLElement) {}
 

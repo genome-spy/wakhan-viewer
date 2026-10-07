@@ -1,4 +1,4 @@
-# Wakhan Explorer implementation plan
+# Wakhan Viewer implementation plan
 
 Status: initial application implemented on 2026-09-29. This is the original
 design plan, so the milestones below remain as a planning record. The current
@@ -164,7 +164,7 @@ filename is a useful display label but is not authoritative sample metadata.
 
 ### Welcome
 
-Use a quiet page headed “Wakhan Explorer”, a one-sentence explanation, a large
+Use a quiet page headed “Wakhan Viewer”, a one-sentence explanation, a large
 drop area, and **Open ZIP**. Explain that files are processed in the browser.
 Include a GenomeSpy link and brief navigation help. Start exploration automatically
 after parsing; there is no separate “Visualize” step. A keyboard-accessible native
@@ -174,7 +174,7 @@ served over HTTP.
 ### Exploring
 
 ```text
-Wakhan Explorer   [Open ZIP] [Open results ▾]        [PNG] [SVG]  GenomeSpy
+Wakhan Viewer     [Open ZIP] [Open results ▾]        [PNG] [SVG]  GenomeSpy
 File / assembly   [Integer | Subclonal] [Locus or gene…] [Whole genome]
 ──────────────────── whole-genome navigator ──────────────────────────
 Structural variants: colored domes, feet, insertions, single breakends
@@ -237,9 +237,9 @@ flowchart LR
 index.html
 src/
   main.ts
-  app/wakhanExplorer.ts          Lit shell and application state
+  app/wakhanViewer.ts            Lit shell and application state
   app/fileDropZone.ts            Shared file-open interaction
-  app/explorerToolbar.ts         Result/profile switch, navigation, export
+  app/viewerToolbar.ts           Result/profile switch, navigation, export
   styles.css                    Plain CSS, layout and design tokens
   import/importWorker.ts        ZIP orchestration and cancellation boundary
   import/archive.ts             Entry discovery and extraction limits
@@ -573,7 +573,7 @@ and messages to its authors are separate actions, not part of this plan update.
 Deliver **`docs/wakhan-zip-format.md`** with the implemented application, linked
 from the project README. Start it during importer implementation and keep it
 current; it is a required deliverable, not a final retrospective. It should be
-usable by the Wakhan authors without reading explorer code or this conversation.
+usable by the Wakhan authors without reading viewer code or this conversation.
 
 For each gap, record:
 
@@ -585,12 +585,12 @@ For each gap, record:
   essential for a specific feature, or optional enhancement.
 - The exact requested field/file or packaging change, with units, coordinate
   conventions, and scope. Include a small proposed example when useful.
-- Current explorer behavior, the regression/acceptance check for a corrected
+- Current viewer behavior, the regression/acceptance check for a corrected
   export, and status: observed, proposed, agreed, or verified in a named version.
 
 ### Initial requests to validate during implementation
 
-| Priority / purpose | Observed gap | Concrete request to Wakhan | Explorer behavior until supplied |
+| Priority / purpose | Observed gap | Concrete request to Wakhan | Viewer behavior until supplied |
 | --- | --- | --- | --- |
 | Correct interpretation of solution metadata | ZIP contains one profile set and rankings for all solutions, without linking them | Export `sampleId`, selected solution ID/rank, and that solution's ploidy, DNA purity, cell purity, and confidence; identify the target VCF sample | Use the filename as a display label; leave solution identity unknown; show rankings only as run-level information |
 | Calibrated depth/CN overlay | No explicit plot calibration | Export the exact depth-to-CN mapping, units, and applicable solution/profile/series; affine coefficients or centers as appropriate | Separate CN and raw-depth tracks by default; optional labeled development estimate, with limitations recorded |
@@ -612,7 +612,7 @@ unverified assumptions, and preview restrictions. It does not close the missing
 calibration issue or change the requested export contract.
 
 The report should separately list requests for optional diagnostic views that the
-initial explorer does not need. Do not require phase-correction history or a
+initial viewer does not need. Do not require phase-correction history or a
 purity/ploidy search grid merely to open a normal result. Record suspected gene
 mask/placeholder issues for confirmation instead of repairing gene measurements.
 
@@ -641,7 +641,7 @@ and revoke Blob URLs after download. Use the file label, profile and locus in a
 sanitized filename. Verify masks, text, axes, selections and arcs in both formats.
 
 Use bundled assets and base-aware Vite URLs throughout, including Worker chunks
-and annotations. Test a production build served under `/wakhan-explorer/` before
+and annotations. Test a production build served under `/wakhan-viewer/` before
 adding a Pages workflow; no router or server endpoints are needed. The project
 README should advertise GenomeSpy, explain the Wakhan/recipe relationship, cite
 the methods and annotations, document supported ZIP variants and limits, and give
@@ -753,7 +753,7 @@ in the project README and ZIP format report.
 
 ### 7. Document and prepare static delivery
 
-**Commits:** `docs: explain Wakhan Explorer usage, data, and citations`;
+**Commits:** `docs: explain Wakhan Viewer usage, data, and citations`;
 `docs: document Wakhan ZIP shortcomings and requested additions`;
 `build: verify assets under a GitHub Pages base path`
 

@@ -2,7 +2,7 @@ import { LitElement, html, nothing } from "lit";
 import { customElement, state } from "lit/decorators.js";
 import type { Profile, WakhanResult } from "./model";
 import { genes, cytobands } from "./annotations";
-import { ExplorerView, type Domain } from "./visualization/controller";
+import { WakhanView, type Domain } from "./visualization/controller";
 import zipReportUrl from "../docs/wakhan-zip-format.md?url";
 import type { CalibrationEstimate } from "./dev/calibration";
 import { layoutSignature } from "./visualization/spec";
@@ -33,8 +33,8 @@ const calibrationTools = import.meta.env.DEV
   ? await import("./dev/calibration")
   : undefined;
 
-@customElement("wakhan-explorer")
-export class WakhanExplorer extends LitElement {
+@customElement("wakhan-viewer")
+export class WakhanViewer extends LitElement {
   @state() private loaded: WakhanResult[] = [];
   @state() private active = -1;
   @state() private profile: Profile = "integer";
@@ -44,7 +44,7 @@ export class WakhanExplorer extends LitElement {
   @state() private message = "";
   @state() private exportBusy = false;
   @state() private previewEstimate?: CalibrationEstimate;
-  private view?: ExplorerView;
+  private view?: WakhanView;
   private viewLayout?: string;
   private worker?: Worker;
   private fileInput?: HTMLInputElement;
@@ -194,7 +194,7 @@ export class WakhanExplorer extends LitElement {
       if (!this.view) {
         const host = this.querySelector<HTMLElement>("#vis");
         if (!host) throw Error("Visualization container was not created.");
-        const view = new ExplorerView(host);
+        const view = new WakhanView(host);
         try {
           await view.initialize(
             genes,
@@ -291,7 +291,7 @@ export class WakhanExplorer extends LitElement {
       />
       <header class="masthead">
         <div class="brand">
-          <h1>Wakhan <em>Explorer</em></h1>
+          <h1>Wakhan <em>Viewer</em></h1>
         </div>
         <div class="top-actions">
           ${active ? html`<button class="primary" @click=${this.openPicker} ?disabled=${this.busy}>Open ZIPs</button>` : nothing}
@@ -431,7 +431,7 @@ export class WakhanExplorer extends LitElement {
               </main>`
         }
       <footer class="footer">
-        <span>Wakhan Explorer</span
+        <span>Wakhan Viewer</span
         ><span
           >Built with <a href="https://genomespy.app/">GenomeSpy</a> ·
           <a href="https://github.com/KolmogorovLab/Wakhan">Wakhan</a></span

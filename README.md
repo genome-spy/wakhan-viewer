@@ -1,4 +1,4 @@
-# Wakhan Explorer
+# Wakhan Viewer
 
 Open a Wakhan results ZIP in the browser and explore its copy-number calls,
 read depth, structural variants, and folded BAF on linked genomic tracks.
@@ -40,7 +40,7 @@ npm run preview
 ~~~
 
 The build is static. GitHub Pages can use GITHUB_PAGES=1 npm run build for
-the /wakhan-explorer/ base path; deployment is not configured yet.
+the /wakhan-viewer/ base path; deployment is not configured yet.
 
 ## What the current ZIPs support
 
