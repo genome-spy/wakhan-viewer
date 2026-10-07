@@ -426,7 +426,11 @@ export class WakhanExplorer extends LitElement {
         >
       </footer>
       ${this.dragging ? html`<div class="drop-overlay">Drop your Wakhan ZIP to open it</div>` : nothing}
-      <div class="status" role="status" aria-live="polite">
+      <div
+        class="status ${this.message || this.busy ? "is-visible" : ""}"
+        role="status"
+        aria-live="polite"
+      >
         ${this.message}${this.busy ? " Working…" : ""}
       </div>
     </div>`;
