@@ -3,8 +3,11 @@
 Open a Wakhan results ZIP in the browser and explore its copy-number calls,
 read depth, structural variants, and folded BAF on linked genomic tracks.
 The app parses the local file in a Worker; it has no data-upload endpoint.
-Open another ZIP or switch between already opened results to compare the same
-genomic locus without losing your zoom.
+Open one or more ZIPs at once, then switch between results to compare the same
+genomic locus without losing your zoom. Files import in order; additional drops
+join the queue. The first successful import is displayed, and adding files keeps
+the current result and zoom. A failed file is reported without stopping the
+remaining imports.
 
 The app adapts the visual design of the
 [HCC1954 Wakhan GenomeSpy recipe](https://github.com/genome-spy/genomespy-dataset-recipes/tree/main/recipes/hcc1954-wakhan-explorer)
@@ -23,8 +26,8 @@ npm ci
 npm run dev
 ~~~
 
-Open the URL printed by Vite, usually http://localhost:5173/. Choose a ZIP
-or drag one onto the page. The two supplied example ZIPs in ignored tmp/
+Open the URL printed by Vite, usually http://localhost:5173/. Choose one or more
+ZIPs or drag them onto the page. The two supplied example ZIPs in ignored tmp/
 are useful for development. Use the navigator, scroll wheel, drag, or locus
 buttons to explore. Switch the result or integer/subclonal profile from the
 toolbar; the detail x domain is retained.

@@ -6,6 +6,7 @@ import { ExplorerView, type Domain } from "./visualization/controller";
 import zipReportUrl from "../docs/wakhan-zip-format.md?url";
 import type { CalibrationEstimate } from "./dev/calibration";
 import { layoutSignature } from "./visualization/spec";
+import { ImportQueue } from "./import/queue";
 
 const loci: Record<string, Domain> = {
   all: [
@@ -37,7 +38,8 @@ export class WakhanExplorer extends LitElement {
   @state() private loaded: WakhanResult[] = [];
   @state() private active = -1;
   @state() private profile: Profile = "integer";
-  @state() private busy = false;
+  @state() private importing = false;
+  @state() private switching = false;
   @state() private dragging = false;
   @state() private message = "";
   @state() private exportBusy = false;
@@ -46,8 +48,16 @@ export class WakhanExplorer extends LitElement {
   private viewLayout?: string;
   private worker?: Worker;
   private fileInput?: HTMLInputElement;
-  private loadSequence = 0;
   private statusTimer?: number;
+  private importQueue = new ImportQueue(
+    (file) => this.importFile(file),
+    ({ file, index, total }) =>
+      this.status(`Reading ${file.name} (${index} of ${total})…`, true),
+  );
+
+  private get busy() {
+    return this.importing || this.switching;
+  }
 
   protected createRenderRoot() {
     return this;
@@ -86,16 +96,32 @@ export class WakhanExplorer extends LitElement {
     this.fileInput?.click();
   }
 
-  private async open(file?: File) {
-    if (!file) return;
-    if (!file.name.toLowerCase().endsWith(".zip")) {
-      this.status("Choose a Wakhan ZIP file.", true);
-      return;
+  private async open(files: File[]) {
+    if (!files.length) return;
+    const completed = this.importQueue.enqueue(files);
+    if (this.importing) return;
+    this.importing = true;
+    try {
+      const { loaded, failures } = await completed;
+      const ready =
+        loaded.length === 1
+          ? `${loaded[0]} ready.`
+          : loaded.length
+            ? `Loaded ${loaded.length} ZIP files.`
+            : "No ZIP files loaded.";
+      const failed = failures
+        .map(({ name, message }) => `${name}: ${message}`)
+        .join("; ");
+      this.status(
+        failures.length ? `${ready} Failed — ${failed}` : ready,
+        failures.length > 0,
+      );
+    } finally {
+      this.importing = false;
     }
-    this.busy = true;
-    this.status(`Reading ${file.name}…`, true);
-    this.worker?.terminate();
-    const seq = ++this.loadSequence;
+  }
+
+  private async importFile(file: File) {
     const worker = new Worker(
       new URL("./import/importWorker.ts", import.meta.url),
       { type: "module" },
@@ -118,16 +144,47 @@ export class WakhanExplorer extends LitElement {
           reject(Error(event.message || "ZIP importer failed"));
         worker.postMessage({ file });
       });
-      if (seq !== this.loadSequence) return;
-      const prior = this.view?.domain();
       this.loaded = [...this.loaded, result];
-      this.active = this.loaded.length - 1;
-      this.profile = result.profiles.includes(this.profile)
-        ? this.profile
-        : result.profiles[0];
-      this.previewEstimate = previewEnabled
-        ? calibrationTools?.estimateCalibration(result)
-        : undefined;
+      if (this.active < 0) {
+        try {
+          await this.showResult(this.loaded.length - 1);
+        } catch (error) {
+          this.view?.dispose();
+          this.view = undefined;
+          this.loaded = this.loaded.slice(0, -1);
+          this.active = -1;
+          throw error;
+        }
+      }
+    } finally {
+      worker.terminate();
+      if (this.worker === worker) this.worker = undefined;
+    }
+  }
+
+  private async activate(index: number) {
+    if (this.busy || !this.loaded[index]) return;
+    this.status(`Opening ${this.loaded[index].name}…`, true);
+    try {
+      await this.showResult(index);
+      this.status(`${this.loaded[index].name} ready`);
+    } catch (error) {
+      this.status(`Visualization failed: ${String(error)}`, true);
+    }
+  }
+
+  private async showResult(index: number) {
+    const result = this.loaded[index];
+    const prior = this.view?.domain();
+    this.active = index;
+    this.profile = result.profiles.includes(this.profile)
+      ? this.profile
+      : result.profiles[0];
+    this.previewEstimate = previewEnabled
+      ? calibrationTools?.estimateCalibration(result)
+      : undefined;
+    this.switching = true;
+    try {
       await this.updateComplete;
       const layout = this.signature(result);
       if (this.view && this.viewLayout !== layout) {
@@ -138,50 +195,6 @@ export class WakhanExplorer extends LitElement {
         const host = this.querySelector<HTMLElement>("#vis");
         if (!host) throw Error("Visualization container was not created.");
         const view = new ExplorerView(host);
-        await view.initialize(
-          genes,
-          cytobands,
-          result,
-          previewEnabled ? this.previewEstimate : undefined,
-        );
-        this.view = view;
-        this.viewLayout = layout;
-      }
-      this.view.show(result, this.profile, !!prior, this.previewRows(result));
-      if (prior) this.view.zoom(prior, 0);
-      this.status(`${result.name} ready`);
-    } catch (error) {
-      this.status(error instanceof Error ? error.message : String(error), true);
-    } finally {
-      worker.terminate();
-      if (this.worker === worker) this.worker = undefined;
-      if (seq === this.loadSequence) this.busy = false;
-    }
-  }
-
-  private activate(index: number) {
-    const result = this.loaded[index];
-    if (!result || !this.view) return;
-    const prior = this.view.domain();
-    this.active = index;
-    this.profile = result.profiles.includes(this.profile)
-      ? this.profile
-      : result.profiles[0];
-    this.previewEstimate = previewEnabled
-      ? calibrationTools?.estimateCalibration(result)
-      : undefined;
-    if (this.viewLayout !== this.signature(result)) {
-      this.busy = true;
-      this.status(`Opening ${result.name}…`, true);
-      this.view.dispose();
-      this.view = undefined;
-      void this.updateComplete.then(async () => {
-        const host = this.querySelector<HTMLElement>("#vis");
-        if (!host) {
-          this.busy = false;
-          return;
-        }
-        const view = new ExplorerView(host);
         try {
           await view.initialize(
             genes,
@@ -189,20 +202,17 @@ export class WakhanExplorer extends LitElement {
             result,
             previewEnabled ? this.previewEstimate : undefined,
           );
-          this.view = view;
-          this.viewLayout = this.signature(result);
-          view.show(result, this.profile, false, this.previewRows(result));
-          if (prior) view.zoom(prior, 0);
-          this.status(`${result.name} ready`);
         } catch (error) {
-          this.status(`Visualization failed: ${String(error)}`, true);
-        } finally {
-          this.busy = false;
+          view.dispose();
+          throw error;
         }
-      });
-    } else {
-      this.view.show(result, this.profile, true, this.previewRows(result));
-      this.status(`${result.name} ready`);
+        this.view = view;
+        this.viewLayout = layout;
+      }
+      this.view.show(result, this.profile, !!prior, this.previewRows(result));
+      if (prior) this.view.zoom(prior, 0);
+    } finally {
+      this.switching = false;
     }
   }
 
@@ -250,13 +260,14 @@ export class WakhanExplorer extends LitElement {
   private onDragOver(event: DragEvent) {
     if (!event.dataTransfer?.types.includes("Files")) return;
     event.preventDefault();
+    event.dataTransfer.dropEffect = "copy";
     this.dragging = true;
   }
   private onDrop(event: DragEvent) {
+    this.dragging = false;
     if (!event.dataTransfer?.files.length) return;
     event.preventDefault();
-    this.dragging = false;
-    void this.open(event.dataTransfer.files[0]);
+    void this.open(Array.from(event.dataTransfer.files));
   }
 
   render() {
@@ -271,9 +282,10 @@ export class WakhanExplorer extends LitElement {
         class="sr-only"
         type="file"
         accept=".zip,application/zip"
+        multiple
         @change=${(e: Event) => {
           const input = e.target as HTMLInputElement;
-          void this.open(input.files?.[0]);
+          void this.open(Array.from(input.files ?? []));
           input.value = "";
         }}
       />
@@ -282,7 +294,7 @@ export class WakhanExplorer extends LitElement {
           <h1>Wakhan <em>Explorer</em></h1>
         </div>
         <div class="top-actions">
-          ${active ? html`<button class="primary" @click=${this.openPicker} ?disabled=${this.busy}>Open ZIP</button>` : nothing}
+          ${active ? html`<button class="primary" @click=${this.openPicker} ?disabled=${this.busy}>Open ZIPs</button>` : nothing}
           <a
             href="https://genomespy.app/"
             target="_blank"
@@ -409,11 +421,11 @@ export class WakhanExplorer extends LitElement {
                     @click=${this.openPicker}
                     ?disabled=${this.busy}
                   >
-                    Open ZIP file
+                    Open ZIP files
                   </button>
                   <p class="hint">
-                    Or drop a ZIP file anywhere on this page. The file is
-                    processed in your browser.
+                    Or drop one or more ZIP files anywhere on this page. Files
+                    are processed in your browser.
                   </p>
                 </div>
               </main>`
@@ -425,7 +437,7 @@ export class WakhanExplorer extends LitElement {
           <a href="https://github.com/KolmogorovLab/Wakhan">Wakhan</a></span
         >
       </footer>
-      ${this.dragging ? html`<div class="drop-overlay">Drop your Wakhan ZIP to open it</div>` : nothing}
+      ${this.dragging ? html`<div class="drop-overlay">Drop Wakhan ZIP files to open them</div>` : nothing}
       <div
         class="status ${this.message || this.busy ? "is-visible" : ""}"
         role="status"
