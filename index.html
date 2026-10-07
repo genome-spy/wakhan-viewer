@@ -3,12 +3,61 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Wakhan Viewer | Interactive Cancer Genome Visualization</title>
+    <meta
+      name="description"
+      content="Visualize Wakhan copy number, read depth, BAF, and structural variants on linked GRCh38 genome tracks. Open ZIP files locally in your browser."
+    />
+    <link rel="canonical" href="https://genomespy.app/wakhan-viewer/" />
+
+    <meta property="og:type" content="website" />
+    <meta property="og:site_name" content="Wakhan Viewer" />
+    <meta
+      property="og:title"
+      content="Wakhan Viewer | Interactive Cancer Genome Visualization"
+    />
+    <meta
+      property="og:description"
+      content="Visualize Wakhan copy number, read depth, BAF, and structural variants on linked GRCh38 genome tracks. Open ZIP files locally in your browser."
+    />
+    <meta property="og:url" content="https://genomespy.app/wakhan-viewer/" />
+    <meta name="twitter:card" content="summary" />
+    <meta
+      name="twitter:title"
+      content="Wakhan Viewer | Interactive Cancer Genome Visualization"
+    />
+    <meta
+      name="twitter:description"
+      content="Visualize Wakhan copy number, read depth, BAF, and structural variants on linked GRCh38 genome tracks. Open ZIP files locally in your browser."
+    />
+
     <meta name="theme-color" content="#142e3a" />
     <link rel="icon" type="image/svg+xml" href="%BASE_URL%favicon.svg" />
-    <title>Wakhan Viewer</title>
+    <script type="application/ld+json">
+      {
+        "@context": "https://schema.org",
+        "@type": "WebApplication",
+        "name": "Wakhan Viewer",
+        "url": "https://genomespy.app/wakhan-viewer/",
+        "description": "Visualize Wakhan copy number, read depth, BAF, and structural variants on linked GRCh38 genome tracks. Open ZIP files locally in your browser.",
+        "applicationCategory": "ScienceApplication",
+        "operatingSystem": "Any",
+        "isAccessibleForFree": true,
+        "license": "https://github.com/genome-spy/wakhan-viewer/blob/main/LICENSE"
+      }
+    </script>
   </head>
   <body>
     <wakhan-viewer></wakhan-viewer>
+    <noscript>
+      <h1>Wakhan Viewer</h1>
+      <p>
+        Explore Wakhan copy number, read depth, BAF, and structural variants in
+        your browser. Enable JavaScript to open a results ZIP or try the HCC1937
+        example.
+      </p>
+      <p><a href="https://github.com/genome-spy/wakhan-viewer">Documentation on GitHub</a></p>
+    </noscript>
     <script type="module" src="/src/main.ts"></script>
   </body>
 </html>
