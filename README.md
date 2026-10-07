@@ -1,35 +1,18 @@
 # Wakhan Viewer
 
-Wakhan Viewer is still a **work in progress**. The interface and support for
-Wakhan ZIP formats are still evolving.
+> [!IMPORTANT]
+> Wakhan Viewer is still a **work in progress**. The interface and support for
+> Wakhan ZIP formats are still evolving.
 
-Open a Wakhan results ZIP in the browser and explore its copy-number calls,
-read depth, structural variants, and folded BAF on linked genomic tracks.
-The app parses the local file in a Worker; it has no data-upload endpoint.
-Open one or more ZIPs at once, then switch between results to compare the same
-genomic locus without losing your zoom. Files import in order; additional drops
-join the queue. The first successful import is displayed, and adding files keeps
-the current result and zoom. A failed file is reported without stopping the
-remaining imports.
+Wakhan Viewer opens [Wakhan](https://github.com/KolmogorovLab/Wakhan/) results
+ZIP in the browser and allows viewing its copy-number calls, read depth,
+structural variants, and folded BAF on linked genomic tracks.
 
-New users can choose **Load HCC1937 example** on the welcome screen to explore
-the bundled [HCC1937 ZIP](public/examples/HCC1937_plots_data.zip) without providing
-their own files. The archive is downloaded only when requested, then processed
-in the browser by the same importer as local ZIPs. It is an unchanged copy of
-the supplied archive; its contents and checksum are recorded in the
-[ZIP format report](docs/wakhan-zip-format.md).
-
-Once a result is open, GenomeSpy fills the window beneath a compact toolbar.
-Tracks resize with the window; short windows scroll within the visualization.
-Result metadata, notes, and credits are available in the toolbar's **About** panel.
-
-The app adapts the visual design of the
-[HCC1954 Wakhan GenomeSpy recipe](https://github.com/genome-spy/genomespy-dataset-recipes/tree/main/recipes/hcc1954-wakhan-explorer)
-and the simple file-opening workflow of
-[SegmentModel Spy](https://github.com/genome-spy/segment-model-spy).
-It uses [GenomeSpy](https://genomespy.app/) Core's **minimal** entry point,
-linked genomic scales, named data sources, and PNG/SVG image exports. ZIP-derived
-rows are supplied to GenomeSpy through its runtime dataset API.
+The app adapts the visual design of the [HCC1954 Wakhan GenomeSpy
+recipe](https://github.com/genome-spy/genomespy-dataset-recipes/tree/main/recipes/hcc1954-wakhan-explorer)
+and the simple file-opening workflow of [SegmentModel
+Spy](https://github.com/genome-spy/segment-model-spy). It uses
+[GenomeSpy](https://genomespy.app/) for visualization.
 
 ## Run locally
 
@@ -41,11 +24,7 @@ npm run dev
 ```
 
 Open the URL printed by Vite, usually http://localhost:5173/. Load the HCC1937
-example, choose one or more ZIPs, or drag them onto the page. An additional
-HCC1954 archive in ignored tmp/ is used by optional development tests.
-Use the navigator, scroll wheel, and drag to explore.
-Switch the result or integer/subclonal profile from the toolbar; the detail x
-domain is retained.
+example, choose one or more ZIPs, or drag them onto the page.
 
 ```sh
 npm run typecheck
@@ -54,38 +33,85 @@ npm run build
 npm run preview
 ```
 
-## GitHub Pages
+## Supported Wakhan Features
 
-[CI and GitHub Pages](.github/workflows/pages.yml) runs tests and builds the
-static app on every push and pull request using Node.js 24 and `npm ci`.
-Every successful push to `main` deploys `dist/` to
-[genome-spy.github.io/wakhan-viewer](https://genome-spy.github.io/wakhan-viewer/).
-The workflow can also be run manually from the Actions tab.
+The main phased GRCh38 tracks have been checked with the HCC1937 and HCC1954
+ZIPs. Compared with Wakhan's Plotly plots, the viewer currently supports:
 
-In the repository's **Settings → Pages → Build and deployment**, select
-**GitHub Actions** as the source once. The workflow uses GitHub's built-in token
-and the `github-pages` environment; no additional secrets are needed.
+- **Haplotype-specific copy number:** separate HP1/HP2 tracks, switching between
+  integer and subclonal/fractional profiles, and tooltips for CN, segment median
+  depth, confidence, subclonal flags, and associated breakpoint IDs.
+- **Binned read depth:** HP1/HP2 depth at the intervals supplied in the ZIP,
+  with no fixed bin-size requirement. Depth is overlaid with CN using an inferred
+  calibration when available; otherwise it appears in separate aligned tracks.
+- **Folded BAF:** a linked 0–0.5 track. Unavailable sentinel values are omitted;
+  zeros remain visible with a note that SNP support is unknown.
+- **Structural variants:** deletions, duplications, inversions, paired breakends,
+  insertions, and single-breakend sites from the observed single-sample Severus
+  VCF schema. PASS, non-reference calls are displayed, with strand-directed feet
+  and reported haplotype, phase-set, and read-support details in arc tooltips.
+- **Centromeres and masked CN intervals:** hatched regions and exclusion of known
+  CN sentinel values, including matching integer-profile zero placeholders.
+- **Genomic context:** bundled GRCh38 cytobands and NCG 7.2 canonical cancer-driver
+  annotations, with gene labels and annotation tooltips. These are reference
+  annotations; Wakhan's sample-specific gene results are not displayed yet.
+- **Interactive exploration:** linked zoom/pan across tracks, a whole-genome
+  navigator, genomic/depth rulers, and SV hover, click, and interval highlighting.
+  Multiple ZIPs can be opened and switched at the same genomic locus.
+- **Image export:** PNG and SVG of the current view.
+- **Unphased schemas (preliminary):** the importer recognizes single-track total
+  CN and four-column total-depth tables. This has synthetic test coverage only;
+  no real unphased ZIP has been validated, and Wakhan's inspected exporter skips
+  the `--without-phasing` branch.
 
-To build and preview the same deployment locally:
+## Unsupported Wakhan Features
 
-```sh
-GITHUB_PAGES=1 npm run build
-GITHUB_PAGES=1 npm run preview
-```
+The following parts of Wakhan's Plotly output are not currently reproduced:
 
-Open the `/wakhan-viewer/` URL printed by Vite. The base path applies to the
-app, its import Worker, and the bundled HCC1937 example ZIP.
+- **Exact depth/CN calibration:** the ZIP omits Wakhan's plot calibration.
+  The viewer's inferred mapping is approximate and has not been verified against
+  the original Plotly axes, especially for subclonal profiles. See
+  [Inferred depth calibration](#inferred-depth-calibration).
+- **The plotted solution's purity, ploidy, confidence, and rank:** these cannot
+  be assigned safely from `solutions_ranks.tsv`, which lists all run solutions
+  without identifying the enclosed one. About reports the number of ranking
+  entries; there is no ranked-solution selector or solution metadata in the title.
+- **Sample-specific gene plots:** HP1/HP2 gene copy numbers, actual/adjusted gene
+  depths, and Wakhan's selected/custom gene list are not visualized.
+  `genes_copynumber_states.bed` is currently used only to estimate calibration.
+- **Current Wakhan LOH exports:** the exporter can include a four-column
+  `chr/start/end/hp` table, but the viewer's LOH parser accepts only three-column
+  intervals. That simpler path has synthetic tests only; neither example ZIP
+  contains LOH. Missing or rejected LOH data do not mean there were no LOH calls.
+- **Phasing and SNP diagnostics:** phase-block coverage, before/after
+  phase-correction plots, per-SNP allele-depth/pileup views, and heterozygous/
+  homozygous SNP counts and ratios. Their inputs are absent from the current ZIPs.
+- **Purity/ploidy search heatmaps:** the ZIP's ranking table does not contain
+  the complete search grid used by Wakhan's optimization plots.
+- **Unphased read depth alongside phased tracks:** the third coverage series is
+  parsed but is not plotted in phased mode; only HP1 and HP2 are shown.
+- **Other assemblies:** GRCh37, T2T-CHM13, mouse, and custom references are not
+  supported by this viewer. Its assembly validation and reference annotations
+  are currently limited to GRCh38 primary chromosomes.
+- **Arbitrary SV callers and multi-sample VCFs:** Wakhan can package other
+  breakpoint inputs under the same VCF filename; the viewer currently supports
+  the observed single-sample Severus schema.
+- **Plotly presentation and output files:** mirrored HP axes, separate
+  chromosome HTML pages, Plotly's modebar/trace-visibility controls, and direct
+  PDF or standalone interactive HTML export. The viewer uses GenomeSpy tracks
+  and navigation, with PNG/SVG export.
+
+This comparison is based on the Wakhan source version recorded in the
+[ZIP format report](docs/wakhan-zip-format.md), which also distinguishes missing
+export data from features not yet implemented in the viewer.
 
 ## What the current ZIPs support
 
 The HCC1937 and HCC1954 ZIPs render phased HP1/HP2 integer and subclonal CN
 profiles, raw binned read depth, folded BAF, Severus SV links and sites,
 centromeric/masked regions, GRCh38 cytobands, and NCG 7.2 cancer-driver genes.
-Optional Wakhan LOH tables and the source's single-track unphased CN schema
-have synthetic parser tests. No real ZIP for those modes was supplied, and
-Wakhan's inspected ZIP exporter currently skips the unphased branch. Plot-only
-purity/ploidy and phasing diagnostics need exported data before they can be
-shown here.
+Neither example contains LOH, and no real unphased ZIP was supplied. Preliminary
+schema support and the current LOH incompatibility are described above.
 
 The current ZIPs omit the enclosed solution identity, exact depth calibration,
 independent assembly metadata, and explicit missingness information. The app
