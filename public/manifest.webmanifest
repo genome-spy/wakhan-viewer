@@ -1,0 +1,31 @@
+{
+  "id": "./",
+  "name": "Wakhan Viewer",
+  "short_name": "Wakhan Viewer",
+  "description": "Explore Wakhan cancer genome results from local ZIP files.",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "theme_color": "#142e3a",
+  "background_color": "#f5f8f8",
+  "icons": [
+    {
+      "src": "icons/icon-192.png",
+      "sizes": "192x192",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "any"
+    },
+    {
+      "src": "icons/icon-maskable-512.png",
+      "sizes": "512x512",
+      "type": "image/png",
+      "purpose": "maskable"
+    }
+  ]
+}
