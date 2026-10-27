@@ -1,5 +1,6 @@
 import { LitElement, html, nothing } from "lit";
-import { customElement, state } from "lit/decorators.js";
+import { customElement, query, state } from "lit/decorators.js";
+import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import type { Profile, WakhanResult } from "./model";
 import { genes, cytobands } from "./annotations";
 import { WakhanView } from "./visualization/controller";
@@ -11,6 +12,9 @@ import {
 } from "./calibration";
 import { layoutSignature } from "./visualization/spec";
 import { ImportQueue } from "./import/queue";
+import scrollAndZoom from "./assets/scrollAndZoom.svg?raw";
+
+const hideNavigationHelpKey = "wakhan-viewer.hide-navigation-help";
 
 @customElement("wakhan-viewer")
 export class WakhanViewer extends LitElement {
@@ -24,6 +28,9 @@ export class WakhanViewer extends LitElement {
   @state() private message = "";
   @state() private exportBusy = false;
   @state() private calibrationEstimate?: CalibrationEstimate;
+  @state() private hideNavigationHelp = false;
+  @query(".navigation-help") private navigationHelpDialog!: HTMLDialogElement;
+  private navigationHelpShown = false;
   private view?: WakhanView;
   private viewLayout?: string;
   private worker?: Worker;
@@ -209,6 +216,13 @@ export class WakhanViewer extends LitElement {
       }
       this.view.show(result, this.profile, !!prior, this.calibratedRows(result));
       if (prior) this.view.zoom(prior, 0);
+
+      if (!this.navigationHelpShown) {
+        this.navigationHelpShown = true;
+        if (localStorage.getItem(hideNavigationHelpKey) !== "true") {
+          this.showNavigationHelp();
+        }
+      }
     } finally {
       this.switching = false;
     }
@@ -219,6 +233,21 @@ export class WakhanViewer extends LitElement {
     if (!result?.profiles.includes(value) || !this.view) return;
     this.profile = value;
     this.view.show(result, value, true, this.calibratedRows(result));
+  }
+
+  private showNavigationHelp() {
+    this.hideNavigationHelp =
+      localStorage.getItem(hideNavigationHelpKey) === "true";
+    this.navigationHelpDialog.showModal();
+  }
+
+  private changeNavigationHelpPreference(event: Event) {
+    this.hideNavigationHelp = (event.target as HTMLInputElement).checked;
+    if (this.hideNavigationHelp) {
+      localStorage.setItem(hideNavigationHelpKey, "true");
+    } else {
+      localStorage.removeItem(hideNavigationHelpKey);
+    }
   }
 
   private calibratedRows(result: WakhanResult) {
@@ -315,6 +344,7 @@ export class WakhanViewer extends LitElement {
           @click=${() => this.exportImage("svg")}
         >SVG ↓</button>
       </div>
+      <button @click=${this.showNavigationHelp}>Help</button>
       <details
         class="details"
         @keydown=${(e: KeyboardEvent) => {
@@ -377,6 +407,35 @@ export class WakhanViewer extends LitElement {
         </div>
       </details>
     </section>`;
+  }
+
+  private renderNavigationHelp() {
+    return html`<dialog
+      class="navigation-help"
+      aria-labelledby="navigation-help-title"
+      aria-describedby="navigation-help-description"
+    >
+      <h2 id="navigation-help-title">Navigate the genome</h2>
+      <p id="navigation-help-description">
+        Pan across chromosomes and zoom into the details.
+      </p>
+      <div class="navigation-help-illustration">${unsafeSVG(scrollAndZoom)}</div>
+      <p>
+        Zoom follows your pointer. In the genome navigator above the tracks,
+        double-click to reset the selection, then drag to choose a region.
+      </p>
+      <form method="dialog" class="navigation-help-actions">
+        <label>
+          <input
+            type="checkbox"
+            .checked=${this.hideNavigationHelp}
+            @change=${this.changeNavigationHelpPreference}
+          />
+          Don't show this again
+        </label>
+        <button class="primary" autofocus>Start exploring</button>
+      </form>
+    </dialog>`;
   }
 
   render() {
@@ -467,6 +526,7 @@ export class WakhanViewer extends LitElement {
         </span>
       </footer>`}
       ${this.dragging ? html`<div class="drop-overlay">Drop Wakhan ZIP files to open them</div>` : nothing}
+      ${this.renderNavigationHelp()}
       <div
         class="status ${this.message || this.busy ? "is-visible" : ""}"
         role="status"
