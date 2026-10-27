@@ -2,6 +2,7 @@ import type { RootSpec } from "@genome-spy/core/spec/root.js";
 import type { CalibrationEstimate } from "../calibration";
 import type { WakhanResult } from "../model";
 import recipeSvSpec from "./specs/structural-variants.json";
+import { themeColor, type WakhanColors } from "./theme";
 
 const locus = (pos: string) => ({
   chrom: "chrom",
@@ -18,7 +19,7 @@ const tip = (field: string, title: string, format?: string) => ({
 });
 
 const rulerMark = {
-  stroke: "#6b7c85",
+  stroke: themeColor("textMuted"),
   strokeWidth: 1,
   strokeDash: [3, 3],
   opacity: { expr: "rulerOpacity" },
@@ -43,9 +44,9 @@ function maskLayer() {
     data: { name: "masks" },
     mark: {
       type: "rect",
-      fill: "#f7f9fa",
+      fill: themeColor("surfaceMuted"),
       fillOpacity: 0,
-      stroke: "#dce2e4",
+      stroke: themeColor("grid"),
       strokeWidth: 1,
       hatch: "diagonal",
       clip: "x",
@@ -62,7 +63,7 @@ function navigator() {
       "Genome navigator | double-click, then drag to brush; scroll to resize; drag selection to move",
     resolve: { scale: { x: "excluded" } },
     data: { lazy: { type: "axisGenome", channel: "x" } },
-    view: { stroke: "#ccd4d8", strokeZindex: 10 },
+    view: { stroke: themeColor("border"), strokeZindex: 10 },
     encoding: {
       x: {
         field: "continuousStart",
@@ -79,7 +80,10 @@ function navigator() {
           color: {
             field: "odd",
             type: "nominal",
-            scale: { domain: [true, false], range: ["#e4e9ec", "#f7f9fa"] },
+            scale: {
+              domain: [true, false],
+              range: [themeColor("surfaceMuted"), themeColor("surface")],
+            },
             legend: null,
           },
         },
@@ -88,7 +92,7 @@ function navigator() {
         mark: {
           type: "text",
           size: 11,
-          color: "#4a5c68",
+          color: themeColor("textMuted"),
           paddingX: 2,
           tooltip: null,
         },
@@ -103,13 +107,13 @@ function navigator() {
           encodings: ["x"],
           clear: "dblclick",
           mark: {
-            stroke: "#487d91",
+            stroke: themeColor("accentStrong"),
             strokeWidth: 1.5,
             strokeOpacity: 0.85,
-            fill: "#75adbf",
+            fill: themeColor("accent"),
             fillOpacity: 0.02,
             shadowBlur: 10,
-            shadowColor: "#75adbf",
+            shadowColor: themeColor("accent"),
             shadowOpacity: 0.5,
             zindex: 11,
             clip: false,
@@ -134,7 +138,10 @@ function sitesTrack() {
       color: {
         field: "svClass",
         type: "nominal",
-        scale: { domain: ["INS", "sBND"], range: ["#9b60c6", "#677580"] },
+        scale: {
+          domain: ["INS", "sBND"],
+          range: [themeColor("svInsertion"), themeColor("textMuted")],
+        },
         legend: null,
       },
       tooltip: [
@@ -147,9 +154,11 @@ function sitesTrack() {
   };
 }
 
-function cnTrack(hp: "HP1" | "HP2" | "Total", calibration?: CalibrationEstimate) {
-  const ink =
-    hp === "HP1" ? "firebrick" : hp === "HP2" ? "steelblue" : "#287a78";
+function cnTrack(
+  hp: "HP1" | "HP2" | "Total",
+  calibration?: CalibrationEstimate,
+) {
+  const ink = themeColor(hp === "HP1" ? "hp1" : hp === "HP2" ? "hp2" : "total");
   const segment = {
     data: { name: "segments" },
     transform: [
@@ -164,7 +173,7 @@ function cnTrack(hp: "HP1" | "HP2" | "Total", calibration?: CalibrationEstimate)
       x2,
       color: {
         condition: { param: "svRegion", empty: true, value: ink },
-        value: "#8f999e",
+        value: themeColor("textSubtle"),
       },
       y: {
         field: "copyNumber",
@@ -188,7 +197,7 @@ function cnTrack(hp: "HP1" | "HP2" | "Total", calibration?: CalibrationEstimate)
     maskLayer(),
     {
       data: { values: [{}] },
-      mark: { type: "rule", color: "#d8e0e1", clip: false, y: 0 },
+      mark: { type: "rule", color: themeColor("grid"), clip: false, y: 0 },
     },
   ];
   if (!calibration || hp === "Total")
@@ -212,7 +221,7 @@ function cnTrack(hp: "HP1" | "HP2" | "Total", calibration?: CalibrationEstimate)
         transform: [{ type: "filter", expr: `datum.haplotype == '${hp}'` }],
         mark: {
           type: "point",
-          size: { expr: "min(pow(zoomLevel(), 1.5) + 2, 100)" },
+          size: { expr: "min(pow(zoomLevel(), 2) + 0.5, 100)" },
           opacity: 0.25,
           strokeWidth: 0,
           clip: true,
@@ -224,9 +233,9 @@ function cnTrack(hp: "HP1" | "HP2" | "Total", calibration?: CalibrationEstimate)
             condition: {
               param: "svRegion",
               empty: true,
-              value: hp === "HP1" ? "#cd6f6f" : "#87aece",
+              value: themeColor(hp === "HP1" ? "depthHp1" : "depthHp2"),
             },
-            value: "#cbd2d6",
+            value: themeColor("border"),
           },
           y: {
             field: "rawDepth",
@@ -257,7 +266,9 @@ function cnTrack(hp: "HP1" | "HP2" | "Total", calibration?: CalibrationEstimate)
 
 function depthTrack(hp: "HP1" | "HP2" | "Total") {
   const field = hp === "HP1" ? "hp1" : hp === "HP2" ? "hp2" : "total";
-  const ink = hp === "HP1" ? "#cd6f6f" : hp === "HP2" ? "#87aece" : "#6eb0aa";
+  const ink = themeColor(
+    hp === "HP1" ? "depthHp1" : hp === "HP2" ? "depthHp2" : "depthTotal",
+  );
   return {
     name: `depth-${hp}`,
     height: { grow: 0.8 },
@@ -276,7 +287,7 @@ function depthTrack(hp: "HP1" | "HP2" | "Total") {
       x2,
       color: {
         condition: { param: "svRegion", empty: true, value: ink },
-        value: "#cbd2d6",
+        value: themeColor("border"),
       },
       y: {
         field,
@@ -331,11 +342,11 @@ function bafTrack() {
           scale: {
             type: "ordinal",
             domain: ["zero; SNP support unknown", "reported"],
-            range: ["#aeb8bd", "#428b81"],
+            range: [themeColor("textSubtle"), themeColor("total")],
           },
           legend: null,
         },
-        value: "#cbd2d6",
+        value: themeColor("border"),
       },
       shape: {
         field: "status",
@@ -372,12 +383,20 @@ function lohTrack(empty: boolean) {
           x,
           x2,
           fill: {
-            condition: { param: "svRegion", empty: true, value: "#6195b9" },
-            value: "#8f999e",
+            condition: {
+              param: "svRegion",
+              empty: true,
+              value: themeColor("loh"),
+            },
+            value: themeColor("textSubtle"),
           },
           stroke: {
-            condition: { param: "svRegion", empty: true, value: "#417497" },
-            value: "#768187",
+            condition: {
+              param: "svRegion",
+              empty: true,
+              value: themeColor("hp2"),
+            },
+            value: themeColor("textSubtle"),
           },
           tooltip: [tip("feature", "Feature")],
         },
@@ -413,14 +432,14 @@ function cytobandsTrack() {
             scale: {
               domain: stains,
               range: [
-                "#f3f5f5",
-                "#dce1e3",
-                "#bdc6ca",
-                "#939fa5",
-                "#64747c",
-                "#c3988d",
-                "#e1e5e6",
-                "#d8dddd",
+                themeColor("cytobandGneg"),
+                themeColor("cytobandGpos25"),
+                themeColor("cytobandGpos50"),
+                themeColor("cytobandGpos75"),
+                themeColor("cytobandGpos100"),
+                themeColor("cytobandAcen"),
+                themeColor("cytobandGvar"),
+                themeColor("cytobandStalk"),
               ],
             },
             legend: null,
@@ -445,16 +464,11 @@ function cytobandsTrack() {
             type: "nominal",
             scale: {
               domain: stains,
-              range: [
-                "#263741",
-                "#263741",
-                "#263741",
-                "#263741",
-                "#ffffff",
-                "#263741",
-                "#263741",
-                "#263741",
-              ],
+              range: stains.map((stain) =>
+                themeColor(
+                  stain === "gpos100" ? "cytobandTextInverse" : "cytobandText",
+                ),
+              ),
             },
             legend: null,
           },
@@ -482,7 +496,13 @@ function genesTrack() {
     },
     layer: [
       {
-        mark: { type: "rect", color: "#64747c", y: 0.1, y2: 0.3, minWidth: 2 },
+        mark: {
+          type: "rect",
+          color: themeColor("textMuted"),
+          y: 0.1,
+          y2: 0.3,
+          minWidth: 2,
+        },
       },
       {
         transform: [
@@ -509,7 +529,7 @@ function genesTrack() {
         mark: {
           type: "text",
           size: 10,
-          color: "#425560",
+          color: themeColor("textMuted"),
           y: 0.75,
           yOffset: 2,
           align: "center",
@@ -544,13 +564,12 @@ export function layoutSignature(
 
 export function createSpec(
   result: WakhanResult,
+  colors: WakhanColors,
   estimate?: CalibrationEstimate,
 ): RootSpec {
   const mode = result.mode;
   const calibration =
-    mode === "phased" && result.coverage.length
-      ? estimate
-      : undefined;
+    mode === "phased" && result.coverage.length ? estimate : undefined;
   const tracks = [
     ...(result.svLinks.length ? [structuredClone(recipeSvSpec)] : []),
     ...(!result.svLinks.length && result.svSites.length ? [sitesTrack()] : []),
@@ -575,7 +594,10 @@ export function createSpec(
                   clamp: true,
                 },
               },
-              vconcat: [cnTrack("HP1", calibration), cnTrack("HP2", calibration)],
+              vconcat: [
+                cnTrack("HP1", calibration),
+                cnTrack("HP2", calibration),
+              ],
             },
           ]
         : [
@@ -599,7 +621,23 @@ export function createSpec(
     height: "container",
     padding: { left: 10, right: 10, top: 8, bottom: 8 },
     spacing: 6,
-    params: [{ name: "brush" }, { name: "showRuler", value: true }],
+    params: [
+      { name: "wakhanColors", value: colors, persist: false },
+      {
+        name: "defaultThemeColors",
+        expr: `{
+          foreground: wakhanColors.text,
+          stroke: wakhanColors.border,
+          grid: wakhanColors.grid,
+          chromosomeTick: wakhanColors.textMuted,
+          symbolStroke: wakhanColors.textMuted,
+          background: wakhanColors.surface
+        }`,
+        persist: false,
+      },
+      { name: "brush" },
+      { name: "showRuler", value: true },
+    ],
     datasets: {
       segments: [],
       coverage: [],
@@ -614,19 +652,21 @@ export function createSpec(
     },
     resolve: { scale: { x: "shared" } },
     config: {
-      title: { anchor: "start", fontSize: 11, color: "#364653", offset: 5 },
+      title: {
+        anchor: "start",
+        fontSize: 11,
+        color: themeColor("text"),
+        offset: 5,
+      },
       axis: {
         labelFontSize: 10,
         titleFontSize: 10,
-        labelColor: "#6b7c85",
-        domainColor: "#ced6da",
-        tickColor: "#ced6da",
-        gridColor: "#e9edef",
+        labelColor: themeColor("textMuted"),
         grid: false,
       },
       axisLocus: {
         chromGrid: true,
-        chromGridColor: "#e0e6e9",
+        chromGridColor: themeColor("border"),
         chromGridOpacity: 0.6,
         title: null,
       },
@@ -660,13 +700,13 @@ export function createSpec(
               clear: "dblclick",
               zoom: false,
               mark: {
-                stroke: "#487d91",
+                stroke: themeColor("accentStrong"),
                 strokeOpacity: 0.65,
                 strokeWidth: 1,
-                fill: "#75adbf",
+                fill: themeColor("accent"),
                 fillOpacity: 0.01,
                 shadowBlur: 10,
-                shadowColor: "#75adbf",
+                shadowColor: themeColor("accent"),
                 shadowOpacity: 0.5,
                 clip: false,
                 measure: "inside",

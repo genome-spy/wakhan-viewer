@@ -3,6 +3,7 @@ import { emptyResult } from "../model";
 import type { CalibrationEstimate } from "../calibration";
 import { calibratedCoverage } from "../calibration";
 import { createSpec, layoutSignature } from "./spec";
+import { wakhanColorNames, type WakhanColors } from "./theme";
 
 type Track = {
   name: string;
@@ -11,9 +12,8 @@ type Track = {
 };
 
 function tracks(spec: ReturnType<typeof createSpec>): Track[] {
-  return (
-    spec as unknown as { vconcat: [unknown, { vconcat: Track[] }] }
-  ).vconcat[1].vconcat;
+  return (spec as unknown as { vconcat: [unknown, { vconcat: Track[] }] })
+    .vconcat[1].vconcat;
 }
 
 const estimate: CalibrationEstimate = {
@@ -25,12 +25,51 @@ const estimate: CalibrationEstimate = {
   maxLeaveStateOutSlopeChange: 0,
 };
 
+const colors = Object.fromEntries(
+  wakhanColorNames.map((name) => [name, "rgb(12, 34, 56)"]),
+) as WakhanColors;
+
+it("shares the CSS palette with generated tracks and the imported SV spec", () => {
+  const result = emptyResult("themed.zip");
+  result.svLinks = [{}];
+  result.svSites = [{}];
+  result.coverage = [{}];
+  result.baf = [{}];
+  result.lohAvailable = true;
+  const references = new Set<string>();
+
+  for (const mode of ["phased", "unphased"] as const) {
+    result.mode = mode;
+    const spec = createSpec(result, colors, estimate);
+    expect(
+      spec.params?.find((param) => param.name === "wakhanColors"),
+    ).toMatchObject({ value: colors, persist: false });
+    expect(
+      spec.params?.find((param) => param.name === "defaultThemeColors"),
+    ).toMatchObject({
+      expr: expect.stringContaining("wakhanColors."),
+      persist: false,
+    });
+
+    for (const match of JSON.stringify(spec).matchAll(
+      /wakhanColors\.([a-zA-Z0-9]+)/g,
+    )) {
+      expect(colors).toHaveProperty(match[1]);
+      references.add(match[1]);
+    }
+  }
+
+  expect(references).toEqual(new Set(wakhanColorNames));
+});
+
 describe("calibrated track layout", () => {
   const phased = emptyResult("phased.zip");
   phased.coverage = [{ chrom: "chr1", start: 0, end: 50000, hp1: 18, hp2: 34 }];
 
   it("layers read depth over copy number when a calibration estimate is available", () => {
-    expect(tracks(createSpec(phased)).map((track) => track.name)).toEqual([
+    expect(
+      tracks(createSpec(phased, colors)).map((track) => track.name),
+    ).toEqual([
       "cn-HP1",
       "depth-HP1",
       "cn-HP2",
@@ -39,7 +78,7 @@ describe("calibrated track layout", () => {
       "genes",
     ]);
 
-    const calibrated = tracks(createSpec(phased, estimate));
+    const calibrated = tracks(createSpec(phased, colors, estimate));
     expect(calibrated.map((track) => track.name)).toEqual([
       "copy-number",
       "cytobands",
@@ -51,7 +90,9 @@ describe("calibrated track layout", () => {
     ]);
     for (const haplotype of calibrated[0].vconcat ?? []) {
       expect(
-        haplotype.layer?.some((layer) => layer.data?.name === "calibratedCoverage"),
+        haplotype.layer?.some(
+          (layer) => layer.data?.name === "calibratedCoverage",
+        ),
       ).toBe(true);
     }
   });
@@ -59,7 +100,9 @@ describe("calibrated track layout", () => {
   it("keeps the calibrated overlay available in production", () => {
     vi.stubEnv("DEV", false);
     try {
-      expect(tracks(createSpec(phased, estimate))[0].name).toBe("copy-number");
+      expect(tracks(createSpec(phased, colors, estimate))[0].name).toBe(
+        "copy-number",
+      );
     } finally {
       vi.unstubAllEnvs();
     }
@@ -68,7 +111,9 @@ describe("calibrated track layout", () => {
   it("rebuilds calibrated axes when switching to a different sample mapping", () => {
     const signature = layoutSignature(phased, estimate);
     expect(layoutSignature(phased)).not.toBe(signature);
-    expect(layoutSignature(phased, { ...estimate, offset: 3 })).not.toBe(signature);
+    expect(layoutSignature(phased, { ...estimate, offset: 3 })).not.toBe(
+      signature,
+    );
     expect(
       layoutSignature(phased, { ...estimate, singleCopyDepth: 20 }),
     ).not.toBe(signature);

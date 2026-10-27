@@ -13,7 +13,13 @@
   "scales": {
     "color": {
       "domain": ["DEL", "INV", "INS", "BND", "DUP"],
-      "range": ["#d88033", "#1d8ac2", "#9b60c6", "#677580", "#309c88"]
+      "range": [
+        { "expr": "wakhanColors.svDeletion" },
+        { "expr": "wakhanColors.svInversion" },
+        { "expr": "wakhanColors.svInsertion" },
+        { "expr": "wakhanColors.textMuted" },
+        { "expr": "wakhanColors.svDuplication" }
+      ]
     }
   },
 
@@ -163,7 +169,7 @@
                 "type": "nominal",
                 "legend": null
               },
-              "value": "#d8dbe0"
+              "value": { "expr": "wakhanColors.border" }
             },
             "x": {
               "chrom": "chrom1",
@@ -347,7 +353,7 @@
             "type": "nominal",
             "legend": null
           },
-          "value": "#d0d8db"
+          "value": { "expr": "wakhanColors.border" }
         },
         "tooltip": [
           {

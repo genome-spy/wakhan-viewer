@@ -6,6 +6,7 @@ import type { EmbedResult } from "@genome-spy/core/types/embedApi.js";
 import type { CalibrationEstimate } from "../calibration";
 import type { Profile, Row, WakhanResult } from "../model";
 import { createSpec } from "./spec";
+import { bindWakhanColors, readWakhanColors, type WakhanColors } from "./theme";
 
 export type Domain = [
   { chrom: string; pos: number },
@@ -14,6 +15,7 @@ export type Domain = [
 
 export class WakhanView {
   private api?: EmbedResult;
+  private unbindColors?: () => void;
   constructor(private host: HTMLElement) {}
 
   async initialize(
@@ -22,9 +24,15 @@ export class WakhanView {
     result: WakhanResult,
     calibration?: CalibrationEstimate,
   ) {
-    this.api = await embed(this.host, createSpec(result, calibration), {
-      inputBindingContainer: "none",
-    });
+    this.api = await embed(
+      this.host,
+      createSpec(result, readWakhanColors(this.host), calibration),
+      { inputBindingContainer: "none" },
+    );
+    this.unbindColors = bindWakhanColors(
+      this.host,
+      this.api.params.get<WakhanColors>("wakhanColors"),
+    );
     this.api.datasets.set("genes", structuredClone(genes));
     this.api.datasets.set("cytobands", structuredClone(cytobands));
   }
@@ -76,6 +84,8 @@ export class WakhanView {
   }
 
   dispose() {
+    this.unbindColors?.();
+    this.unbindColors = undefined;
     this.api?.finalize();
     this.api = undefined;
   }
