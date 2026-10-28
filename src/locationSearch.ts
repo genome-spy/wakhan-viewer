@@ -202,7 +202,7 @@ export class LocationSearch extends LitElement {
                   ${(this.search?.examples ?? []).map((term) => this.example(term))}
                 </div>
                 <p class="location-search-hint">
-                  GRCh38 · Enter to search · Esc to cancel
+                  GRCh38. Press Enter to search or Esc to cancel.
                 </p>`
         }
       </div>

@@ -70,7 +70,7 @@ export class WakhanViewer extends LitElement {
   private labelFor(index: number) {
     const name = this.loaded[index]?.name ?? "";
     return this.loaded.filter((r) => r.name === name).length > 1
-      ? `${name} · file ${index + 1}`
+      ? `${name} (file ${index + 1})`
       : name;
   }
 
@@ -296,18 +296,18 @@ export class WakhanViewer extends LitElement {
   }
 
   private renderProjectLinks() {
-    return html`
+    return html`<span class="project-links">
       <a
         href="https://github.com/genome-spy/wakhan-viewer"
         target="_blank"
         rel="noopener noreferrer"
-      >GitHub</a> ·
+      >GitHub</a>
       <a
         href="https://github.com/genome-spy/wakhan-viewer/blob/main/LICENSE"
         target="_blank"
         rel="noopener noreferrer"
       >MIT license</a>
-    `;
+    </span>`;
   }
 
   private renderToolbar(active: WakhanResult) {
@@ -362,8 +362,8 @@ export class WakhanViewer extends LitElement {
         <div class="details-panel">
           <h2>${active.name}</h2>
           <p class="details-meta">
-            GRCh38 · ${active.segments[this.profile].length / (active.mode === "phased" ? 2 : 1)}
-            CN intervals · ${active.mode}
+            GRCh38, ${active.segments[this.profile].length / (active.mode === "phased" ? 2 : 1)}
+            CN intervals (${active.mode})
           </p>
           ${active.coverage.length ? html`<div class="calibration-note">
             ${this.calibrationEstimate ? html`
@@ -388,7 +388,7 @@ export class WakhanViewer extends LitElement {
               </p>
             `}
           </div>` : nothing}
-          <p>Scroll to zoom · drag to pan · navigator to brush.</p>
+          <p>Scroll to zoom, drag to pan, and use the navigator to brush.</p>
           <p>
             HP1 and HP2 are chromosome-local labels. Wakhan CN confidence is
             distinct from phasing confidence.
@@ -397,16 +397,16 @@ export class WakhanViewer extends LitElement {
             ${active.diagnostics.map((d) => html`<li class=${d.level}>${d.message}</li>`)}
           </ul>
           <p>
-            ${active.svLinks.length} SV links · ${active.svSites.length} SV sites ·
-            ${active.baf.filter((b) => b.baf !== null).length} BAF bins ·
-            ${active.lohAvailable ? `${active.loh.length} LOH intervals` : "LOH not supplied"}
-            · ${active.rankings.length} ranked solutions (included solution
-            unspecified) · VCF sample ${active.vcfSample ?? "not supplied"}.
+            ${active.svLinks.length} SV links, ${active.svSites.length} SV sites,
+            ${active.baf.filter((b) => b.baf !== null).length} BAF bins.
+            ${active.lohAvailable ? `${active.loh.length} LOH intervals.` : "LOH not supplied."}
+            ${active.rankings.length} ranked solutions (included solution
+            unspecified). VCF sample: ${active.vcfSample ?? "not supplied"}.
           </p>
           <a href=${zipReportUrl} target="_blank" rel="noopener noreferrer">Wakhan ZIP format findings ↗</a>
           <p class="credits">
             ${this.renderProjectLinks()}<br />
-            Built with <a href="https://genomespy.app/">GenomeSpy</a> ·
+            Built with <a href="https://genomespy.app/">GenomeSpy</a> and
             <a href="https://github.com/KolmogorovLab/Wakhan">Wakhan</a>
           </p>
         </div>
@@ -524,9 +524,9 @@ export class WakhanViewer extends LitElement {
                 </div>
               </main>`}
       ${active ? nothing : html`<footer class="footer">
-        <span>Wakhan Viewer · ${this.renderProjectLinks()}</span>
+        <span class="footer-project">Wakhan Viewer ${this.renderProjectLinks()}</span>
         <span>
-          Built with <a href="https://genomespy.app/">GenomeSpy</a> ·
+          Built with <a href="https://genomespy.app/">GenomeSpy</a> and
           <a href="https://github.com/KolmogorovLab/Wakhan">Wakhan</a>
         </span>
       </footer>`}

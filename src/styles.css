@@ -840,6 +840,14 @@ wakhan-location-search {
   }
 }
 
+.project-links,
+.footer-project {
+  display: inline-flex;
+  flex-wrap: wrap;
+  align-items: baseline;
+  gap: 12px;
+}
+
 .footer {
   display: flex;
   justify-content: space-between;
