@@ -18,6 +18,11 @@ Spy](https://github.com/genome-spy/segment-model-spy). It uses
 
 Requires a current Node.js release and npm.
 
+The location search currently requires a locally built GenomeSpy Core from master
+(`e5dd5282d` or later); its optional search APIs are not in the published 1.2.0
+package yet. After `npm ci`, install the built Core tarball with
+`npm install --no-save --package-lock=false /path/to/genome-spy-core-1.2.0.tgz`.
+
 ```sh
 npm ci
 npm run dev
@@ -25,6 +30,11 @@ npm run dev
 
 Open the URL printed by Vite, usually http://localhost:5173/. Load the HCC1937
 example, choose one or more ZIPs, or drag them onto the page.
+
+The toolbar location field accepts chromosomes (`chr8`), positions
+(`chr8:21,445,873`), ranges (`chr8:21,445,873-24,623,697`), and case-insensitive
+symbols from the bundled cancer-driver genes (`TP53`). Press Enter to navigate
+or Escape to cancel. Genes with multiple loci offer a chromosome choice.
 
 ```sh
 npm run typecheck

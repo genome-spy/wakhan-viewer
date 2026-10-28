@@ -496,6 +496,7 @@ function genesTrack() {
     },
     layer: [
       {
+        encoding: { search: { field: "symbol" } },
         mark: {
           type: "rect",
           color: themeColor("textMuted"),

@@ -6,6 +6,7 @@ import type { EmbedResult } from "@genome-spy/core/types/embedApi.js";
 import type { CalibrationEstimate } from "../calibration";
 import type { Profile, Row, WakhanResult } from "../model";
 import { createSpec } from "./spec";
+import { GenomeSearch } from "./search";
 import { bindWakhanColors, readWakhanColors, type WakhanColors } from "./theme";
 
 export type Domain = [
@@ -14,6 +15,7 @@ export type Domain = [
 ];
 
 export class WakhanView {
+  search?: GenomeSearch;
   private api?: EmbedResult;
   private unbindColors?: () => void;
   constructor(private host: HTMLElement) {}
@@ -35,6 +37,7 @@ export class WakhanView {
     );
     this.api.datasets.set("genes", structuredClone(genes));
     this.api.datasets.set("cytobands", structuredClone(cytobands));
+    this.search = new GenomeSearch(this.api);
   }
 
   domain(): Domain | undefined {
@@ -84,6 +87,7 @@ export class WakhanView {
   }
 
   dispose() {
+    this.search = undefined;
     this.unbindColors?.();
     this.unbindColors = undefined;
     this.api?.finalize();

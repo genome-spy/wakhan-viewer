@@ -13,6 +13,7 @@ import {
 import { layoutSignature } from "./visualization/spec";
 import { ImportQueue } from "./import/queue";
 import scrollAndZoom from "./assets/scrollAndZoom.svg?raw";
+import "./locationSearch";
 
 const hideNavigationHelpKey = "wakhan-viewer.hide-navigation-help";
 
@@ -334,6 +335,10 @@ export class WakhanViewer extends LitElement {
           ${active.profiles.map((p) => html`<option value=${p} ?selected=${p === this.profile}>${p === "integer" ? "Integer CN" : "Subclonal CN"}</option>`)}
         </select>
       </div>
+      <wakhan-location-search
+        .search=${this.view?.search}
+        .disabled=${this.busy}
+      ></wakhan-location-search>
       <div class="exports" role="group" aria-label="Export image">
         <button
           ?disabled=${this.exportBusy || this.busy}
