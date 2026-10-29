@@ -80,7 +80,7 @@ describe("observed Wakhan table contract", () => {
     });
     expect(result.mode).toBe("unphased");
     expect(result.segments.integer).toHaveLength(1);
-    expect(result.coverage[0].total).toBe(35);
+    expect(result.coverage[0]).toMatchObject({ total: 35 });
     expect(result.loh).toMatchObject([
       { start: 10000, end: 20000 },
       { start: 30000, end: 40000 },

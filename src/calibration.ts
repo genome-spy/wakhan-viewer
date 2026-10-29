@@ -1,4 +1,4 @@
-import type { Row, WakhanResult } from "./model";
+import type { CalibratedCoverage, Coverage, WakhanResult } from "./model";
 
 export interface CalibrationEstimate {
   offset: number;
@@ -39,27 +39,22 @@ export function estimateCalibration(
     { copyNumber: number; adjustedDepth: number }
   >();
   for (const gene of result.geneResults) {
-    for (const hp of [1, 2]) {
+    for (const hp of [1, 2] as const) {
       const haplotype = `HP${hp}`;
       const overlapsMask = masked.some(
         (m) =>
           m.haplotype === haplotype &&
           m.chrom === gene.chrom &&
-          (m.start as number) < (gene.end as number) &&
-          (gene.start as number) < (m.end as number),
+          m.start < gene.end &&
+          gene.start < m.end,
       );
       if (overlapsMask) {
-        excludedGenes.add(String(gene.gene));
+        excludedGenes.add(gene.gene);
         continue;
       }
       const copyNumber = gene[`stateHp${hp}`];
       const adjustedDepth = gene[`adjustedHp${hp}`];
-      if (
-        typeof copyNumber !== "number" ||
-        typeof adjustedDepth !== "number" ||
-        !Number.isFinite(copyNumber) ||
-        !Number.isFinite(adjustedDepth)
-      )
+      if (!Number.isFinite(copyNumber) || !Number.isFinite(adjustedDepth))
         continue;
       unique.set(`${copyNumber}:${adjustedDepth}`, {
         copyNumber,
@@ -107,29 +102,26 @@ export function estimateCalibration(
 }
 
 export function calibratedCoverage(
-  coverage: Row[],
+  coverage: Coverage[],
   estimate: CalibrationEstimate,
-): Row[] {
-  return coverage.flatMap((row) =>
-    [1, 2].flatMap((hp) => {
+): CalibratedCoverage[] {
+  return coverage.flatMap((row) => {
+    if (!("hp1" in row)) return [];
+
+    return ([1, 2] as const).flatMap((hp) => {
       const rawDepth = row[`hp${hp}`];
-      if (
-        typeof rawDepth !== "number" ||
-        !Number.isFinite(rawDepth) ||
-        rawDepth === 3300
-      )
-        return [];
+      if (!Number.isFinite(rawDepth) || rawDepth === 3300) return [];
       return [
         {
           chrom: row.chrom,
           start: row.start,
           end: row.end,
-          haplotype: `HP${hp}`,
+          haplotype: `HP${hp}` as const,
           adjustedCopyNumber:
             (rawDepth - estimate.offset) / estimate.singleCopyDepth,
           rawDepth,
         },
       ];
-    }),
-  );
+    });
+  });
 }

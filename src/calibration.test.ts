@@ -4,14 +4,33 @@ import { emptyResult } from "./model";
 
 function resultWithDepths(depths = [2, 18, 34]) {
   const result = emptyResult("sample.zip");
-  result.segments.subclonal = [{ status: "reported" }];
+  result.segments.subclonal = [
+    {
+      chrom: "chr1",
+      start: 0,
+      end: 1000,
+      haplotype: "HP1",
+      copyNumber: 1,
+      medianCoverage: 18,
+      sourceCopyNumber: 1,
+      sourceMedianCoverage: 18,
+      confidence: 1,
+      status: "reported",
+      subclonal: false,
+      breakpointIds: "",
+    },
+  ];
   result.geneResults = depths.map((depth, state) => ({
     gene: `GENE${state}`,
     chrom: "chr1",
     start: state * 100,
     end: state * 100 + 50,
+    actualHp1: depth,
+    actualHp2: depth,
     stateHp1: state,
+    stateHp2: state,
     adjustedHp1: depth,
+    adjustedHp2: depth,
   }));
   return result;
 }
@@ -29,6 +48,11 @@ describe("inferred depth calibration", () => {
   it("excludes masked haplotypes without discarding the other haplotype", () => {
     const result = resultWithDepths();
     result.segments.subclonal.push({
+      ...result.segments.subclonal[0],
+      copyNumber: null,
+      medianCoverage: null,
+      sourceCopyNumber: 3300,
+      sourceMedianCoverage: 3300,
       chrom: "chrX",
       start: 100,
       end: 200,
@@ -40,6 +64,8 @@ describe("inferred depth calibration", () => {
       chrom: "chrX",
       start: 150,
       end: 175,
+      actualHp1: 3300,
+      actualHp2: 50,
       stateHp1: 141,
       adjustedHp1: 3300,
       stateHp2: 3,

@@ -32,10 +32,48 @@ const colors = Object.fromEntries(
   wakhanColorNames.map((name) => [name, "rgb(12, 34, 56)"]),
 ) as WakhanColors;
 
+const site = {
+  variantId: "site-1",
+  svClass: "sBND",
+  sourceSvType: "BND",
+  chrom: "chr1",
+  start: 100,
+  chrom1: "chr1",
+  start1: 100,
+  genotype: "0/1",
+  haplotype: "1",
+  phaseSet: "100",
+  variantReads: 10,
+  referenceReads: 20,
+  vaf: 0.33,
+  haplotypeVaf: "0.5,0",
+  orientation: "+",
+  detailedType: "loose_end",
+};
+const link = {
+  ...site,
+  variantId: "link-1",
+  svClass: "DEL",
+  sourceSvType: "DEL",
+  chrom2: "chr1",
+  start2: 200,
+  mateId: "",
+  orientation: "+-",
+};
+const coverage = {
+  chrom: "chr1",
+  start: 0,
+  end: 50000,
+  originalStart: 0,
+  hp1: 18,
+  hp2: 34,
+  unphased: 0,
+};
+
 it("assigns a color to single breakends when sites and links share the scale", () => {
   const result = emptyResult("single-breakends.zip");
-  result.svLinks = [{ svClass: "DEL" }];
-  result.svSites = [{ svClass: "sBND" }];
+  result.svLinks = [link];
+  result.svSites = [site];
   const scale = tracks(createSpec(result, colors))[0].scales!.color;
 
   expect(scale.range[scale.domain.indexOf("sBND")]).toEqual({
@@ -45,10 +83,19 @@ it("assigns a color to single breakends when sites and links share the scale", (
 
 it("shares the CSS palette with generated tracks and the imported SV spec", () => {
   const result = emptyResult("themed.zip");
-  result.svLinks = [{}];
-  result.svSites = [{}];
-  result.coverage = [{}];
-  result.baf = [{}];
+  result.svLinks = [link];
+  result.svSites = [site];
+  result.coverage = [coverage];
+  result.baf = [
+    {
+      chrom: "chr1",
+      start: 0,
+      end: 50000,
+      baf: 0.25,
+      status: "reported",
+      bounds: "coverage bin",
+    },
+  ];
   result.lohAvailable = true;
   const references = new Set<string>();
 
@@ -78,7 +125,7 @@ it("shares the CSS palette with generated tracks and the imported SV spec", () =
 
 describe("calibrated track layout", () => {
   const phased = emptyResult("phased.zip");
-  phased.coverage = [{ chrom: "chr1", start: 0, end: 50000, hp1: 18, hp2: 34 }];
+  phased.coverage = [coverage];
 
   it("layers read depth over copy number when a calibration estimate is available", () => {
     expect(
@@ -138,8 +185,14 @@ describe("calibrated track layout", () => {
     expect(
       calibratedCoverage(
         [
-          { chrom: "chr1", start: 0, end: 50000, hp1: 18, hp2: 3300 },
-          { chrom: "chr1", start: 50000, end: 100000, hp1: null, hp2: 34 },
+          { ...coverage, hp2: 3300 },
+          {
+            ...coverage,
+            start: 50000,
+            end: 100000,
+            originalStart: 50001,
+            hp1: NaN,
+          },
         ],
         estimate,
       ),

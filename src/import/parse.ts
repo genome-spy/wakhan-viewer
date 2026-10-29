@@ -8,7 +8,18 @@
  * See docs/wakhan-zip-format.md for the archive evidence and open format questions.
  */
 
-import type { Row, WakhanResult, Profile } from "../model";
+import type {
+  BafBin,
+  Coverage,
+  GeneResult,
+  GenomicInterval,
+  LohInterval,
+  MaskInterval,
+  Profile,
+  Ranking,
+  Segment,
+  WakhanResult,
+} from "../model";
 import { emptyResult } from "../model";
 import parseVcf from "@genome-spy/core/data/formats/vcf.js";
 import { getContigs } from "@genome-spy/core/genome/genomes.js";
@@ -142,7 +153,7 @@ const unphasedColumns = [
  * centromere_regions_blacklist in src/utils/chromosome.py. Do not infer missingness
  * from zero alone: merge_haplotype_segments also zero-fills absent haplotypes.
  */
-export function parseSegments(text: string, profile: Profile): Row[] {
+export function parseSegments(text: string, profile: Profile): Segment[] {
   const member = `${profile}_profile.bed`;
   const header =
     lines(text)
@@ -183,10 +194,10 @@ export function parseSegments(text: string, profile: Profile): Row[] {
     "\t",
     true,
   );
-  const result: Row[] = [];
+  const result: Segment[] = [];
   rows.forEach((f, i) => {
     const loc = interval(f, member, i + 1);
-    for (const hp of [1, 2]) {
+    for (const hp of [1, 2] as const) {
       const coverage = number(f[hp === 1 ? 3 : 6], member, i + 1);
       const copyNumber = number(f[hp === 1 ? 4 : 7], member, i + 1);
       const confidence = number(f[hp === 1 ? 5 : 8], member, i + 1);
@@ -216,7 +227,7 @@ export function parseSegments(text: string, profile: Profile): Row[] {
  * (chr/start/end/total depth), supported here as an import fallback.
  * Preserve the source start for the BAF join; interval ends come from each row.
  */
-export function parseCoverage(text: string): Row[] {
+export function parseCoverage(text: string): Coverage[] {
   return lines(text).map(({ value, line }) => {
     const f = value.split("\t");
     if (f.length !== 6 && f.length !== 4)
@@ -248,7 +259,7 @@ export function parseCoverage(text: string): Row[] {
  * a fourth hp column. This parser does not yet support that current ZIP schema;
  * neither supplied archive contains LOH, so this path has synthetic tests only.
  */
-export function parseLoh(text: string, member: string): Row[] {
+export function parseLoh(text: string, member: string): LohInterval[] {
   return lines(text)
     .filter((x) => !x.value.startsWith("#"))
     .map(({ value, line }) => {
@@ -273,7 +284,7 @@ export function parseLoh(text: string, member: string): Row[] {
  * use a one-base site when unmatched. The example ZIPs also contain zeros;
  * their support cannot be reconstructed, so retain them with an uncertainty label.
  */
-export function parseBaf(text: string, coverage: Row[]): Row[] {
+export function parseBaf(text: string, coverage: Coverage[]): BafBin[] {
   const bins = new Map(
     coverage.map((r) => [`${r.chrom}:${r.originalStart}`, r]),
   );
@@ -309,7 +320,7 @@ export function parseBaf(text: string, coverage: Row[]): Row[] {
  * headerless TSV columns. The start == 1 special case mirrors
  * src/utils/chromosome.py:extract_centromere_regions; other bounds are preserved.
  */
-export function parseMasks(text: string): Row[] {
+export function parseMasks(text: string): MaskInterval[] {
   return lines(text).map(({ value, line }) => {
     const f = value.split("\t");
     if (f.length !== 3)
@@ -332,7 +343,7 @@ export function parseMasks(text: string): Row[] {
  * both depth pairs are rounded to two decimals. These are not exact calibration
  * parameters. The ZIP exporter flattens the genes/ path to the member basename.
  */
-export function parseGenes(text: string): Row[] {
+export function parseGenes(text: string): GeneResult[] {
   return table(
     text,
     "genes_copynumber_states.bed",
@@ -357,7 +368,7 @@ export function parseGenes(text: string): Row[] {
  * The ZIP exporter copies the complete run-wide table into every solution ZIP,
  * without identifying which repository_name belongs to the enclosed profiles.
  */
-export function parseRankings(text: string): Row[] {
+export function parseRankings(text: string): Ranking[] {
   const cols = [
     "repository_name",
     "dna_purity",
@@ -563,7 +574,7 @@ export async function parseMembers(
   if (
     result.mode === "phased" &&
     result.coverage.length &&
-    result.coverage.every((r) => r.unphased === 0)
+    result.coverage.every((r) => "unphased" in r && r.unphased === 0)
   ) {
     result.diagnostics.push({
       level: "info",
@@ -658,12 +669,12 @@ export async function parseMembers(
     });
   if (result.loh.length && result.masks.length) {
     result.loh = result.loh.flatMap((row) => {
-      let fragments = [{ start: row.start as number, end: row.end as number }];
+      let fragments = [{ start: row.start, end: row.end }];
       for (const mask of result.masks) {
         if (mask.chrom !== row.chrom) continue;
         fragments = fragments.flatMap((part) => {
-          const a = mask.start as number,
-            b = mask.end as number;
+          const a = mask.start,
+            b = mask.end;
           if (b <= part.start || a >= part.end) return [part];
           return [
             part.start < a ? { start: part.start, end: a } : null,
@@ -690,8 +701,8 @@ export async function parseMembers(
   )
     throw Error("The ZIP does not identify a supported reference assembly.");
   const lengths = new Map(getContigs("hg38").map((x) => [x.name, x.size]));
-  const checkedTables: [string, Row[]][] = [
-    ...result.profiles.map((p): [string, Row[]] => [
+  const checkedTables: [string, GenomicInterval[]][] = [
+    ...result.profiles.map((p): [string, GenomicInterval[]] => [
       `${p} segments`,
       result.segments[p],
     ]),
@@ -702,11 +713,9 @@ export async function parseMembers(
   ];
   for (const [tableName, rows] of checkedTables) {
     for (const row of rows) {
-      const length = lengths.get(String(row.chrom));
+      const length = lengths.get(row.chrom);
       if (
         !length ||
-        typeof row.start !== "number" ||
-        typeof row.end !== "number" ||
         row.start < 0 ||
         row.end > length ||
         row.end <= row.start
