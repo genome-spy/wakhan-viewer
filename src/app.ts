@@ -1,21 +1,20 @@
 import { LitElement, html, nothing } from "lit";
 import { customElement, query, state } from "lit/decorators.js";
-import { unsafeSVG } from "lit/directives/unsafe-svg.js";
 import { live } from "lit/directives/live.js";
 import type { Profile, WakhanResult } from "./model";
 import { genes, cytobands } from "./annotations";
 import { WakhanView } from "./visualization/controller";
-import zipReportUrl from "../docs/wakhan-zip-format.md?url";
 import {
   estimateCalibration,
   calibratedCoverage,
   type CalibrationEstimate,
 } from "./calibration";
 import { ImportQueue } from "./import/queue";
-import scrollAndZoom from "./assets/scrollAndZoom.svg?raw";
+import type { NavigationHelp } from "./navigationHelp";
+import "./navigationHelp";
+import { renderResultDetails } from "./resultDetails";
+import { renderProjectLinks } from "./projectLinks";
 import "./locationSearch";
-
-const hideNavigationHelpKey = "wakhan-viewer.hide-navigation-help";
 
 @customElement("wakhan-viewer")
 export class WakhanViewer extends LitElement {
@@ -29,9 +28,7 @@ export class WakhanViewer extends LitElement {
   @state() private message = "";
   @state() private exportBusy = false;
   @state() private calibrationEstimate?: CalibrationEstimate;
-  @state() private hideNavigationHelp = false;
-  @query(".navigation-help") private navigationHelpDialog!: HTMLDialogElement;
-  private navigationHelpShown = false;
+  @query("wakhan-navigation-help") private navigationHelp!: NavigationHelp;
   private view?: WakhanView;
   private worker?: Worker;
   private fileInput?: HTMLInputElement;
@@ -203,12 +200,7 @@ export class WakhanViewer extends LitElement {
       this.profile = profile;
       this.calibrationEstimate = calibration;
 
-      if (!this.navigationHelpShown) {
-        this.navigationHelpShown = true;
-        if (localStorage.getItem(hideNavigationHelpKey) !== "true") {
-          this.showNavigationHelp();
-        }
-      }
+      void this.navigationHelp.showOnce();
     } catch (error) {
       if (this.active < 0) {
         this.view?.dispose();
@@ -236,21 +228,6 @@ export class WakhanViewer extends LitElement {
       this.status(`Visualization failed: ${String(error)}`, true);
     } finally {
       this.switching = false;
-    }
-  }
-
-  private showNavigationHelp() {
-    this.hideNavigationHelp =
-      localStorage.getItem(hideNavigationHelpKey) === "true";
-    this.navigationHelpDialog.showModal();
-  }
-
-  private changeNavigationHelpPreference(event: Event) {
-    this.hideNavigationHelp = (event.target as HTMLInputElement).checked;
-    if (this.hideNavigationHelp) {
-      localStorage.setItem(hideNavigationHelpKey, "true");
-    } else {
-      localStorage.removeItem(hideNavigationHelpKey);
     }
   }
 
@@ -296,23 +273,6 @@ export class WakhanViewer extends LitElement {
     if (!event.dataTransfer?.files.length) return;
     event.preventDefault();
     void this.open(Array.from(event.dataTransfer.files));
-  }
-
-  private renderProjectLinks() {
-    return html`<span class="project-links">
-      <a
-        href="https://github.com/genome-spy/wakhan-viewer"
-        target="_blank"
-        rel="noopener noreferrer"
-        >GitHub</a
-      >
-      <a
-        href="https://github.com/genome-spy/wakhan-viewer/blob/main/LICENSE"
-        target="_blank"
-        rel="noopener noreferrer"
-        >MIT license</a
-      >
-    </span>`;
   }
 
   private renderToolbar(active: WakhanResult) {
@@ -374,128 +334,9 @@ export class WakhanViewer extends LitElement {
           SVG ↓
         </button>
       </div>
-      <button @click=${this.showNavigationHelp}>Help</button>
-      <details
-        class="details"
-        @keydown=${(e: KeyboardEvent) => {
-          if (e.key === "Escape")
-            (e.currentTarget as HTMLDetailsElement).open = false;
-        }}
-      >
-        <summary
-          aria-label=${`About these results (${active.diagnostics.length} notes)`}
-        >
-          About <span>${active.diagnostics.length}</span>
-        </summary>
-        <div class="details-panel">
-          <h2>${active.name}</h2>
-          <p class="details-meta">
-            GRCh38,
-            ${
-              active.segments[this.profile].length /
-              (active.mode === "phased" ? 2 : 1)
-            }
-            CN intervals (${active.mode})
-          </p>
-          ${
-            active.coverage.length
-              ? html`<div class="calibration-note">
-                  ${
-                    this.calibrationEstimate
-                      ? html`
-                          <strong>Estimated depth calibration</strong>
-                          <p>
-                            The ZIP omits Wakhan’s exact calibration and the
-                            identity of the plotted solution. We infer the
-                            copy/depth mapping from rounded gene values. Its
-                            agreement with Wakhan’s original plot is unverified,
-                            especially for subclonal profiles. Depth alignment
-                            and depth-derived copy estimates are approximate.
-                          </p>
-                          <p class="calibration-values">
-                            Depth ≈
-                            ${this.calibrationEstimate.offset.toFixed(3)} +
-                            ${this.calibrationEstimate.singleCopyDepth.toFixed(3)}
-                            × copies
-                          </p>
-                        `
-                      : html`
-                          <strong>Depth calibration unavailable</strong>
-                          <p>
-                            The ZIP omits Wakhan’s exact calibration, and a
-                            consistent estimate is unavailable. Copy number and
-                            raw read depth are shown in separate tracks.
-                          </p>
-                        `
-                  }
-                </div>`
-              : nothing
-          }
-          <p>Scroll to zoom, drag to pan, and use the navigator to brush.</p>
-          <p>
-            HP1 and HP2 are chromosome-local labels. Wakhan CN confidence is
-            distinct from phasing confidence.
-          </p>
-          <ul>
-            ${active.diagnostics.map(
-              (d) => html`<li class=${d.level}>${d.message}</li>`,
-            )}
-          </ul>
-          <p>
-            ${active.svLinks.length} SV links, ${active.svSites.length} SV
-            sites, ${active.baf.filter((b) => b.baf !== null).length} BAF bins.
-            ${
-              active.lohAvailable
-                ? `${active.loh.length} LOH intervals.`
-                : "LOH not supplied."
-            }
-            ${active.rankings.length} ranked solutions (included solution
-            unspecified). VCF sample: ${active.vcfSample ?? "not supplied"}.
-          </p>
-          <a href=${zipReportUrl} target="_blank" rel="noopener noreferrer"
-            >Wakhan ZIP format findings ↗</a
-          >
-          <p class="credits">
-            ${this.renderProjectLinks()}<br />
-            A viewer for
-            <a href="https://github.com/KolmogorovLab/Wakhan">Wakhan</a>
-            results, powered by <a href="https://genomespy.app/">GenomeSpy</a>,
-            built by Kari Lavikka.
-          </p>
-        </div>
-      </details>
+      <button @click=${() => this.navigationHelp.show()}>Help</button>
+      ${renderResultDetails(active, this.profile, this.calibrationEstimate)}
     </section>`;
-  }
-
-  private renderNavigationHelp() {
-    return html`<dialog
-      class="navigation-help"
-      aria-labelledby="navigation-help-title"
-      aria-describedby="navigation-help-description"
-    >
-      <h2 id="navigation-help-title">Navigate the genome</h2>
-      <p id="navigation-help-description">
-        Pan across chromosomes and zoom into the details.
-      </p>
-      <div class="navigation-help-illustration">
-        ${unsafeSVG(scrollAndZoom)}
-      </div>
-      <p>
-        Zoom follows your pointer. In the genome navigator above the tracks,
-        double-click to reset the selection, then drag to choose a region.
-      </p>
-      <form method="dialog" class="navigation-help-actions">
-        <label>
-          <input
-            type="checkbox"
-            .checked=${this.hideNavigationHelp}
-            @change=${this.changeNavigationHelpPreference}
-          />
-          Don't show this again
-        </label>
-        <button class="primary" autofocus>Start exploring</button>
-      </form>
-    </dialog>`;
   }
 
   render() {
@@ -606,7 +447,7 @@ export class WakhanViewer extends LitElement {
         active
           ? nothing
           : html`<footer class="footer">
-              <span class="footer-project">${this.renderProjectLinks()}</span>
+              <span class="footer-project">${renderProjectLinks()}</span>
               <span>
                 A viewer for
                 <a href="https://github.com/KolmogorovLab/Wakhan">Wakhan</a>
@@ -622,7 +463,7 @@ export class WakhanViewer extends LitElement {
             </div>`
           : nothing
       }
-      ${this.renderNavigationHelp()}
+      <wakhan-navigation-help></wakhan-navigation-help>
       <div
         class="status ${this.message || this.busy ? "is-visible" : ""}"
         role="status"

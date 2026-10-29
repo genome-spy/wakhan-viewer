@@ -2,6 +2,7 @@ import { LitElement, html, nothing, type PropertyValues } from "lit";
 import { customElement, property, query, state } from "lit/decorators.js";
 import type { DatumSearchMatch } from "@genome-spy/core/types/search.js";
 import type { GenomeSearch } from "./visualization/search";
+import "./locationSearch.css";
 
 @customElement("wakhan-location-search")
 export class LocationSearch extends LitElement {

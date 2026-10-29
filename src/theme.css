@@ -1,0 +1,195 @@
+:root {
+  color-scheme: light dark;
+
+  /* Adjust these base colors; the remaining palette is derived. */
+  --base-ink: #10303e;
+  --base-paper: #fff;
+  --base-accent: #74c8b6;
+  --base-hp1: #c20c0c;
+  --base-hp2: #2980c8;
+  --base-sv-deletion: #d88033;
+  --base-sv-inversion: #1d8ac2;
+  --base-sv-insertion: #9b60c6;
+  --base-sv-duplication: #309c88;
+  --base-centromere: #c3988d;
+
+  --depth-lightness-offset-light: 0.12;
+  --depth-lightness-offset-dark: -0.08;
+  --sv-chroma-scale: 1.12;
+  --cytoband-lightness-max-dark: 0.5;
+
+  --color-page: light-dark(
+    color-mix(in oklab, var(--base-ink) 4%, var(--base-paper)),
+    var(--base-ink)
+  );
+  --color-surface: light-dark(
+    var(--base-paper),
+    color-mix(in oklab, var(--color-page) 85%, black)
+  );
+  --color-text: light-dark(
+    var(--base-ink),
+    color-mix(in oklab, var(--base-paper) 92%, var(--base-ink))
+  );
+  --color-text-muted: color-mix(
+    in oklab,
+    var(--color-text) 72%,
+    var(--color-surface)
+  );
+  --color-text-subtle: color-mix(
+    in oklab,
+    var(--color-text) 52%,
+    var(--color-surface)
+  );
+  --color-border: color-mix(
+    in oklab,
+    var(--color-text) 23%,
+    var(--color-surface)
+  );
+  --color-grid: color-mix(
+    in oklab,
+    var(--color-text) 12%,
+    var(--color-surface)
+  );
+  --color-surface-muted: color-mix(
+    in oklab,
+    var(--color-text) 6%,
+    var(--color-surface)
+  );
+  --color-accent: var(--base-accent);
+  --color-accent-strong: light-dark(
+    color-mix(in oklab, var(--base-accent) 45%, var(--base-ink)),
+    color-mix(in oklab, var(--base-accent) 80%, var(--base-paper))
+  );
+  --color-accent-hover: color-mix(
+    in oklab,
+    var(--base-accent) 75%,
+    var(--base-paper)
+  );
+  --color-warning: light-dark(
+    color-mix(in oklab, var(--base-sv-deletion) 65%, var(--base-ink)),
+    color-mix(in oklab, var(--base-sv-deletion) 75%, var(--base-paper))
+  );
+  --color-shadow: color-mix(in srgb, var(--base-ink) 25%, transparent);
+
+  /* Adjust haplotype and depth lightness while retaining chroma. */
+  --color-hp1: light-dark(
+    var(--base-hp1),
+    oklch(from var(--base-hp1) calc(l + 0.12) c h)
+  );
+  --color-hp2: light-dark(
+    var(--base-hp2),
+    oklch(from var(--base-hp2) calc(l + 0.12) c h)
+  );
+  --color-total: var(--color-accent-strong);
+  --color-depth-hp1: light-dark(
+    oklch(
+      from var(--color-hp1) calc(l + var(--depth-lightness-offset-light)) c h
+    ),
+    oklch(
+      from var(--color-hp1) calc(l + var(--depth-lightness-offset-dark)) c h
+    )
+  );
+  --color-depth-hp2: light-dark(
+    oklch(
+      from var(--color-hp2) calc(l + var(--depth-lightness-offset-light)) c h
+    ),
+    oklch(
+      from var(--color-hp2) calc(l + var(--depth-lightness-offset-dark)) c h
+    )
+  );
+  --color-depth-total: light-dark(
+    oklch(
+      from var(--color-total) calc(l + var(--depth-lightness-offset-light)) c h
+    ),
+    oklch(
+      from var(--color-total) calc(l + var(--depth-lightness-offset-dark)) c h
+    )
+  );
+  --color-loh: color-mix(in oklab, var(--color-hp2) 75%, var(--color-surface));
+  --color-sv-deletion: oklch(
+    from
+      light-dark(
+        var(--base-sv-deletion),
+        color-mix(in oklab, var(--base-sv-deletion) 72%, var(--base-paper))
+      )
+      l calc(c * var(--sv-chroma-scale)) h
+  );
+  --color-sv-inversion: oklch(
+    from
+      light-dark(
+        var(--base-sv-inversion),
+        color-mix(in oklab, var(--base-sv-inversion) 72%, var(--base-paper))
+      )
+      l calc(c * var(--sv-chroma-scale)) h
+  );
+  --color-sv-insertion: oklch(
+    from
+      light-dark(
+        var(--base-sv-insertion),
+        color-mix(in oklab, var(--base-sv-insertion) 72%, var(--base-paper))
+      )
+      l calc(c * var(--sv-chroma-scale)) h
+  );
+  --color-sv-duplication: oklch(
+    from
+      light-dark(
+        var(--base-sv-duplication),
+        color-mix(in oklab, var(--base-sv-duplication) 72%, var(--base-paper))
+      )
+      l calc(c * var(--sv-chroma-scale)) h
+  );
+
+  /* Dim both ramp endpoints in dark mode while retaining stain order. */
+  --cytoband-paper: light-dark(
+    var(--base-paper),
+    oklch(from var(--color-surface) var(--cytoband-lightness-max-dark) c h)
+  );
+  --cytoband-ink: light-dark(var(--base-ink), var(--color-surface));
+  --color-cytoband-gneg: color-mix(
+    in oklab,
+    var(--cytoband-ink) 3%,
+    var(--cytoband-paper)
+  );
+  --color-cytoband-gpos25: color-mix(
+    in oklab,
+    var(--cytoband-ink) 15%,
+    var(--cytoband-paper)
+  );
+  --color-cytoband-gpos50: color-mix(
+    in oklab,
+    var(--cytoband-ink) 30%,
+    var(--cytoband-paper)
+  );
+  --color-cytoband-gpos75: color-mix(
+    in oklab,
+    var(--cytoband-ink) 45%,
+    var(--cytoband-paper)
+  );
+  --color-cytoband-gpos100: color-mix(
+    in oklab,
+    var(--cytoband-ink) 70%,
+    var(--cytoband-paper)
+  );
+  /* A cooler hue keeps dimmed centromeres rose. */
+  --color-cytoband-acen: light-dark(
+    var(--base-centromere),
+    oklch(
+      from var(--base-centromere) min(l, var(--cytoband-lightness-max-dark)) c
+        calc(h - 45)
+    )
+  );
+  --color-cytoband-gvar: color-mix(
+    in oklab,
+    var(--cytoband-ink) 12%,
+    var(--cytoband-paper)
+  );
+  --color-cytoband-stalk: color-mix(
+    in oklab,
+    var(--cytoband-ink) 18%,
+    var(--cytoband-paper)
+  );
+  --color-cytoband-text: light-dark(var(--base-ink), var(--color-text));
+  --color-cytoband-text-inverse: var(--base-paper);
+
+  --genome-spy-foreground: var(--color-text);
+}

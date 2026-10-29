@@ -1,0 +1,121 @@
+wakhan-navigation-help {
+  display: contents;
+}
+
+.navigation-help {
+  width: min(600px, calc(100vw - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 20px;
+  overflow: auto;
+  border: 1px solid var(--color-border);
+  border-radius: 14px;
+  background: var(--color-surface);
+  color: var(--color-text);
+  box-shadow: 0 24px 80px var(--color-shadow);
+
+  &::backdrop {
+    background: color-mix(in srgb, var(--base-ink) 55%, transparent);
+    backdrop-filter: blur(1px);
+  }
+
+  h2 {
+    margin: 0 0 8px;
+    font:
+      600 24px "Space Grotesk",
+      sans-serif;
+    letter-spacing: -0.03em;
+  }
+
+  p {
+    margin: 0;
+    color: var(--color-text-muted);
+    font-size: 14px;
+    line-height: 1.55;
+  }
+
+  @media (max-width: 600px) {
+    padding: 16px;
+  }
+}
+
+@media (prefers-reduced-motion: no-preference) {
+  .navigation-help {
+    &,
+    &::backdrop {
+      opacity: 0;
+      transition-duration: 140ms;
+      transition-timing-function: ease-out;
+      transition-behavior: allow-discrete;
+    }
+
+    transform: translateY(4px) scale(0.98);
+    transition-property: opacity, transform, display, overlay;
+
+    &::backdrop {
+      transition-property: opacity, display, overlay;
+    }
+
+    &[open] {
+      opacity: 1;
+      transform: none;
+    }
+
+    &[open]::backdrop {
+      opacity: 1;
+    }
+
+    @starting-style {
+      &[open] {
+        opacity: 0;
+        transform: translateY(4px) scale(0.98);
+      }
+
+      &[open]::backdrop {
+        opacity: 0;
+      }
+    }
+  }
+}
+
+.navigation-help-illustration {
+  max-width: 450px;
+  margin: 16px auto;
+  border-radius: 8px;
+  background: radial-gradient(
+    ellipse at center,
+    var(--color-surface-muted),
+    var(--color-surface) 75%
+  );
+
+  svg {
+    display: block;
+    width: 100%;
+    height: auto;
+  }
+}
+
+.navigation-help-actions {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 12px;
+  margin-top: 16px;
+  padding-top: 14px;
+  border-top: 1px solid var(--color-grid);
+
+  label {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    cursor: pointer;
+  }
+
+  input {
+    margin: 0;
+    width: 16px;
+    height: 16px;
+    accent-color: var(--color-accent-strong);
+  }
+}
