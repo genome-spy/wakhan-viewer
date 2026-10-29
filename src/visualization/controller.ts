@@ -1,11 +1,12 @@
 import { embed } from "@genome-spy/core/minimal";
+import "./styles.css";
 import "@genome-spy/core/rendering/webgl.js";
 import "@genome-spy/core/rendering/svg.js";
 import "@genome-spy/core/rendering/canvas.js";
 import type { EmbedResult } from "@genome-spy/core/types/embedApi.js";
 import type { CalibrationEstimate } from "../calibration";
-import type { Profile, Row, WakhanResult } from "../model";
-import { createSpec } from "./spec";
+import type { CalibratedCoverage, Profile, Row, WakhanResult } from "../model";
+import { createSpec, layoutSignature } from "./spec";
 import { GenomeSearch } from "./search";
 import { bindWakhanColors, readWakhanColors, type WakhanColors } from "./theme";
 
@@ -14,50 +15,110 @@ export type Domain = [
   { chrom: string; pos: number },
 ];
 
-export class WakhanView {
-  search?: GenomeSearch;
-  private api?: EmbedResult;
-  private unbindColors?: () => void;
-  constructor(private host: HTMLElement) {}
+type ViewData = {
+  result: WakhanResult;
+  profile: Profile;
+  calibrated: CalibratedCoverage[];
+};
 
-  async initialize(
-    genes: Row[],
-    cytobands: Row[],
+type ViewSession = {
+  host: HTMLElement;
+  api: EmbedResult;
+  search: GenomeSearch;
+  unbindColors: () => void;
+  layout: string;
+  data: ViewData;
+};
+
+export class WakhanView {
+  private session?: ViewSession;
+  private disposed = false;
+
+  constructor(
+    private host: HTMLElement,
+    private genes: Row[],
+    private cytobands: Row[],
+  ) {}
+
+  get search() {
+    return this.session?.search;
+  }
+
+  /** Activate data and reveal a replacement only after it is ready. */
+  async show(
     result: WakhanResult,
+    profile: Profile,
     calibration?: CalibrationEstimate,
+    calibrated: CalibratedCoverage[] = [],
   ) {
-    this.api = await embed(
-      this.host,
-      createSpec(result, readWakhanColors(this.host), calibration),
-      { inputBindingContainer: "none" },
-    );
-    this.unbindColors = bindWakhanColors(
-      this.host,
-      this.api.params.get<WakhanColors>("wakhanColors"),
-    );
-    this.api.datasets.set("genes", structuredClone(genes));
-    this.api.datasets.set("cytobands", structuredClone(cytobands));
-    this.search = new GenomeSearch(this.api);
+    if (this.disposed) throw Error("The visualization has been disposed.");
+    const prior = this.domain();
+    const layout = layoutSignature(result, calibration);
+    const data = { result, profile, calibrated };
+    const current = this.session;
+
+    if (current?.layout === layout) {
+      try {
+        this.publish(current.api, data);
+        if (prior) await this.restoreDomain(current.api, prior);
+        current.data = data;
+      } catch (error) {
+        this.publish(current.api, current.data);
+        if (prior) await this.restoreDomain(current.api, prior);
+        throw error;
+      }
+      return;
+    }
+
+    const host = document.createElement("div");
+    host.className = "visualization-host";
+    host.style.visibility = "hidden";
+    this.host.append(host);
+    let api: EmbedResult | undefined;
+    let unbindColors: (() => void) | undefined;
+    try {
+      api = await embed(
+        host,
+        createSpec(result, readWakhanColors(host), calibration),
+        { inputBindingContainer: "none" },
+      );
+      if (this.disposed) throw Error("The visualization has been disposed.");
+      unbindColors = bindWakhanColors(
+        host,
+        api.params.get<WakhanColors>("wakhanColors"),
+      );
+      api.datasets.set("genes", structuredClone(this.genes));
+      api.datasets.set("cytobands", structuredClone(this.cytobands));
+      this.publish(api, data);
+      if (prior) await this.restoreDomain(api, prior);
+      if (this.disposed) throw Error("The visualization has been disposed.");
+      const search = new GenomeSearch(api);
+
+      if (current) this.disposeSession(current);
+      this.session = { host, api, search, unbindColors, layout, data };
+      host.style.visibility = "";
+    } catch (error) {
+      unbindColors?.();
+      api?.finalize();
+      host.remove();
+      throw error;
+    }
   }
 
   domain(): Domain | undefined {
-    const d = this.api?.getScaleResolutionByName("genome")?.getComplexDomain();
-    return Array.isArray(d) &&
-      typeof d[0] === "object" &&
-      d[0] &&
-      "chrom" in d[0]
-      ? (structuredClone(d) as Domain)
-      : undefined;
+    const domain = this.session?.api
+      .getScaleResolutionByName("genome")
+      ?.getComplexDomain();
+    return domain ? (structuredClone(domain) as Domain) : undefined;
   }
 
-  show(
-    result: WakhanResult,
-    profile: Profile,
-    preserve = true,
-    calibrated: Row[] = [],
-  ) {
-    if (!this.api) throw Error("GenomeSpy is not ready.");
-    const prior = preserve ? this.domain() : undefined;
+  private restoreDomain(api: EmbedResult, domain: Domain) {
+    const scale = api.getScaleResolutionByName("genome");
+    if (!scale) throw Error("The genome scale is missing.");
+    return scale.zoomTo(domain, { duration: 0 });
+  }
+
+  private publish(api: EmbedResult, { result, profile, calibrated }: ViewData) {
     const rows: Record<string, Row[]> = {
       segments: result.segments[profile],
       coverage: result.coverage,
@@ -69,28 +130,28 @@ export class WakhanView {
       loh: result.loh,
     };
     for (const [name, data] of Object.entries(rows))
-      this.api.datasets.set(name, structuredClone(data));
-    if (prior) this.zoom(prior, 0);
-  }
-
-  zoom(domain: Domain, duration = 450) {
-    this.api?.getScaleResolutionByName("genome")?.zoomTo(domain, { duration });
+      api.datasets.set(name, structuredClone(data));
   }
 
   async export(format: "png" | "svg") {
-    if (!this.api) throw Error("GenomeSpy is not ready.");
+    const api = this.session?.api;
+    if (!api) throw Error("GenomeSpy is not ready.");
     return format === "svg"
-      ? this.api.imageExport.svg({
+      ? api.imageExport.svg({
           rasterization: { maxVectorInstances: 5000 },
         })
-      : this.api.imageExport.raster({ pixelRatio: 3 });
+      : api.imageExport.raster({ pixelRatio: 3 });
+  }
+
+  private disposeSession(session: ViewSession) {
+    session.unbindColors();
+    session.api.finalize();
+    session.host.remove();
   }
 
   dispose() {
-    this.search = undefined;
-    this.unbindColors?.();
-    this.unbindColors = undefined;
-    this.api?.finalize();
-    this.api = undefined;
+    this.disposed = true;
+    if (this.session) this.disposeSession(this.session);
+    this.session = undefined;
   }
 }

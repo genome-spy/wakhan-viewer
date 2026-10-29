@@ -1,0 +1,31 @@
+#vis {
+  display: grid;
+  flex: 1;
+  min-width: 0;
+  min-height: 0;
+  background: var(--color-surface);
+  overflow: auto;
+
+  canvas {
+    touch-action: pan-y;
+  }
+
+  &.is-loading {
+    opacity: 0.6;
+    pointer-events: none;
+  }
+}
+
+#vis > .visualization-host {
+  grid-area: 1 / 1;
+  display: flex;
+  min-width: 0;
+  min-height: 0;
+
+  > .canvas-wrapper {
+    /* Preserve readable tracks when the host needs to scroll. */
+    flex-basis: 0;
+    flex-shrink: 0;
+    min-height: 550px;
+  }
+}

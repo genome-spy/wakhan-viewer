@@ -1,6 +1,7 @@
 import { LitElement, html, nothing } from "lit";
 import { customElement, query, state } from "lit/decorators.js";
 import { unsafeSVG } from "lit/directives/unsafe-svg.js";
+import { live } from "lit/directives/live.js";
 import type { Profile, WakhanResult } from "./model";
 import { genes, cytobands } from "./annotations";
 import { WakhanView } from "./visualization/controller";
@@ -10,7 +11,6 @@ import {
   calibratedCoverage,
   type CalibrationEstimate,
 } from "./calibration";
-import { layoutSignature } from "./visualization/spec";
 import { ImportQueue } from "./import/queue";
 import scrollAndZoom from "./assets/scrollAndZoom.svg?raw";
 import "./locationSearch";
@@ -33,7 +33,6 @@ export class WakhanViewer extends LitElement {
   @query(".navigation-help") private navigationHelpDialog!: HTMLDialogElement;
   private navigationHelpShown = false;
   private view?: WakhanView;
-  private viewLayout?: string;
   private worker?: Worker;
   private fileInput?: HTMLInputElement;
   private statusTimer?: number;
@@ -157,10 +156,7 @@ export class WakhanViewer extends LitElement {
         try {
           await this.showResult(this.loaded.length - 1);
         } catch (error) {
-          this.view?.dispose();
-          this.view = undefined;
           this.loaded = this.loaded.slice(0, -1);
-          this.active = -1;
           throw error;
         }
       }
@@ -183,47 +179,29 @@ export class WakhanViewer extends LitElement {
 
   private async showResult(index: number) {
     const result = this.loaded[index];
-    const prior = this.view?.domain();
-    this.active = index;
-    this.profile = result.profiles.includes(this.profile)
+    const profile = result.profiles.includes(this.profile)
       ? this.profile
       : result.profiles[0];
-    this.calibrationEstimate = result.coverage.length
+    const calibration = result.coverage.length
       ? estimateCalibration(result)
       : undefined;
     this.switching = true;
     try {
       await this.updateComplete;
-      const layout = layoutSignature(result, this.calibrationEstimate);
-      if (this.view && this.viewLayout !== layout) {
-        this.view.dispose();
-        this.view = undefined;
-      }
       if (!this.view) {
         const host = this.querySelector<HTMLElement>("#vis");
         if (!host) throw Error("Visualization container was not created.");
-        const view = new WakhanView(host);
-        try {
-          await view.initialize(
-            genes,
-            cytobands,
-            result,
-            this.calibrationEstimate,
-          );
-        } catch (error) {
-          view.dispose();
-          throw error;
-        }
-        this.view = view;
-        this.viewLayout = layout;
+        this.view = new WakhanView(host, genes, cytobands);
       }
-      this.view.show(
+      await this.view.show(
         result,
-        this.profile,
-        !!prior,
-        this.calibratedRows(result),
+        profile,
+        calibration,
+        calibration ? calibratedCoverage(result.coverage, calibration) : [],
       );
-      if (prior) this.view.zoom(prior, 0);
+      this.active = index;
+      this.profile = profile;
+      this.calibrationEstimate = calibration;
 
       if (!this.navigationHelpShown) {
         this.navigationHelpShown = true;
@@ -231,16 +209,34 @@ export class WakhanViewer extends LitElement {
           this.showNavigationHelp();
         }
       }
+    } catch (error) {
+      if (this.active < 0) {
+        this.view?.dispose();
+        this.view = undefined;
+      }
+      throw error;
     } finally {
       this.switching = false;
     }
   }
 
-  private changeProfile(value: Profile) {
+  private async changeProfile(value: Profile) {
     const result = this.loaded[this.active];
-    if (!result?.profiles.includes(value) || !this.view) return;
-    this.profile = value;
-    this.view.show(result, value, true, this.calibratedRows(result));
+    if (this.busy || !result?.profiles.includes(value) || !this.view) return;
+    this.switching = true;
+    try {
+      await this.view.show(
+        result,
+        value,
+        this.calibrationEstimate,
+        this.calibratedRows(result),
+      );
+      this.profile = value;
+    } catch (error) {
+      this.status(`Visualization failed: ${String(error)}`, true);
+    } finally {
+      this.switching = false;
+    }
   }
 
   private showNavigationHelp() {
@@ -328,6 +324,7 @@ export class WakhanViewer extends LitElement {
         <label class="sr-only" for="result-select">Result</label>
         <select
           id="result-select"
+          .value=${live(String(this.active))}
           ?disabled=${this.busy}
           @change=${(e: Event) =>
             this.activate(Number((e.target as HTMLSelectElement).value))}
@@ -344,6 +341,7 @@ export class WakhanViewer extends LitElement {
         <label class="sr-only" for="profile-select">Profile</label>
         <select
           id="profile-select"
+          .value=${live(this.profile)}
           ?disabled=${this.busy}
           @change=${(e: Event) =>
             this.changeProfile(
@@ -502,8 +500,9 @@ export class WakhanViewer extends LitElement {
 
   render() {
     const active = this.loaded[this.active];
+    const viewing = !!active || this.switching;
     return html`<div
-      class="app ${active ? "is-viewing" : ""} ${
+      class="app ${viewing ? "is-viewing" : ""} ${
         this.dragging ? "dragging" : ""
       }"
       @dragover=${this.onDragOver}
@@ -546,7 +545,7 @@ export class WakhanViewer extends LitElement {
         }
       </header>
       ${
-        active
+        viewing
           ? html`<main class="workspace" aria-label="Genome viewer">
               <div
                 id="vis"
