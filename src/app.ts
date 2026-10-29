@@ -607,9 +607,7 @@ export class WakhanViewer extends LitElement {
         active
           ? nothing
           : html`<footer class="footer">
-              <span class="footer-project"
-                >Wakhan Viewer ${this.renderProjectLinks()}</span
-              >
+              <span class="footer-project">${this.renderProjectLinks()}</span>
               <span>
                 A viewer for
                 <a href="https://github.com/KolmogorovLab/Wakhan">Wakhan</a>
