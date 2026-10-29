@@ -126,29 +126,48 @@ function navigator() {
   };
 }
 
-function sitesTrack() {
+function sitesTrack(withLinks: boolean) {
   return {
-    name: "sv-sites",
-    height: 18,
-    title: "Insertions and single breakends",
+    name: "single-sites",
+    height: withLinks ? 6 : 18,
+    ...(withLinks ? {} : { title: "Insertions and single breakends" }),
     data: { name: "svSites" },
-    mark: { type: "point", size: 28, opacity: 0.7, clip: "x" },
+    params: [{ name: "svSiteSelect", select: "point", persist: false }],
+    mark: {
+      type: "point",
+      shape: "triangle-up",
+      size: 18,
+      opacity: 0.7,
+      clip: "x",
+    },
     encoding: {
-      x,
+      x: { chrom: "chrom1", pos: "start1", type: "locus", band: 0 },
+      y: { value: 0.5 },
       color: {
-        field: "svClass",
-        type: "nominal",
-        scale: {
-          domain: ["INS", "sBND"],
-          range: [themeColor("svInsertion"), themeColor("textMuted")],
+        condition: {
+          test: {
+            param: { or: ["svSiteSelect", "svRegion"] },
+            empty: true,
+          },
+          field: "svClass",
+          type: "nominal",
+          legend: null,
         },
-        legend: null,
+        value: themeColor("border"),
       },
       tooltip: [
-        tip("variantId", "Variant"),
-        tip("svClass", "Class"),
-        tip("genotype", "GT"),
-        tip("variantReads", "DV"),
+        tip("svClass", "Wakhan SV class"),
+        tip("sourceSvType", "Source SVTYPE"),
+        tip("variantId", "Original variant ID"),
+        tip("orientation", "Strands"),
+        tip("haplotype", "Source HP"),
+        tip("phaseSet", "Phase set"),
+        tip("genotype", "Target genotype"),
+        tip("variantReads", "Variant reads"),
+        tip("referenceReads", "Reference reads"),
+        tip("vaf", "VAF"),
+        tip("haplotypeVaf", "Haplotype VAF"),
+        tip("detailedType", "Severus detail"),
       ],
     },
   };
@@ -571,9 +590,21 @@ export function createSpec(
   const mode = result.mode;
   const calibration =
     mode === "phased" && result.coverage.length ? estimate : undefined;
+  const svSpec = structuredClone(recipeSvSpec);
   const tracks = [
-    ...(result.svLinks.length ? [structuredClone(recipeSvSpec)] : []),
-    ...(!result.svLinks.length && result.svSites.length ? [sitesTrack()] : []),
+    ...(result.svLinks.length || result.svSites.length
+      ? [
+          {
+            ...svSpec,
+            vconcat: [
+              ...(result.svLinks.length ? svSpec.vconcat : []),
+              ...(result.svSites.length
+                ? [sitesTrack(!!result.svLinks.length)]
+                : []),
+            ],
+          },
+        ]
+      : []),
     ...(mode === "phased"
       ? calibration
         ? [

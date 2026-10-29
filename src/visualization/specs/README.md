@@ -5,7 +5,9 @@ at commit `cf3aa5b436aa877da7718a588e8dd172639dfa82` in the
 [GenomeSpy dataset recipes](https://github.com/genome-spy/genomespy-dataset-recipes/tree/main/recipes/hcc1954-wakhan-explorer/specs).
 The recipe's [rights review](https://github.com/genome-spy/genomespy-dataset-recipes/blob/main/recipes/hcc1954-wakhan-explorer/RIGHTS.md)
 states that its original specs are CC0. This copy replaces sample-specific
-file URLs with the `svLinks` and `svSites` named sources. The app supplies
+file URLs with the `svLinks` named source. `../spec.ts` composes the arc spec with
+one shared insertion/single-breakend track using `svSites`, so site tooltips and
+selection behavior stay the same with or without arcs. The app supplies
 normalized Severus VCF records to those sources through GenomeSpy's API.
 
 `../spec.ts` follows the same recipe for the navigator, title and axis styling,

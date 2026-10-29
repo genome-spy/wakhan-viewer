@@ -12,6 +12,11 @@ type Track = {
   };
   layer?: { data?: { name?: string }; resolve?: unknown }[];
   vconcat?: Track[];
+  params?: unknown[];
+  encoding?: {
+    color: unknown;
+    tooltip: { field: string; title: string }[];
+  };
 };
 
 function tracks(spec: ReturnType<typeof createSpec>): Track[] {
@@ -78,6 +83,39 @@ it("assigns a color to single breakends when sites and links share the scale", (
 
   expect(scale.range[scale.domain.indexOf("sBND")]).toEqual({
     expr: "wakhanColors.textMuted",
+  });
+});
+
+it("keeps site details and selection behavior when an archive has no SV links", () => {
+  const result = emptyResult("sites.zip");
+  result.svSites = [site];
+  const sitesOnly = tracks(createSpec(result, colors))[0].vconcat![0];
+
+  result.svLinks = [link];
+  const withLinks = tracks(createSpec(result, colors))[0].vconcat!.find(
+    (track) => track.name === "single-sites",
+  )!;
+
+  expect(sitesOnly.encoding).toEqual(withLinks.encoding);
+  expect(sitesOnly.encoding!.tooltip.map(({ field }) => field)).toEqual(
+    expect.arrayContaining([
+      "sourceSvType",
+      "haplotype",
+      "phaseSet",
+      "referenceReads",
+      "haplotypeVaf",
+    ]),
+  );
+  expect(sitesOnly.params).toEqual(withLinks.params);
+  expect(sitesOnly.params).toContainEqual({
+    name: "svSiteSelect",
+    select: "point",
+    persist: false,
+  });
+  expect(sitesOnly.encoding!.color).toMatchObject({
+    condition: {
+      test: { param: { or: ["svSiteSelect", "svRegion"] } },
+    },
   });
 });
 
