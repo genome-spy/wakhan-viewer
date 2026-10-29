@@ -1,7 +1,16 @@
 # Wakhan Viewer
 
-A browser-based Wakhan results viewer built with TypeScript, Lit, Vite, and
-GenomeSpy. ZIP files are processed locally in a web worker.
+Wakhan Viewer is an interactive viewer for haplotype-specific somatic copy-number
+analysis results and structural variants (SVs) in tumor genomes.
+[Wakhan](https://github.com/KolmogorovLab/Wakhan/) analyzes long-read sequencing
+data (Oxford Nanopore or PacBio) to reconstruct chromosome-scale copy-number
+profiles and estimate tumor purity and ploidy. This viewer opens Wakhan results
+ZIPs and displays copy-number segments, read depth, folded B-allele frequency
+(BAF), and Severus SV calls on linked genomic tracks.
+
+The app is built with TypeScript, Lit, and Vite, and uses
+[GenomeSpy](https://github.com/genome-spy/genome-spy) for visualization. ZIP files
+are processed locally in a web worker.
 
 ## Code style
 
