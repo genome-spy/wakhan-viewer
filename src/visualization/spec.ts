@@ -1,31 +1,50 @@
 import type { RootSpec } from "@genome-spy/core/spec/root.js";
+import type {
+  LayerSpec,
+  UnitSpec,
+  VConcatSpec,
+  ViewSpec,
+} from "@genome-spy/core/spec/view.js";
+import type {
+  PositionDef,
+  Position2Def,
+  StringFieldDef,
+} from "@genome-spy/core/spec/channel.js";
+import type {
+  RulerMarkConfig,
+  RulerParameter,
+} from "@genome-spy/core/spec/parameter.js";
 import type { CalibrationEstimate } from "../calibration";
 import type { WakhanResult } from "../model";
 import recipeSvSpec from "./specs/structural-variants.json";
 import { themeColor, type WakhanColors } from "./theme";
 
-const locus = (pos: string) => ({
+const locus = (pos: string): PositionDef => ({
   chrom: "chrom",
   pos,
   type: "locus",
   band: 0,
 });
 const x = locus("start");
-const x2 = { chrom: "chrom", pos: "end", band: 0 };
-const tip = (field: string, title: string, format?: string) => ({
+const x2: Position2Def = { chrom: "chrom", pos: "end", band: 0 };
+const tip = (
+  field: string,
+  title: string,
+  format?: string,
+): StringFieldDef => ({
   field,
   title,
   ...(format ? { format } : {}),
 });
 
-const rulerMark = {
+const rulerMark: RulerMarkConfig = {
   stroke: themeColor("textMuted"),
   strokeWidth: 1,
   strokeDash: [3, 3],
   opacity: { expr: "rulerOpacity" },
 };
 
-function horizontalRuler(name: string) {
+function horizontalRuler(name: string): RulerParameter {
   return {
     name,
     persist: false,
@@ -39,7 +58,7 @@ function horizontalRuler(name: string) {
   };
 }
 
-function maskLayer() {
+function maskLayer(): UnitSpec {
   return {
     data: { name: "masks" },
     mark: {
@@ -55,7 +74,7 @@ function maskLayer() {
   };
 }
 
-function navigator() {
+function navigator(): LayerSpec {
   return {
     name: "overview",
     height: 20,
@@ -126,7 +145,7 @@ function navigator() {
   };
 }
 
-function sitesTrack(withLinks: boolean) {
+function sitesTrack(withLinks: boolean): UnitSpec {
   return {
     name: "single-sites",
     height: withLinks ? 6 : 18,
@@ -176,9 +195,9 @@ function sitesTrack(withLinks: boolean) {
 function cnTrack(
   hp: "HP1" | "HP2" | "Total",
   calibration?: CalibrationEstimate,
-) {
+): LayerSpec {
   const ink = themeColor(hp === "HP1" ? "hp1" : hp === "HP2" ? "hp2" : "total");
-  const segment = {
+  const segment: UnitSpec = {
     data: { name: "segments" },
     transform: [
       {
@@ -212,7 +231,7 @@ function cnTrack(
       ],
     },
   };
-  const layers = [
+  const layers: UnitSpec[] = [
     maskLayer(),
     {
       data: { values: [{}] },
@@ -283,7 +302,7 @@ function cnTrack(
   };
 }
 
-function depthTrack(hp: "HP1" | "HP2" | "Total") {
+function depthTrack(hp: "HP1" | "HP2" | "Total"): UnitSpec {
   const field = hp === "HP1" ? "hp1" : hp === "HP2" ? "hp2" : "total";
   const ink = themeColor(
     hp === "HP1" ? "depthHp1" : hp === "HP2" ? "depthHp2" : "depthTotal",
@@ -323,7 +342,7 @@ function depthTrack(hp: "HP1" | "HP2" | "Total") {
   };
 }
 
-function bafTrack() {
+function bafTrack(): UnitSpec {
   return {
     name: "baf",
     height: { grow: 0.7 },
@@ -386,7 +405,7 @@ function bafTrack() {
   };
 }
 
-function lohTrack(empty: boolean) {
+function lohTrack(empty: boolean): LayerSpec {
   return {
     name: "loh",
     height: 12,
@@ -424,7 +443,7 @@ function lohTrack(empty: boolean) {
   };
 }
 
-function cytobandsTrack() {
+function cytobandsTrack(): LayerSpec {
   const stains = [
     "gneg",
     "gpos25",
@@ -497,7 +516,7 @@ function cytobandsTrack() {
   };
 }
 
-function genesTrack() {
+function genesTrack(): LayerSpec {
   return {
     name: "genes",
     height: 25,
@@ -590,8 +609,9 @@ export function createSpec(
   const mode = result.mode;
   const calibration =
     mode === "phased" && result.coverage.length ? estimate : undefined;
-  const svSpec = structuredClone(recipeSvSpec);
-  const tracks = [
+  // JSON imports widen discriminant literals; assert only at the import boundary.
+  const svSpec = structuredClone(recipeSvSpec) as VConcatSpec;
+  const tracks: ViewSpec[] = [
     ...(result.svLinks.length || result.svSites.length
       ? [
           {
@@ -630,7 +650,7 @@ export function createSpec(
                 cnTrack("HP1", calibration),
                 cnTrack("HP2", calibration),
               ],
-            },
+            } satisfies VConcatSpec,
           ]
         : [
             cnTrack("HP1"),
@@ -760,5 +780,5 @@ export function createSpec(
         vconcat: tracks,
       },
     ],
-  } as unknown as RootSpec;
+  };
 }
