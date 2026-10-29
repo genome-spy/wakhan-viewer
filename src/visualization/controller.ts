@@ -105,6 +105,32 @@ export class WakhanView {
     }
   }
 
+  /** Change only CN segments; all other sample datasets remain installed. */
+  async setProfile(profile: Profile) {
+    const session = this.session;
+    if (!session) throw Error("GenomeSpy is not ready.");
+    const { result } = session.data;
+    if (!result.profiles.includes(profile))
+      throw Error(`The result has no ${profile} profile.`);
+    if (session.data.profile === profile) return;
+
+    const prior = this.domain();
+    const publish = (value: Profile) =>
+      session.api.datasets.set(
+        "segments",
+        structuredClone(result.segments[value]),
+      );
+    try {
+      publish(profile);
+      if (prior) await this.restoreDomain(session.api, prior);
+      session.data.profile = profile;
+    } catch (error) {
+      publish(session.data.profile);
+      if (prior) await this.restoreDomain(session.api, prior);
+      throw error;
+    }
+  }
+
   domain(): Domain | undefined {
     const domain = this.session?.api
       .getScaleResolutionByName("genome")

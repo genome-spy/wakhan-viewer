@@ -217,24 +217,13 @@ export class WakhanViewer extends LitElement {
     if (this.busy || !result?.profiles.includes(value) || !this.view) return;
     this.switching = true;
     try {
-      await this.view.show(
-        result,
-        value,
-        this.calibrationEstimate,
-        this.calibratedRows(result),
-      );
+      await this.view.setProfile(value);
       this.profile = value;
     } catch (error) {
       this.status(`Visualization failed: ${String(error)}`, true);
     } finally {
       this.switching = false;
     }
-  }
-
-  private calibratedRows(result: WakhanResult) {
-    return this.calibrationEstimate
-      ? calibratedCoverage(result.coverage, this.calibrationEstimate)
-      : [];
   }
 
   private async exportImage(format: "png" | "svg") {

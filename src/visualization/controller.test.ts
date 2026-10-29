@@ -1,5 +1,5 @@
 import { beforeEach, expect, it, onTestFinished, vi } from "vitest";
-import { emptyResult } from "../model";
+import { emptyResult, type Segment } from "../model";
 import { WakhanView, type Domain } from "./controller";
 
 const { embed, unbindColors } = vi.hoisted(() => ({
@@ -53,6 +53,30 @@ function api() {
     params: { get: vi.fn() },
     finalize: vi.fn(),
   };
+}
+
+function profileResult() {
+  const result = emptyResult("profiles.zip");
+  result.profiles = ["integer", "subclonal"];
+  const segment: Segment = {
+    chrom: "chr1",
+    start: 0,
+    end: 100,
+    haplotype: "HP1",
+    copyNumber: 2,
+    medianCoverage: 32,
+    sourceCopyNumber: 2,
+    sourceMedianCoverage: 32,
+    confidence: 0.9,
+    status: "reported",
+    subclonal: false,
+    breakpointIds: "",
+  };
+  result.segments.integer = [segment];
+  result.segments.subclonal = [
+    { ...segment, copyNumber: 2.5, subclonal: true },
+  ];
+  return result;
 }
 
 function setup() {
@@ -160,4 +184,65 @@ it("cleans up an embed that finishes initializing after disposal", async () => {
   expect(pending.finalize).toHaveBeenCalledOnce();
   expect(host.children).toHaveLength(0);
   expect(view.search).toBeUndefined();
+});
+
+it("changes only segments on profile switches and retains the locus", async () => {
+  const current = api();
+  embed.mockResolvedValue(current);
+  const { view } = setup();
+  const result = profileResult();
+  await view.show(result, "integer");
+  current.datasets.set.mockClear();
+
+  await view.setProfile("subclonal");
+  expect(current.datasets.set).toHaveBeenCalledExactlyOnceWith(
+    "segments",
+    result.segments.subclonal,
+  );
+  expect(current.scale.zoomTo).toHaveBeenCalledExactlyOnceWith(domain, {
+    duration: 0,
+  });
+  expect(result.segments.integer[0].copyNumber).toBe(2);
+  expect(embed).toHaveBeenCalledTimes(1);
+});
+
+it("restores the active profile if a compatible result publication fails", async () => {
+  const current = api();
+  embed.mockResolvedValue(current);
+  const { view } = setup();
+  const result = profileResult();
+  await view.show(result, "integer");
+  await view.setProfile("subclonal");
+  const search = view.search;
+  current.datasets.set.mockClear();
+  current.scale.zoomTo.mockClear();
+  current.datasets.set
+    .mockImplementationOnce(() => {})
+    .mockImplementationOnce(() => {
+      throw Error("Cannot replace coverage");
+    });
+
+  await expect(view.show(emptyResult("next.zip"), "integer")).rejects.toThrow(
+    "Cannot replace coverage",
+  );
+  expect(view.search).toBe(search);
+  expect(
+    current.datasets.set.mock.calls.slice(2).map(([name]) => name),
+  ).toEqual([
+    "segments",
+    "coverage",
+    "calibratedCoverage",
+    "baf",
+    "svLinks",
+    "svSites",
+    "masks",
+    "loh",
+  ]);
+  expect(current.datasets.set.mock.calls[2]).toEqual([
+    "segments",
+    result.segments.subclonal,
+  ]);
+  expect(current.scale.zoomTo).toHaveBeenCalledExactlyOnceWith(domain, {
+    duration: 0,
+  });
 });
