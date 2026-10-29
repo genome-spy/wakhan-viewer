@@ -10,6 +10,7 @@ import {
   type CalibrationEstimate,
 } from "./calibration";
 import { ImportQueue } from "./import/queue";
+import { importResult } from "./import/client";
 import type { NavigationHelp } from "./navigationHelp";
 import "./navigationHelp";
 import { renderResultDetails } from "./resultDetails";
@@ -30,7 +31,7 @@ export class WakhanViewer extends LitElement {
   @state() private calibrationEstimate?: CalibrationEstimate;
   @query("wakhan-navigation-help") private navigationHelp!: NavigationHelp;
   private view?: WakhanView;
-  private worker?: Worker;
+  private importAbort = new AbortController();
   private fileInput?: HTMLInputElement;
   private statusTimer?: number;
   private importQueue = new ImportQueue(
@@ -48,7 +49,7 @@ export class WakhanViewer extends LitElement {
   }
 
   disconnectedCallback() {
-    this.worker?.terminate();
+    this.importAbort.abort();
     this.view?.dispose();
     clearTimeout(this.statusTimer);
     super.disconnectedCallback();
@@ -126,40 +127,15 @@ export class WakhanViewer extends LitElement {
   }
 
   private async importFile(file: File) {
-    const worker = new Worker(
-      new URL("./import/importWorker.ts", import.meta.url),
-      { type: "module" },
-    );
-    this.worker = worker;
-    try {
-      const result = await new Promise<WakhanResult>((resolve, reject) => {
-        worker.onmessage = (
-          event: MessageEvent<{
-            ok: boolean;
-            result?: WakhanResult;
-            error?: string;
-          }>,
-        ) => {
-          event.data.ok && event.data.result
-            ? resolve(event.data.result)
-            : reject(Error(event.data.error ?? "ZIP import failed"));
-        };
-        worker.onerror = (event) =>
-          reject(Error(event.message || "ZIP importer failed"));
-        worker.postMessage({ file });
-      });
-      this.loaded = [...this.loaded, result];
-      if (this.active < 0) {
-        try {
-          await this.showResult(this.loaded.length - 1);
-        } catch (error) {
-          this.loaded = this.loaded.slice(0, -1);
-          throw error;
-        }
+    const result = await importResult(file, this.importAbort.signal);
+    this.loaded = [...this.loaded, result];
+    if (this.active < 0) {
+      try {
+        await this.showResult(this.loaded.length - 1);
+      } catch (error) {
+        this.loaded = this.loaded.slice(0, -1);
+        throw error;
       }
-    } finally {
-      worker.terminate();
-      if (this.worker === worker) this.worker = undefined;
     }
   }
 
