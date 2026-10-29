@@ -90,21 +90,10 @@ export function bindWakhanColors(
   host: HTMLElement,
   palette: ParamApi<WakhanColors>,
 ): () => void {
-  const style = getComputedStyle(host);
   const preference = matchMedia("(prefers-color-scheme: dark)");
-  let previousStyle: string | undefined;
 
   const refresh = () => {
-    const signature = JSON.stringify([
-      style.colorScheme,
-      style.color,
-      preference.matches,
-      ...colorProperties.map((property) => style.getPropertyValue(property)),
-    ]);
-    if (signature === previousStyle) return;
-
     const colors = readWakhanColors(host);
-    previousStyle = signature;
     const previous = palette.getValue();
     if (wakhanColorNames.some((name) => previous[name] !== colors[name])) {
       palette.setValue(colors);
@@ -115,23 +104,5 @@ export function bindWakhanColors(
   refresh();
 
   preference.addEventListener("change", refresh);
-  const observer = new MutationObserver(refresh);
-  for (
-    let ancestor: Element | null = host;
-    ancestor;
-    ancestor = ancestor.parentElement
-  ) {
-    observer.observe(ancestor, { attributes: true });
-  }
-
-  // DevTools and CSSOM stylesheet edits do not produce DOM mutations.
-  const timer = window.setInterval(() => {
-    if (!document.hidden) refresh();
-  }, 250);
-
-  return () => {
-    window.clearInterval(timer);
-    observer.disconnect();
-    preference.removeEventListener("change", refresh);
-  };
+  return () => preference.removeEventListener("change", refresh);
 }
