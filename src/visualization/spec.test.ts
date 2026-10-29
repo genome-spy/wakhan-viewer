@@ -7,6 +7,9 @@ import { wakhanColorNames, type WakhanColors } from "./theme";
 
 type Track = {
   name: string;
+  scales?: {
+    color: { domain: string[]; range: { expr: string }[] };
+  };
   layer?: { data?: { name?: string }; resolve?: unknown }[];
   vconcat?: Track[];
 };
@@ -28,6 +31,17 @@ const estimate: CalibrationEstimate = {
 const colors = Object.fromEntries(
   wakhanColorNames.map((name) => [name, "rgb(12, 34, 56)"]),
 ) as WakhanColors;
+
+it("assigns a color to single breakends when sites and links share the scale", () => {
+  const result = emptyResult("single-breakends.zip");
+  result.svLinks = [{ svClass: "DEL" }];
+  result.svSites = [{ svClass: "sBND" }];
+  const scale = tracks(createSpec(result, colors))[0].scales!.color;
+
+  expect(scale.range[scale.domain.indexOf("sBND")]).toEqual({
+    expr: "wakhanColors.textMuted",
+  });
+});
 
 it("shares the CSS palette with generated tracks and the imported SV spec", () => {
   const result = emptyResult("themed.zip");

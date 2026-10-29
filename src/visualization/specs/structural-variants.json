@@ -12,13 +12,14 @@
 
   "scales": {
     "color": {
-      "domain": ["DEL", "INV", "INS", "BND", "DUP"],
+      "domain": ["DEL", "INV", "INS", "BND", "DUP", "sBND"],
       "range": [
         { "expr": "wakhanColors.svDeletion" },
         { "expr": "wakhanColors.svInversion" },
         { "expr": "wakhanColors.svInsertion" },
         { "expr": "wakhanColors.textMuted" },
-        { "expr": "wakhanColors.svDuplication" }
+        { "expr": "wakhanColors.svDuplication" },
+        { "expr": "wakhanColors.textMuted" }
       ]
     }
   },

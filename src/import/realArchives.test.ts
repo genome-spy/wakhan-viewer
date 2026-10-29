@@ -21,6 +21,25 @@ const cases = [
 ];
 
 describe("Wakhan archives", () => {
+  it("retains the demo's PASS single breakend at chr4:54,596,602", async () => {
+    const name = "HCC1937_plots_data.zip";
+    const members = extractArchive(readFileSync(`public/examples/${name}`));
+    const result = await parseMembers(name, members);
+
+    expect(
+      result.svSites.find((site) => site.variantId === "severus_BND20728"),
+    ).toMatchObject({
+      svClass: "sBND",
+      chrom: "chr4",
+      start: 54596601,
+      genotype: "0/1",
+      variantReads: 196,
+      referenceReads: 174,
+      vaf: 0.53,
+      detailedType: "loose_end",
+    });
+  });
+
   for (const sample of cases) {
     it.skipIf(sample.optional && !existsSync(sample.path))(
       `imports ${sample.name} with all expected tracks`,
