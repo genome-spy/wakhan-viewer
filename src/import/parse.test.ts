@@ -69,6 +69,65 @@ describe("observed Wakhan table contract", () => {
     ).toBe(true);
   });
 
+  it("uses sentinel masks for LOH and repairs only matching integer placeholders", async () => {
+    const subclonalHeader = header.replace(
+      "\tsvs_breakpoints_ids",
+      "\thp1_is_subclonal\thp2_is_subclonal\tsvs_breakpoints_ids",
+    );
+    const result = await parseMembers("masked.zip", {
+      "integer_profile.bed": `${header}\nchr1\t0\t10\t0\t0\t0\t0\t0\t0\t.\nchr1\t11\t20\t0\t0\t0\t0\t0\t0\t.`,
+      "subclonal_profile.bed": `${subclonalHeader}\nchr1\t0\t10\t3300\t3300\t0\t0\t0\t0\tN\tN\t.`,
+      "grch38.cen_coord.curated.bed": "chr1\t100\t200",
+      "sample_loh_segments.csv": "chr1\t0\t210",
+    });
+
+    expect(result.masks).toEqual([
+      {
+        chrom: "chr1",
+        start: 0,
+        end: 10,
+        reason: "Wakhan masked segment (sentinel 3300)",
+      },
+    ]);
+    expect(result.loh).toEqual([
+      { chrom: "chr1", start: 10, end: 210, feature: "LOH" },
+    ]);
+    expect(result.segments.integer[0]).toMatchObject({
+      copyNumber: null,
+      medianCoverage: null,
+      sourceCopyNumber: 0,
+      sourceMedianCoverage: 0,
+      status: "masked",
+    });
+    expect(result.segments.integer.slice(1)).toEqual(
+      expect.arrayContaining([
+        expect.objectContaining({
+          haplotype: "HP2",
+          start: 0,
+          copyNumber: 0,
+          status: "reported",
+        }),
+        expect.objectContaining({
+          haplotype: "HP1",
+          start: 10,
+          copyNumber: 0,
+          status: "reported",
+        }),
+      ]),
+    );
+  });
+
+  it("rejects an incompatible VCF assembly before optional-track recovery", async () => {
+    await expect(
+      parseMembers("wrong-reference.zip", {
+        "integer_profile.bed": cn,
+        "grch38.cen_coord.curated.bed": "chr1\t100\t200",
+        "severus_somatic.vcf":
+          "##fileformat=VCFv4.2\n##contig=<ID=chr1,length=1000>\n",
+      }),
+    ).rejects.toThrow("contig dictionary does not match GRCh38");
+  });
+
   it("recognizes Wakhan's single-track writer schema and clips LOH at masks", async () => {
     const single =
       "#chr\tstart\tend\tcoverage\tcopynumber_state\tconfidence\nchr1\t0\t50000\t35\t2\t0.8\n";
