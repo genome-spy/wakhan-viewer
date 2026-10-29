@@ -71,9 +71,13 @@ describe("ZIP import queue", () => {
       loaded: ["first.zip", "second.zip", "third.zip"],
       failures: [],
     });
-    expect(progress.mock.calls.map(([{ index, total }]) => [index, total])).toEqual(
-      [[1, 2], [2, 3], [3, 3]],
-    );
+    expect(
+      progress.mock.calls.map(([{ index, total }]) => [index, total]),
+    ).toEqual([
+      [1, 2],
+      [2, 3],
+      [3, 3],
+    ]);
   });
 
   it("reports each failed or unsupported file and continues with valid ZIPs", async () => {
@@ -111,7 +115,11 @@ describe("ZIP import queue", () => {
       loaded: ["next.zip"],
       failures: [],
     });
-    expect(progress).toHaveBeenLastCalledWith({ file: next, index: 1, total: 1 });
+    expect(progress).toHaveBeenLastCalledWith({
+      file: next,
+      index: 1,
+      total: 1,
+    });
   });
 
   it("does nothing when the file picker is cancelled", async () => {

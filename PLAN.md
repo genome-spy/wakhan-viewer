@@ -111,28 +111,28 @@ Counts below are source rows before normalization/filtering; CN rows contain bot
 haplotypes. Both archives have eight flat members and cover chr1–22 and chrX in
 their coverage and CN tables. Their VCF dictionaries also contain chrY.
 
-| Property | HCC1937 | HCC1954 |
-| --- | ---: | ---: |
-| ZIP bytes | 1,319,889 | 1,470,008 |
+| Property                 |   HCC1937 |   HCC1954 |
+| ------------------------ | --------: | --------: |
+| ZIP bytes                | 1,319,889 | 1,470,008 |
 | Total uncompressed bytes | 5,591,766 | 6,114,508 |
-| Integer profile rows | 461 | 1,271 |
-| Subclonal profile rows | 461 | 1,271 |
-| Coverage bins | 60,630 | 60,630 |
-| BAF bins | 60,630 | 60,630 |
-| Gene result rows | 85 | 85 |
-| VCF records | 1,018 | 1,926 |
-| Ranking entries | 3 | 2 |
+| Integer profile rows     |       461 |     1,271 |
+| Subclonal profile rows   |       461 |     1,271 |
+| Coverage bins            |    60,630 |    60,630 |
+| BAF bins                 |    60,630 |    60,630 |
+| Gene result rows         |        85 |        85 |
+| VCF records              |     1,018 |     1,926 |
+| Ranking entries          |         3 |         2 |
 
-| Member | Observed contract | Application use |
-| --- | --- | --- |
-| `integer_profile.bed` | Comment preamble, then `#chr` tabular header; HP1/HP2 coverage, state, confidence, union of SV IDs | Integer CN rules and tooltips |
-| `subclonal_profile.bed` | Same, plus `hp1_is_subclonal` and `hp2_is_subclonal`; fractional states | Profile toggle and caller subclonal flags |
-| `phase_corrected_coverage.csv` | **Tab-delimited**, headerless: chromosome, start, end, HP1, HP2, unphased | Raw depth dots; third series is all zero in both supplied ZIPs |
-| `baf.csv` | Comma-delimited, headerless: chromosome, bin start, folded BAF | BAF track, joined to coverage intervals by chromosome and source start |
-| `genes_copynumber_states.bed` | Commented header; actual/adjusted HP depth and integer gene states | Caller gene details; optional development calibration experiment |
-| `grch38.cen_coord.curated.bed` | Headerless three-column TSV | Wakhan source masks; filename can vary |
-| `severus_somatic.vcf` | Severus v1.8; one sample, `wakhan_haplotagged`; contig lengths and phased SV fields | Assembly dictionary, SVs and support |
-| `solutions_ranks.tsv` | Ordinary header; repository name, DNA/cell purity, ploidy, confidence, rank | Run-level ranking information |
+| Member                         | Observed contract                                                                                  | Application use                                                        |
+| ------------------------------ | -------------------------------------------------------------------------------------------------- | ---------------------------------------------------------------------- |
+| `integer_profile.bed`          | Comment preamble, then `#chr` tabular header; HP1/HP2 coverage, state, confidence, union of SV IDs | Integer CN rules and tooltips                                          |
+| `subclonal_profile.bed`        | Same, plus `hp1_is_subclonal` and `hp2_is_subclonal`; fractional states                            | Profile toggle and caller subclonal flags                              |
+| `phase_corrected_coverage.csv` | **Tab-delimited**, headerless: chromosome, start, end, HP1, HP2, unphased                          | Raw depth dots; third series is all zero in both supplied ZIPs         |
+| `baf.csv`                      | Comma-delimited, headerless: chromosome, bin start, folded BAF                                     | BAF track, joined to coverage intervals by chromosome and source start |
+| `genes_copynumber_states.bed`  | Commented header; actual/adjusted HP depth and integer gene states                                 | Caller gene details; optional development calibration experiment       |
+| `grch38.cen_coord.curated.bed` | Headerless three-column TSV                                                                        | Wakhan source masks; filename can vary                                 |
+| `severus_somatic.vcf`          | Severus v1.8; one sample, `wakhan_haplotagged`; contig lengths and phased SV fields                | Assembly dictionary, SVs and support                                   |
+| `solutions_ranks.tsv`          | Ordinary header; repository name, DNA/cell purity, ploidy, confidence, rank                        | Run-level ranking information                                          |
 
 Neither ZIP contains LOH intervals, a manifest, a Wakhan version, explicit
 coverage-to-CN calibration, or the identity of the enclosed solution. The archive
@@ -306,16 +306,16 @@ available profiles, capabilities, named tables, and diagnostics. Use nullable
 numeric values with an explicit status (`reported`, `masked`, `unavailable`).
 Keep original coordinates, identifiers, and caller values for tooltips/auditing.
 
-| Named dataset | Canonical rows |
-| --- | --- |
-| `coverage` | chrom, start, end, HP1/HP2/unphased or total depth, per-series status |
-| `segments` | chrom, start, end, haplotype or total, CN, median depth, confidence, subclonal flag, SV IDs |
-| `baf` | chrom, start, end, folded BAF, status |
-| `svLinks`, `svSites` | endpoints/sites, SV class, original type/IDs, strands, HP/phase sets, GT, support/VAF |
-| `masks`, `unavailableCn` | intervals, scope/haplotype, reason |
-| `loh` | intervals and reported HP when present; source-call semantics |
-| `geneResults` | Caller-provided gene measurements and states |
-| `genes`, `cytobands` | Bundled reference annotations |
+| Named dataset            | Canonical rows                                                                              |
+| ------------------------ | ------------------------------------------------------------------------------------------- |
+| `coverage`               | chrom, start, end, HP1/HP2/unphased or total depth, per-series status                       |
+| `segments`               | chrom, start, end, haplotype or total, CN, median depth, confidence, subclonal flag, SV IDs |
+| `baf`                    | chrom, start, end, folded BAF, status                                                       |
+| `svLinks`, `svSites`     | endpoints/sites, SV class, original type/IDs, strands, HP/phase sets, GT, support/VAF       |
+| `masks`, `unavailableCn` | intervals, scope/haplotype, reason                                                          |
+| `loh`                    | intervals and reported HP when present; source-call semantics                               |
+| `geneResults`            | Caller-provided gene measurements and states                                                |
+| `genes`, `cytobands`     | Bundled reference annotations                                                               |
 
 Expand merged HP segment columns to long-form rows. Keep both normalized profiles
 in the result; publish only the active profile into `segments`. Switching profiles
@@ -395,10 +395,10 @@ A preliminary check on 2026-09-29 excluded genes overlapping a subclonal masked
 segment for the relevant haplotype, deduplicated the remaining CN/depth pairs,
 and fitted an ordinary least-squares line with equal weight per distinct pair:
 
-| Input | Distinct pairs / observed CN range | Single-copy depth | Offset | Maximum absolute residual in depth units |
-| --- | --- | --- | --- | --- |
-| HCC1937 | 6 / 0–5 | 23.376286 | 1.600952 | 0.003905 |
-| HCC1954 | 7 / 0–12 | 16.837578 | 1.999297 | 0.004453 |
+| Input   | Distinct pairs / observed CN range | Single-copy depth | Offset   | Maximum absolute residual in depth units |
+| ------- | ---------------------------------- | ----------------- | -------- | ---------------------------------------- |
+| HCC1937 | 6 / 0–5                            | 23.376286         | 1.600952 | 0.003905                                 |
+| HCC1954 | 7 / 0–12                           | 16.837578         | 1.999297 | 0.004453                                 |
 
 These residuals are within the 0.005 rounding half-step. This establishes internal
 consistency of the selected pairs, not agreement with the original plot or safe
@@ -555,19 +555,19 @@ calibration. Domain listeners keep the toolbar in sync and are removed on dispos
 Detect observable capabilities from schemas/fields. Tumor-only versus paired and
 SV-guided versus change-point segmentation need not be guessed to render the data.
 
-| Wakhan mode/output | Planned behavior | Evidence/availability |
-| --- | --- | --- |
-| Phased integer CN, tumor-normal or tumor-only | Two HP tracks with shared CN scale | Supplied ZIPs verify the phased schema |
-| Subclonal CN | Integer/subclonal toggle; fractional states and flags in tooltips/style | Both supplied ZIPs; exclude sentinel rows |
-| Unphased SVs vs `--use-sv-haplotypes` | Same arc design; show HP annotations only when reported | Current VCFs include HP and phase sets; missing fields supported |
-| `--without-phasing` | One total-CN/depth track, no artificial HP2 | Single-track writer inspected; real ZIP fixture still needed because current exporter skips this branch |
-| No SV / change-point detection | CN exploration with SV track omitted | Importer can accept a reduced bundle; current ZIP writer requires breakpoints |
-| No subclonal profile | Integer-only UI | Importer supports it; current ZIP writer unconditionally requires subclonal BED |
-| LOH | Compact source-call track; retain HP if present | Exporter optionally includes `<sample>_loh_segments.csv`; absent in both examples |
-| Gene output | Optional caller-gene details, separate from reference cancer genes | Both examples have 85 rows; not a replacement for reference loci |
-| Other assemblies, including mouse and CHM13 | Matching/custom contig dictionary; only compatible annotations | Requires fixtures; bundled cancer genes/cytobands initially GRCh38 only |
-| Alternative purity/ploidy solutions / WGD | Compare separately opened ZIPs at the same locus | Ranking rows do not contain alternate profiles; require a future manifest for automatic identity |
-| Phasing/SNP diagnostic plots, purity-ploidy heatmaps | Deferred until the relevant data are exported | Current ZIP lacks their inputs |
+| Wakhan mode/output                                   | Planned behavior                                                        | Evidence/availability                                                                                   |
+| ---------------------------------------------------- | ----------------------------------------------------------------------- | ------------------------------------------------------------------------------------------------------- |
+| Phased integer CN, tumor-normal or tumor-only        | Two HP tracks with shared CN scale                                      | Supplied ZIPs verify the phased schema                                                                  |
+| Subclonal CN                                         | Integer/subclonal toggle; fractional states and flags in tooltips/style | Both supplied ZIPs; exclude sentinel rows                                                               |
+| Unphased SVs vs `--use-sv-haplotypes`                | Same arc design; show HP annotations only when reported                 | Current VCFs include HP and phase sets; missing fields supported                                        |
+| `--without-phasing`                                  | One total-CN/depth track, no artificial HP2                             | Single-track writer inspected; real ZIP fixture still needed because current exporter skips this branch |
+| No SV / change-point detection                       | CN exploration with SV track omitted                                    | Importer can accept a reduced bundle; current ZIP writer requires breakpoints                           |
+| No subclonal profile                                 | Integer-only UI                                                         | Importer supports it; current ZIP writer unconditionally requires subclonal BED                         |
+| LOH                                                  | Compact source-call track; retain HP if present                         | Exporter optionally includes `<sample>_loh_segments.csv`; absent in both examples                       |
+| Gene output                                          | Optional caller-gene details, separate from reference cancer genes      | Both examples have 85 rows; not a replacement for reference loci                                        |
+| Other assemblies, including mouse and CHM13          | Matching/custom contig dictionary; only compatible annotations          | Requires fixtures; bundled cancer genes/cytobands initially GRCh38 only                                 |
+| Alternative purity/ploidy solutions / WGD            | Compare separately opened ZIPs at the same locus                        | Ranking rows do not contain alternate profiles; require a future manifest for automatic identity        |
+| Phasing/SNP diagnostic plots, purity-ploidy heatmaps | Deferred until the relevant data are exported                           | Current ZIP lacks their inputs                                                                          |
 
 Implement additional modes against representative exports or an author-confirmed
 contract, with synthetic fixtures for edge cases. Record unsupported modes and
@@ -597,17 +597,17 @@ For each gap, record:
 
 ### Initial requests to validate during implementation
 
-| Priority / purpose | Observed gap | Concrete request to Wakhan | Viewer behavior until supplied |
-| --- | --- | --- | --- |
-| Correct interpretation of solution metadata | ZIP contains one profile set and rankings for all solutions, without linking them | Export `sampleId`, selected solution ID/rank, and that solution's ploidy, DNA purity, cell purity, and confidence; identify the target VCF sample | Use the filename as a display label; leave solution identity unknown; show rankings only as run-level information |
-| Calibrated depth/CN overlay | No explicit plot calibration | Export the exact depth-to-CN mapping, units, and applicable solution/profile/series; affine coefficients or centers as appropriate | Separate CN and raw-depth tracks by default; optional labeled development estimate, with limitations recorded |
-| Correct genomic placement, including no-SV modes | No independent assembly declaration or sequence dictionary | Export reference assembly name/accession when known, ordered contig names and lengths, and analyzed contigs independently of VCF presence | Use a validated VCF dictionary or explicit supported assembly choice; report unresolved reference |
-| Correct interval interpretation | CN/coverage boundaries follow a mixed start convention; formats lack a versioned coordinate contract | Declare coordinate base and interval closure for each table, including masks, LOH, genes, and BAF bins; preferably emit standard zero-based half-open intervals in a new schema version | One documented adapter for the inspected format; no per-row convention guessing |
-| Correct missingness and masks | Sentinel 3300, integer zero placeholders, and zero-filled missing HPs can be confused with measurements | Export explicit per-series/per-row status distinguishing reported, masked, and unavailable values; export mask intervals and scope; preserve genuine zeros | Apply only established sentinel rules, expose ambiguity, and keep unavailable values out of numeric scales |
-| BAF interpretation | No SNP support counts or bin ends; 3300 denotes unavailable bins | Include start/end, BAF value/status, contributing SNP count, and the support threshold used; document folded-BAF semantics | Match existing bins by source coordinates, retain valid values without inferred counts, report unavailable BAF |
-| Mode coverage | ZIP creation requires optional outputs and skips the unphased branch | Produce a ZIP for each supported results mode; include available outputs and declare each optional track as present, empty, not computed, or not applicable | Display supported present tracks; report missing capabilities without synthesizing results |
-| Distinguish missing output from no calls | No LOH in either example; the exporter makes it optional; an all-zero unphased series is ambiguous | Declare computation/availability for LOH and unphased depth, with an empty table for a completed analysis with no calls where applicable | Mark absent output as unavailable, not “no LOH”; do not infer phasing/depth availability from zeros |
-| Reproducible import and evolution | No manifest or Wakhan version; custom filenames and mixed delimiters | Add a small versioned manifest with Wakhan version/build, relevant mode flags, and member roles/paths/table schemas | Support the observed layout explicitly and diagnose unknown formats |
+| Priority / purpose                               | Observed gap                                                                                            | Concrete request to Wakhan                                                                                                                                                              | Viewer behavior until supplied                                                                                    |
+| ------------------------------------------------ | ------------------------------------------------------------------------------------------------------- | --------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------- | ----------------------------------------------------------------------------------------------------------------- |
+| Correct interpretation of solution metadata      | ZIP contains one profile set and rankings for all solutions, without linking them                       | Export `sampleId`, selected solution ID/rank, and that solution's ploidy, DNA purity, cell purity, and confidence; identify the target VCF sample                                       | Use the filename as a display label; leave solution identity unknown; show rankings only as run-level information |
+| Calibrated depth/CN overlay                      | No explicit plot calibration                                                                            | Export the exact depth-to-CN mapping, units, and applicable solution/profile/series; affine coefficients or centers as appropriate                                                      | Separate CN and raw-depth tracks by default; optional labeled development estimate, with limitations recorded     |
+| Correct genomic placement, including no-SV modes | No independent assembly declaration or sequence dictionary                                              | Export reference assembly name/accession when known, ordered contig names and lengths, and analyzed contigs independently of VCF presence                                               | Use a validated VCF dictionary or explicit supported assembly choice; report unresolved reference                 |
+| Correct interval interpretation                  | CN/coverage boundaries follow a mixed start convention; formats lack a versioned coordinate contract    | Declare coordinate base and interval closure for each table, including masks, LOH, genes, and BAF bins; preferably emit standard zero-based half-open intervals in a new schema version | One documented adapter for the inspected format; no per-row convention guessing                                   |
+| Correct missingness and masks                    | Sentinel 3300, integer zero placeholders, and zero-filled missing HPs can be confused with measurements | Export explicit per-series/per-row status distinguishing reported, masked, and unavailable values; export mask intervals and scope; preserve genuine zeros                              | Apply only established sentinel rules, expose ambiguity, and keep unavailable values out of numeric scales        |
+| BAF interpretation                               | No SNP support counts or bin ends; 3300 denotes unavailable bins                                        | Include start/end, BAF value/status, contributing SNP count, and the support threshold used; document folded-BAF semantics                                                              | Match existing bins by source coordinates, retain valid values without inferred counts, report unavailable BAF    |
+| Mode coverage                                    | ZIP creation requires optional outputs and skips the unphased branch                                    | Produce a ZIP for each supported results mode; include available outputs and declare each optional track as present, empty, not computed, or not applicable                             | Display supported present tracks; report missing capabilities without synthesizing results                        |
+| Distinguish missing output from no calls         | No LOH in either example; the exporter makes it optional; an all-zero unphased series is ambiguous      | Declare computation/availability for LOH and unphased depth, with an empty table for a completed analysis with no calls where applicable                                                | Mark absent output as unavailable, not “no LOH”; do not infer phasing/depth availability from zeros               |
+| Reproducible import and evolution                | No manifest or Wakhan version; custom filenames and mixed delimiters                                    | Add a small versioned manifest with Wakhan version/build, relevant mode flags, and member roles/paths/table schemas                                                                     | Support the observed layout explicitly and diagnose unknown formats                                               |
 
 These are proposals, not an agreed Wakhan schema. A single small manifest can hold
 identity, reference, calibration, modes, and member descriptions; value/status and

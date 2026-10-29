@@ -12,11 +12,11 @@ The original source downloads occurred on the dates recorded below.
 
 ## Included files
 
-| File | Contents | Rows |
-| --- | --- | ---: |
-| `ncg-7.2-grch38.tsv` | NCG 7.2 canonical drivers mapped to RefSeq spans | 593 loci / 591 genes |
-| `cytobands-grch38.tsv` | UCSC hg38 chromosome bands | 862 |
-| `provenance.json` | Source identities, retrieval dates, source/output hashes, and transfer record | — |
+| File                   | Contents                                                                      |                 Rows |
+| ---------------------- | ----------------------------------------------------------------------------- | -------------------: |
+| `ncg-7.2-grch38.tsv`   | NCG 7.2 canonical drivers mapped to RefSeq spans                              | 593 loci / 591 genes |
+| `cytobands-grch38.tsv` | UCSC hg38 chromosome bands                                                    |                  862 |
+| `provenance.json`      | Source identities, retrieval dates, source/output hashes, and transfer record |                    — |
 
 All intervals are **zero-based, half-open** on **GRCh38/hg38**, using `chr`
 chromosome names. These annotations must only be enabled for a compatible assembly.

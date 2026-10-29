@@ -29,11 +29,21 @@ describe("inferred depth calibration", () => {
   it("excludes masked haplotypes without discarding the other haplotype", () => {
     const result = resultWithDepths();
     result.segments.subclonal.push({
-      chrom: "chrX", start: 100, end: 200, haplotype: "HP1", status: "masked",
+      chrom: "chrX",
+      start: 100,
+      end: 200,
+      haplotype: "HP1",
+      status: "masked",
     });
     result.geneResults.push({
-      gene: "MASKED", chrom: "chrX", start: 150, end: 175,
-      stateHp1: 141, adjustedHp1: 3300, stateHp2: 3, adjustedHp2: 50,
+      gene: "MASKED",
+      chrom: "chrX",
+      start: 150,
+      end: 175,
+      stateHp1: 141,
+      adjustedHp1: 3300,
+      stateHp2: 3,
+      adjustedHp2: 50,
     });
     const estimate = estimateCalibration(result)!;
     expect(estimate.excludedGenes).toEqual(["MASKED"]);

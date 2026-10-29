@@ -393,39 +393,46 @@ export class WakhanViewer extends LitElement {
           <h2>${active.name}</h2>
           <p class="details-meta">
             GRCh38,
-            ${active.segments[this.profile].length /
-            (active.mode === "phased" ? 2 : 1)}
+            ${
+              active.segments[this.profile].length /
+              (active.mode === "phased" ? 2 : 1)
+            }
             CN intervals (${active.mode})
           </p>
-          ${active.coverage.length
-            ? html`<div class="calibration-note">
-                ${this.calibrationEstimate
-                  ? html`
-                      <strong>Estimated depth calibration</strong>
-                      <p>
-                        The ZIP omits Wakhan’s exact calibration and the
-                        identity of the plotted solution. We infer the
-                        copy/depth mapping from rounded gene values. Its
-                        agreement with Wakhan’s original plot is unverified,
-                        especially for subclonal profiles. Depth alignment and
-                        depth-derived copy estimates are approximate.
-                      </p>
-                      <p class="calibration-values">
-                        Depth ≈ ${this.calibrationEstimate.offset.toFixed(3)} +
-                        ${this.calibrationEstimate.singleCopyDepth.toFixed(3)} ×
-                        copies
-                      </p>
-                    `
-                  : html`
-                      <strong>Depth calibration unavailable</strong>
-                      <p>
-                        The ZIP omits Wakhan’s exact calibration, and a
-                        consistent estimate is unavailable. Copy number and raw
-                        read depth are shown in separate tracks.
-                      </p>
-                    `}
-              </div>`
-            : nothing}
+          ${
+            active.coverage.length
+              ? html`<div class="calibration-note">
+                  ${
+                    this.calibrationEstimate
+                      ? html`
+                          <strong>Estimated depth calibration</strong>
+                          <p>
+                            The ZIP omits Wakhan’s exact calibration and the
+                            identity of the plotted solution. We infer the
+                            copy/depth mapping from rounded gene values. Its
+                            agreement with Wakhan’s original plot is unverified,
+                            especially for subclonal profiles. Depth alignment
+                            and depth-derived copy estimates are approximate.
+                          </p>
+                          <p class="calibration-values">
+                            Depth ≈
+                            ${this.calibrationEstimate.offset.toFixed(3)} +
+                            ${this.calibrationEstimate.singleCopyDepth.toFixed(3)}
+                            × copies
+                          </p>
+                        `
+                      : html`
+                          <strong>Depth calibration unavailable</strong>
+                          <p>
+                            The ZIP omits Wakhan’s exact calibration, and a
+                            consistent estimate is unavailable. Copy number and
+                            raw read depth are shown in separate tracks.
+                          </p>
+                        `
+                  }
+                </div>`
+              : nothing
+          }
           <p>Scroll to zoom, drag to pan, and use the navigator to brush.</p>
           <p>
             HP1 and HP2 are chromosome-local labels. Wakhan CN confidence is
@@ -439,9 +446,11 @@ export class WakhanViewer extends LitElement {
           <p>
             ${active.svLinks.length} SV links, ${active.svSites.length} SV
             sites, ${active.baf.filter((b) => b.baf !== null).length} BAF bins.
-            ${active.lohAvailable
-              ? `${active.loh.length} LOH intervals.`
-              : "LOH not supplied."}
+            ${
+              active.lohAvailable
+                ? `${active.loh.length} LOH intervals.`
+                : "LOH not supplied."
+            }
             ${active.rankings.length} ranked solutions (included solution
             unspecified). VCF sample: ${active.vcfSample ?? "not supplied"}.
           </p>
@@ -494,9 +503,9 @@ export class WakhanViewer extends LitElement {
   render() {
     const active = this.loaded[this.active];
     return html`<div
-      class="app ${active ? "is-viewing" : ""} ${this.dragging
-        ? "dragging"
-        : ""}"
+      class="app ${active ? "is-viewing" : ""} ${
+        this.dragging ? "dragging" : ""
+      }"
       @dragover=${this.onDragOver}
       @dragleave=${() => (this.dragging = false)}
       @drop=${this.onDrop}
@@ -521,91 +530,101 @@ export class WakhanViewer extends LitElement {
         <div class="brand">
           <h1>Wakhan <em>Viewer</em></h1>
         </div>
-        ${active
-          ? this.renderToolbar(active)
-          : html`<div class="top-actions">
-              <a
-                href="https://genomespy.app/"
-                target="_blank"
-                rel="noopener noreferrer"
-                class="powered"
-              >
-                Powered by <strong>GenomeSpy ↗</strong>
-              </a>
-            </div>`}
-      </header>
-      ${active
-        ? html`<main class="workspace" aria-label="Genome viewer">
-            <div
-              id="vis"
-              class=${this.busy ? "is-loading" : ""}
-              aria-label="Interactive genomic tracks"
-            ></div>
-          </main>`
-        : html`<main class="welcome">
-            <div class="welcome-copy">
-              <h2>Open Wakhan results</h2>
-              <p>
+        ${
+          active
+            ? this.renderToolbar(active)
+            : html`<div class="top-actions">
                 <a
-                  href="https://github.com/KolmogorovLab/Wakhan"
+                  href="https://genomespy.app/"
                   target="_blank"
                   rel="noopener noreferrer"
-                  >Wakhan</a
+                  class="powered"
                 >
-                analyzes long-read tumor sequencing data to estimate copy-number
-                changes, including haplotype-specific profiles when phasing is
-                available.
-              </p>
-              <p>
-                This viewer opens a Wakhan results ZIP and displays its
-                copy-number, read-depth, BAF, and structural-variant tracks.
-              </p>
-              <p>
-                <strong>Work in progress.</strong> The interface and support for
-                Wakhan ZIP formats are still evolving.
-              </p>
-              <div class="welcome-actions">
-                <button
-                  class="primary large"
-                  @click=${this.openPicker}
-                  ?disabled=${this.busy}
-                >
-                  Open ZIP files
-                </button>
-                <button
-                  class="large"
-                  @click=${this.loadExample}
-                  ?disabled=${this.busy}
-                >
-                  ${this.loadingExample
-                    ? "Loading example…"
-                    : "Load HCC1937 example"}
-                </button>
+                  Powered by <strong>GenomeSpy ↗</strong>
+                </a>
+              </div>`
+        }
+      </header>
+      ${
+        active
+          ? html`<main class="workspace" aria-label="Genome viewer">
+              <div
+                id="vis"
+                class=${this.busy ? "is-loading" : ""}
+                aria-label="Interactive genomic tracks"
+              ></div>
+            </main>`
+          : html`<main class="welcome">
+              <div class="welcome-copy">
+                <h2>Open Wakhan results</h2>
+                <p>
+                  <a
+                    href="https://github.com/KolmogorovLab/Wakhan"
+                    target="_blank"
+                    rel="noopener noreferrer"
+                    >Wakhan</a
+                  >
+                  analyzes long-read tumor sequencing data to estimate
+                  copy-number changes, including haplotype-specific profiles
+                  when phasing is available.
+                </p>
+                <p>
+                  This viewer opens a Wakhan results ZIP and displays its
+                  copy-number, read-depth, BAF, and structural-variant tracks.
+                </p>
+                <p>
+                  <strong>Work in progress.</strong> The interface and support
+                  for Wakhan ZIP formats are still evolving.
+                </p>
+                <div class="welcome-actions">
+                  <button
+                    class="primary large"
+                    @click=${this.openPicker}
+                    ?disabled=${this.busy}
+                  >
+                    Open ZIP files
+                  </button>
+                  <button
+                    class="large"
+                    @click=${this.loadExample}
+                    ?disabled=${this.busy}
+                  >
+                    ${
+                      this.loadingExample
+                        ? "Loading example…"
+                        : "Load HCC1937 example"
+                    }
+                  </button>
+                </div>
+                <p class="hint">
+                  Or drop one or more ZIP files anywhere on this page. Files are
+                  processed in your browser.
+                </p>
               </div>
-              <p class="hint">
-                Or drop one or more ZIP files anywhere on this page. Files are
-                processed in your browser.
-              </p>
-            </div>
-          </main>`}
-      ${active
-        ? nothing
-        : html`<footer class="footer">
-            <span class="footer-project"
-              >Wakhan Viewer ${this.renderProjectLinks()}</span
-            >
-            <span>
-              A viewer for
-              <a href="https://github.com/KolmogorovLab/Wakhan">Wakhan</a>
-              results, powered by
-              <a href="https://genomespy.app/">GenomeSpy</a>.
-            </span>
-          </footer>`}
-      ${this.dragging
-        ? html`<div class="drop-overlay">
-            Drop Wakhan ZIP files to open them
-          </div>`
-        : nothing}
+            </main>`
+      }
+      ${
+        active
+          ? nothing
+          : html`<footer class="footer">
+              <span class="footer-project"
+                >Wakhan Viewer ${this.renderProjectLinks()}</span
+              >
+              <span>
+                A viewer for
+                <a href="https://github.com/KolmogorovLab/Wakhan">Wakhan</a>
+                results, powered by
+                <a href="https://genomespy.app/">GenomeSpy</a>.
+              </span>
+            </footer>`
+      }
+      ${
+        this.dragging
+          ? html`<div class="drop-overlay">
+              Drop Wakhan ZIP files to open them
+            </div>`
+          : nothing
+      }
       ${this.renderNavigationHelp()}
       <div
         class="status ${this.message || this.busy ? "is-visible" : ""}"

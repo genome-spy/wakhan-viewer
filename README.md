@@ -43,6 +43,10 @@ npm run build
 npm run preview
 ```
 
+`npm ci` also installs the Git hooks. Before each commit, Prettier automatically
+formats staged files through Husky and lint-staged. Run `npm run format` to format
+the project or `npm run format:check` to check formatting, as CI does.
+
 ## Appearance
 
 The interface and visualization follow the system's light or dark appearance.
