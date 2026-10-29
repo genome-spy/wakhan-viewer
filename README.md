@@ -47,30 +47,6 @@ npm run preview
 formats staged files through Husky and lint-staged. Run `npm run format` to format
 the project or `npm run format:check` to check formatting, as CI does.
 
-## Appearance
-
-The interface and visualization follow the system's light or dark appearance.
-The ten `--base-*` colors at the top of `src/styles.css` control the palette.
-Shared text, surface, border, and data shades derive from them with
-`color-mix(in oklab, …)` and `light-dark()`. Haplotype colors in dark mode and
-depth shades use relative OKLCH lightness adjustments to retain their chroma.
-The shared `--depth-lightness-offset-light` and `--depth-lightness-offset-dark`
-values control depth brightness relative to copy-number colors: positive offsets
-lighten the points, and negative offsets darken them. `--sv-chroma-scale` controls
-SV color intensity.
-Set CSS `color-scheme: light` or `color-scheme: dark` on the page or viewer to
-force either appearance. Cytoband stain strength retains its light-to-dark order
-in both modes; `--cytoband-lightness-max-dark` controls the dimmer dark-mode ramp
-and centromeres, with light labels for readability.
-
-The CSS colors are converted to sRGB for the reactive `wakhanColors` parameter;
-GenomeSpy's `defaultThemeColors` parameter derives from that same palette. A CSS
-alias also gives GenomeSpy's tooltips the matching text color. System appearance
-changes and attribute changes on the visualization container or its ancestors
-refresh the colors without resetting zoom or selections. While the page is
-visible, stylesheet edits (including changes in DevTools) are also checked
-every 250 ms. Unchanged CSS values skip color conversion and palette updates.
-
 ## Supported Wakhan Features
 
 The main phased GRCh38 tracks have been checked with the HCC1937 and HCC1954
