@@ -18,11 +18,6 @@ Spy](https://github.com/genome-spy/segment-model-spy). It uses
 
 Requires a current Node.js release and npm.
 
-The location search currently requires a locally built GenomeSpy Core from master
-(`e5dd5282d` or later); its optional search APIs are not in the published 1.2.0
-package yet. After `npm ci`, install the built Core tarball with
-`npm install --no-save --package-lock=false /path/to/genome-spy-core-1.2.0.tgz`.
-
 ```sh
 npm ci
 npm run dev
