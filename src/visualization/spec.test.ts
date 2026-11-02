@@ -1,4 +1,9 @@
-import { describe, expect, it, vi } from "vitest";
+import { describe, expect, it, onTestFinished, vi } from "vitest";
+import "@genome-spy/core/data/sources/lazy/registerCoreLazySources.js";
+import { createHeadlessEngine } from "@genome-spy/core/genomeSpy/headlessBootstrap.js";
+import { createCategorySelection } from "@genome-spy/core/selection/categorySelection.js";
+import { createMultiPointSelection } from "@genome-spy/core/selection/selection.js";
+import UnitView from "@genome-spy/core/view/unitView.js";
 import { emptyResult } from "../model";
 import type { CalibrationEstimate } from "../calibration";
 import { calibratedCoverage } from "../calibration";
@@ -14,7 +19,7 @@ type Track = {
   vconcat?: Track[];
   params?: unknown[];
   encoding?: {
-    color: unknown;
+    opacity: unknown;
     tooltip: { field: string; title: string }[];
   };
 };
@@ -112,12 +117,96 @@ it("keeps site details and selection behavior when an archive has no SV links", 
     select: "point",
     persist: false,
   });
-  expect(sitesOnly.encoding!.color).toMatchObject({
-    condition: {
-      test: { param: { or: ["svSiteSelect", "svRegion"] } },
-    },
+  expect(sitesOnly.encoding!.opacity).toMatchObject({
+    condition: expect.arrayContaining([
+      expect.objectContaining({
+        test: { param: { or: ["svSiteSelect", "svRegion"] }, empty: true },
+      }),
+    ]),
   });
 });
+
+it.each(["links", "sites", "both"])(
+  "hides unselected SV classes in %s and restores them when the legend selection clears",
+  async (mode) => {
+    const result = emptyResult("sv-classes.zip");
+    if (mode !== "sites")
+      result.svLinks = [
+        link,
+        { ...link, variantId: "breakend", svClass: "BND" },
+      ];
+    if (mode !== "links")
+      result.svSites = [
+        site,
+        { ...site, variantId: "insertion", svClass: "INS" },
+      ];
+    const spec = createSpec(result, colors);
+    spec.datasets = {
+      ...spec.datasets,
+      svLinks: result.svLinks,
+      svSites: result.svSites,
+    };
+    const { view: root } = await createHeadlessEngine(spec);
+    onTestFinished(() => root.disposeSubtree());
+    const sv = root.getDescendants().find((view) => view.name === "sv-tracks")!;
+    expect(sv.resolutions.legend.color!.selectionBindings.size).toBe(1);
+    const marks = root
+      .getDescendants()
+      .filter(
+        (view): view is UnitView =>
+          view instanceof UnitView &&
+          ["sv-domes", "sv-feet", "single-sites"].includes(view.name),
+      );
+    expect(marks).toHaveLength(mode === "both" ? 3 : mode === "links" ? 2 : 1);
+    for (const view of marks) view.mark.initializeEncoders();
+
+    const checkVisibility = (selected: string[]) => {
+      sv.paramRuntime.setValue(
+        "svClassSelect",
+        createCategorySelection("color", selected),
+      );
+      for (const view of marks) {
+        // Point opacity is normalized to fill opacity by GenomeSpy.
+        const opacity =
+          view.mark.encoders.opacity ?? view.mark.encoders.fillOpacity!;
+        for (const datum of view.getCollector().getData()) {
+          const visible =
+            selected.length === 0 || selected.includes(datum.svClass);
+          if (visible) expect(opacity(datum)).toBeGreaterThan(0);
+          else expect(opacity(datum)).toBe(0);
+        }
+      }
+    };
+
+    checkVisibility([]);
+    checkVisibility(["DEL"]);
+    checkVisibility(["sBND"]);
+    checkVisibility(["BND"]);
+    checkVisibility(["INS", "DEL"]);
+    // Highlighting a hidden variant must not override the legend selection.
+    for (const view of marks) {
+      const rows = Array.from(view.getCollector().getData());
+      if (view.name === "sv-domes") {
+        view.paramRuntime.setValue("svHover", createMultiPointSelection(rows));
+        view.paramRuntime.setValue("svSelect", createMultiPointSelection(rows));
+      } else if (view.name === "single-sites") {
+        view.paramRuntime.setValue(
+          "svSiteSelect",
+          createMultiPointSelection(rows),
+        );
+      }
+    }
+    root
+      .getDescendants()
+      .find((view) => view.name === "detail")!
+      .paramRuntime.setValue("svRegion", {
+        type: "interval",
+        intervals: { x: [0, 300] },
+      });
+    checkVisibility(["INV"]);
+    checkVisibility([]);
+  },
+);
 
 it("shares the CSS palette with generated tracks and the imported SV spec", () => {
   const result = emptyResult("themed.zip");

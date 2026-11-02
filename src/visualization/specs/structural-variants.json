@@ -4,6 +4,31 @@
   "name": "sv-tracks",
   "spacing": 5,
 
+  "params": [
+    {
+      "name": "svClassSelect",
+      "select": { "type": "point", "encodings": ["color"] },
+      "bind": "legend",
+      "persist": false
+    }
+  ],
+
+  "encoding": {
+    "color": { "field": "svClass", "type": "nominal" },
+    "opacity": {
+      "condition": { "param": "svClassSelect", "empty": true, "value": 0.7 },
+      "value": 0
+    }
+  },
+
+  "legends": {
+    "color": {
+      "title": "Wakhan SV class",
+      "orient": "top",
+      "direction": "horizontal"
+    }
+  },
+
   "resolve": {
     "scale": { "x": "shared", "color": "shared" },
     "axis": { "x": "shared" },
@@ -54,17 +79,6 @@
           "type": "identifier"
         }
       ],
-      "encoding": {
-        "color": {
-          "field": "svClass",
-          "type": "nominal",
-          "legend": {
-            "title": "Wakhan SV class",
-            "orient": "top",
-            "direction": "horizontal"
-          }
-        }
-      },
       "layer": [
         {
           "name": "sv-feet",
@@ -86,7 +100,6 @@
             "y": 0,
             "yOffset": -0.5,
             "size": 1,
-            "opacity": 0.7,
             "clip": "x"
           },
           "encoding": {
@@ -159,18 +172,6 @@
                 "value": 1
               },
               "value": 0
-            },
-            "color": {
-              "condition": {
-                "test": {
-                  "param": { "or": ["svSelect", "svRegion"] },
-                  "empty": true
-                },
-                "field": "svClass",
-                "type": "nominal",
-                "legend": null
-              },
-              "value": { "expr": "wakhanColors.border" }
             },
             "x": {
               "chrom": "chrom1",
@@ -270,6 +271,12 @@
             },
             "opacity": {
               "condition": [
+                {
+                  "test": {
+                    "not": { "param": "svClassSelect", "empty": true }
+                  },
+                  "value": 0
+                },
                 {
                   "param": "svHover",
                   "empty": false,

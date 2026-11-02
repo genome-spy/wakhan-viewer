@@ -156,23 +156,27 @@ function sitesTrack(withLinks: boolean): UnitSpec {
       type: "point",
       shape: "triangle-up",
       size: 18,
-      opacity: 0.7,
       clip: "x",
     },
     encoding: {
       x: { chrom: "chrom1", pos: "start1", type: "locus", band: 0 },
       y: { value: 0.5 },
-      color: {
-        condition: {
-          test: {
-            param: { or: ["svSiteSelect", "svRegion"] },
-            empty: true,
+      // Legend category selection requires unconditional color; dim by opacity.
+      opacity: {
+        condition: [
+          {
+            test: { not: { param: "svClassSelect", empty: true } },
+            value: 0,
           },
-          field: "svClass",
-          type: "nominal",
-          legend: null,
-        },
-        value: themeColor("border"),
+          {
+            test: {
+              param: { or: ["svSiteSelect", "svRegion"] },
+              empty: true,
+            },
+            value: 0.7,
+          },
+        ],
+        value: 0.15,
       },
       tooltip: [
         tip("svClass", "Wakhan SV class"),

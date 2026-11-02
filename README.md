@@ -66,6 +66,8 @@ ZIPs. Compared with Wakhan's Plotly plots, the viewer currently supports:
   annotations; Wakhan's sample-specific gene results are not displayed yet.
 - **Interactive exploration:** linked zoom/pan across tracks, a whole-genome
   navigator, genomic/depth rulers, and SV hover, click, and interval highlighting.
+  Click an SV legend class to show only that class; Shift-click to toggle
+  additional classes. Click the plot background to show all classes again.
   Multiple ZIPs can be opened and switched at the same genomic locus.
 - **Image export:** PNG and SVG of the current view.
 - **Unphased schemas (preliminary):** the importer recognizes single-track total
